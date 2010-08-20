@@ -3,6 +3,8 @@ This repository holds the backend code for the central roomtrol server (responsi
 
 Roomtrol is split into three parts: the server code, [roomtrol-daemon](https://github.com/mwylde/roomtrol-daemon) which contains the code for the daemon that runs on each controller, and [roomtrol-devices](https://github.com/mwylde/roomtrol-devices) which holds the various device drivers that have been written.
 
+**Note: in order to get device drivers, you need to run these two commands**: `git submodule init` and `git submodule update`.
+
 ##Development notes
 ###Code style
 All code should match the following style: tabs for indentation and spaces for aligning and line lengths should be minized but there is no hard cut-off. For Ruby code, class names ShouldBeCamelCased, variable and method names should\_be\_underscored, every method and class should be documented using [Yardoc](yardoc.com) tags and [markdown](http://daringfireball.net/projects/markdown/) formatting and [RSpec](rpsec.org) tests should be written for all functionality.
