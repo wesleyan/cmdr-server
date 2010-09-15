@@ -1,7 +1,7 @@
 require 'extlib'
 
-WORKING = File.dirname(__FILE__)
-TARGETS = ['/tp5']
+WORKING = File.dirname(__FILE__) / '..'
+TARGETS = ['/tp5', '/wescontrol_web']
 
 SERVERS = ["129.133.124.142"]
 
