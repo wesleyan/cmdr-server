@@ -1,9 +1,17 @@
 require 'extlib'
+require 'json'
+
+PUBLIC_KEY = false #Are we using public key authentication on all the servers?
 
 WORKING = File.dirname(__FILE__) / '..'
 TARGETS = ['/tp5', '/wescontrol_web']
 
-SERVERS = ["129.133.124.142"]
+# load server addresses from servers.json
+servers_file = File.open(WORKING / "servers.json")
+exit "No servers.json file found" unless servers_file
+servers = JSON.parse(servers_file.read)
+SERVERS = servers['servers']
+CONTROLLERS = servers['controllers']
 
 OPTS = {}
 
@@ -29,15 +37,17 @@ end
 
 desc "collects the login password from the operator"
 task :collect_password do
-	begin
-		require 'highline/import'
-	rescue LoadError => e
-	    puts "\n ~ FATAL: sproutcore gem is required.\n          Try: rake install_gems"
-	    exit(1)
-	end
+	unless PUBLIC_KEY
+		begin
+			require 'highline/import'
+		rescue LoadError => e
+		    puts "\n ~ FATAL: sproutcore gem is required.\n          Try: rake install_gems"
+		    exit(1)
+		end
 	
-	puts "Enter wescontrol password to complete this task"
-	OPTS[:password] = ask("Password: "){|q| q.echo = '*'}
+		puts "Enter roomtrol password to complete this task"
+		OPTS[:password] = ask("Password: "){|q| q.echo = '*'}
+	end
 end
 
 desc "finds all targets in the system and computes their build numbers" 
@@ -68,8 +78,17 @@ task :prepare_targets do
 end
 
 
-desc "copies the files to the servers"
+desc "copies the files to the controllers"
 task :deploy_assets => [:collect_password, :build, :prepare_targets] do
+	deploy(true)
+end
+
+desc "copies the files to the controllers"
+task :deploy_assets_server => [:collect_password, :build, :prepare_targets] do
+	deploy(false)
+end
+
+def deploy(to_controllers)
 	begin
 		require 'net/ssh'
 		require 'net/scp'
@@ -81,10 +100,10 @@ task :deploy_assets => [:collect_password, :build, :prepare_targets] do
 	password = OPTS[:password]
 	targets  = OPTS[:targets]
 
-	SERVERS.each do |server|
+	(to_controllers ? CONTROLLERS : SERVERS).each do |server|
 		installed = {}
 		puts "building directory structure on #{server}"
-		Net::SSH.start(server, 'wescontrol', :password => password) do |ssh|
+		Net::SSH.start(server, 'roomtrol', :password => password) do |ssh|
 			targets.each do |target|
 				remote_path = "/var/www/static#{target.index_root}/en"
 				puts ssh.exec!(%[mkdir -p "#{remote_path}"]) || "%: mkdir -p #{remote_path}"
@@ -95,7 +114,7 @@ task :deploy_assets => [:collect_password, :build, :prepare_targets] do
 		end
 		
 		puts "Copying static resources onto #{server}"
-		Net::SCP.start(server, 'wescontrol', :password => password) do |scp|
+		Net::SCP.start(server, 'roomtrol', :password => password) do |scp|
 			targets.each do |target|
 				local_path = target.build_root / 'en' / target.build_number
 				remote_path = "/var/www/static#{target.index_root}/en"
@@ -113,9 +132,18 @@ task :deploy_assets => [:collect_password, :build, :prepare_targets] do
 	end
 end
 
-desc "creates symlinks to the latest versions of all pages and apps. Make sure you deploy your assets also!"
+desc "creates symlinks to the latest versions of all pages and apps on the controllers."
 task :link_current => [:collect_password, :prepare_targets] do
- 
+	link(true)
+end
+
+desc "creates symlinks to the latest versions of all pages and apps on the servers."
+task :link_current_server => [:collect_password, :prepare_targets] do
+	link(false)
+end
+
+
+def link(to_controllers)
 	# don't require unless this task runs to avoid dependency problems
 	begin
 		require 'net/ssh'
@@ -136,8 +164,8 @@ task :link_current => [:collect_password, :prepare_targets] do
 
 	# SSH in and do the symlink
 	password = OPTS[:password]
-	SERVERS.each do |server|
-		Net::SSH.start(server, "wescontrol", :password => password) do |ssh|
+	(to_controllers ? CONTROLLERS : SERVERS).each do |server|
+		Net::SSH.start(server, "roomtrol", :password => password) do |ssh|
 			targets.each do |target|
 			# find the local build number
 				build_number = target.prepare!.compute_build_number
@@ -163,8 +191,10 @@ task :link_current => [:collect_password, :prepare_targets] do
 					puts ssh.exec!("rm #{to_path}") || " ~ Removed link at #{to_path}"
 				end
 				puts ssh.exec!("ln -s #{from_path} #{to_path}") || " ~ Linked #{from_path} => #{to_path}"
-				puts "Restarting X"
-				puts ssh.exec!("echo '#{password}' | sudo -S restart x")
+				if to_controllers
+					puts "Restarting X"
+					puts ssh.exec!("echo '#{password}' | sudo -S restart x")
+				end
 			end
 		end
 	end
@@ -172,33 +202,8 @@ end
 
 desc "builds and then deploys the files to the server.  This will not clean the build first, which will be faster.  If you have trouble try deploy_clean"
 task :deploy => [:collect_password, :build, :deploy_assets, :link_current]
+
+task :deploy_server => [:collect_password, :build, :deploy_assets_server, :link_current_server]
  
 desc "first cleans, then deploys the files"
 task :deploy_clean => [:clean, :deploy]
-
-desc "Update wiki with newest docs"
-task :wiki_docs do
-	begin
-		require 'git'
-		require 'yard'
-	rescue LoadError => e
-		puts "\n ~ FATAL: ruby-git gem is required.\n          Try: rake install_gems"
-		exit(1)
-	end
-	
-	#If the wiki is not checked out, check it out
-	unless Dir.exists? "wescontrol.wiki"
-		Git.clone('git@github.com:mwylde/wescontrol.wiki.git', 'wescontrol.wiki')
-	end
-
-	File.open "wescontrol.wiki/Device.md", "w+" do |f|
-		YARD.parse('roomtrol/lib/roomtrol/device.rb')
-		f.write YARD::Registry.objects["Wescontrol::Device"].docstring
-	end
-	
-	g = Git.open('wescontrol.wiki')
-	g.add('Device.md')
-	g.commit("Updated Device")
-	g.push
-	puts "Updated device on wiki"
-end

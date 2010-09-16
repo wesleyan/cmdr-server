@@ -1,7 +1,7 @@
 require 'json'
 
 # load server addresses from servers.json
-servers_file = File.open("../../servers.json")
+servers_file = File.open("#{File.dirname(__FILE__)}/../../servers.json")
 exit "No servers.json file found" unless servers_file
 servers = JSON.parse(servers_file.read)['servers']
 exit "NO servers in servers.json" unless servers

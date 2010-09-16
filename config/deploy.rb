@@ -10,7 +10,7 @@ default_run_options[:pty] = true
 set :application, "roomtrol-server"
 
 # Deployment
-set :deploy_to, "/svc/#{application}"
+set :deploy_to, "/var/#{application}"
 #set :user, 'someone'
 
 # Get repo configuration
