@@ -79,16 +79,8 @@ end
 
 
 desc "copies the files to the controllers"
-task :deploy_assets => [:collect_password, :build, :prepare_targets] do
-	deploy(true)
-end
-
-desc "copies the files to the controllers"
-task :deploy_assets_server => [:collect_password, :build, :prepare_targets] do
-	deploy(false)
-end
-
-def deploy(to_controllers)
+task :deploy_assets, :to_controllers, :needs => [:collect_password, :build, :prepare_targets] do |t, args|
+	puts "Deploying for controllers: #{args.inspect}"
 	begin
 		require 'net/ssh'
 		require 'net/scp'
@@ -100,7 +92,7 @@ def deploy(to_controllers)
 	password = OPTS[:password]
 	targets  = OPTS[:targets]
 
-	(to_controllers ? CONTROLLERS : SERVERS).each do |server|
+	(args[:to_controllers] ? CONTROLLERS : SERVERS).each do |server|
 		installed = {}
 		puts "building directory structure on #{server}"
 		Net::SSH.start(server, 'roomtrol', :password => password) do |ssh|
@@ -133,17 +125,7 @@ def deploy(to_controllers)
 end
 
 desc "creates symlinks to the latest versions of all pages and apps on the controllers."
-task :link_current => [:collect_password, :prepare_targets] do
-	link(true)
-end
-
-desc "creates symlinks to the latest versions of all pages and apps on the servers."
-task :link_current_server => [:collect_password, :prepare_targets] do
-	link(false)
-end
-
-
-def link(to_controllers)
+task :link_current, :to_controllers, :needs => [:collect_password, :prepare_targets] do |t, args|
 	# don't require unless this task runs to avoid dependency problems
 	begin
 		require 'net/ssh'
@@ -164,7 +146,7 @@ def link(to_controllers)
 
 	# SSH in and do the symlink
 	password = OPTS[:password]
-	(to_controllers ? CONTROLLERS : SERVERS).each do |server|
+	(args[:to_controllers] ? CONTROLLERS : SERVERS).each do |server|
 		Net::SSH.start(server, "roomtrol", :password => password) do |ssh|
 			targets.each do |target|
 			# find the local build number
@@ -191,7 +173,7 @@ def link(to_controllers)
 					puts ssh.exec!("rm #{to_path}") || " ~ Removed link at #{to_path}"
 				end
 				puts ssh.exec!("ln -s #{from_path} #{to_path}") || " ~ Linked #{from_path} => #{to_path}"
-				if to_controllers
+				if args[:to_controllers]
 					puts "Restarting X"
 					puts ssh.exec!("echo '#{password}' | sudo -S restart x")
 				end
@@ -200,10 +182,45 @@ def link(to_controllers)
 	end
 end
 
-desc "builds and then deploys the files to the server.  This will not clean the build first, which will be faster.  If you have trouble try deploy_clean"
-task :deploy => [:collect_password, :build, :deploy_assets, :link_current]
+desc "deploy server code"
+task :deploy_roomtrol_server, :needs => [:collect_password] do
+	begin
+		require 'net/ssh'
+		require 'net/scp'
+	rescue LoadError => e
+		puts "\n ~ FATAL: net-scp gem is required.\n          Try: rake install_gems"
+		exit(1)
+	end
+	
+	puts "Creating tar of roomtrol-server"
+	`tar cf /tmp/roomtrol-server.tar.gz #{WORKING}`
+	
+	SERVERS.each do |server|
+		Net::SCP.start(server, 'roomtrol', :password => OPTS[:password]) do |scp|
+			local_path = "/tmp/roomtrol-server.tar.gz"
+			remote_path = "/var/roomtrol-server"
+			puts " Copying roomtrol-server to #{server}"
+			scp.upload! local_path, remote_path, :recursive => false
+		end
+		Net::SSH.start(server, "roomtrol", :password => OPTS[:password]) do |ssh|
+			path = "/var/roomtrol-server"
+			commands = [
+				"cd #{path}",
+				"tar xvf roomtrol-server.tar.gz",
+				"rm roomtrol-server.tar.gz",
+				"rvm 1.9.1",
+				"bundle install"
+			]
+			puts ssh.exec!(commands.join("; "))
+		end
+	end
+end
 
-task :deploy_server => [:collect_password, :build, :deploy_assets_server, :link_current_server]
- 
+desc "builds and then deploys the files onto every server in servers.json.  This will not clean the build first, which will be faster.  If you have trouble try deploy_clean"
+task :deploy_servers, :to_controllers, :needs => [:collect_password, :build, :deploy_assets, :link_current]
+desc "builds and then deploys the files onto every controller in servers.json.  This will not clean the build first, which will be faster.  If you have trouble try deploy_clean"
+task :deploy_controllers do
+  Rake::Task[:deploy_servers].invoke(true)
+end
 desc "first cleans, then deploys the files"
 task :deploy_clean => [:clean, :deploy]

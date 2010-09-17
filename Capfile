@@ -8,6 +8,6 @@ end
 
 require 'config/boot'
 load DaemonKit.framework_root + '/lib/daemon_kit/deployment/capistrano.rb'
-
+puts DaemonKit.framework_root + '/lib/daemon_kit/deployment/capistrano.rb'
 Dir['config/deploy/recipes/*.rb'].each { |plugin| load(plugin) }
 load 'config/deploy.rb'

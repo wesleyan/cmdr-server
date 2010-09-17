@@ -16,12 +16,14 @@ set :deploy_to, "/var/#{application}"
 # Get repo configuration
 set :repository, "git@github.com:mwylde/#{application}.git"
 set :scm, "git"
+set :scm_command, "/usr/bin/git"
+set :local_scm_command, "git"
 set :branch, "master"
 set :deploy_via, :remote_cache
 set :git_enable_submodules, 1
 
 # No sudo
-set :use_sudo, false
+set :use_sudo, true
 
 # File list in the config_files setting will be copied from the
 # 'deploy_to' directory into config, overwriting files from the repo
