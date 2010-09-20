@@ -20,6 +20,8 @@ gem 'eventmachine'
 gem 'couchrest'
 gem 'json'
 gem 'net-ldap'
+gem 'em-proxy'
+gem 'unicorn'
 
 # WescontrolWeb gems
 gem 'highline'

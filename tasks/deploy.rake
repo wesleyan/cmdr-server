@@ -192,17 +192,18 @@ task :deploy_roomtrol_server, :needs => [:collect_password] do
 		exit(1)
 	end
 	
-	puts "Creating tar of roomtrol-server"
+	puts "\tCreating tar of roomtrol-server"
 	`tar cf /tmp/roomtrol-server.tar.gz #{WORKING}`
 	
 	SERVERS.each do |server|
 		Net::SCP.start(server, 'roomtrol', :password => OPTS[:password]) do |scp|
 			local_path = "/tmp/roomtrol-server.tar.gz"
 			remote_path = "/var/roomtrol-server"
-			puts " Copying roomtrol-server to #{server}"
+			puts "\tCopying roomtrol-server to #{server}"
 			scp.upload! local_path, remote_path, :recursive => false
 		end
 		Net::SSH.start(server, "roomtrol", :password => OPTS[:password]) do |ssh|
+			puts "\tInstalling gems on server"
 			path = "/var/roomtrol-server"
 			commands = [
 				"cd #{path}",
@@ -213,6 +214,7 @@ task :deploy_roomtrol_server, :needs => [:collect_password] do
 			]
 			puts ssh.exec!(commands.join("; "))
 		end
+		puts "\tInstallation finished on #{server}"
 	end
 end
 
