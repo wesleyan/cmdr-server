@@ -11,16 +11,16 @@ Bundler.require :default, DaemonKit.env
 
 DaemonKit::Initializer.run do |config|
 
-  # The name of the daemon as reported by process monitoring tools
-  config.daemon_name = 'roomtrol-server'
+	# The name of the daemon as reported by process monitoring tools
+	config.daemon_name = 'roomtrol-server'
 
-  # Force the daemon to be killed after X seconds from asking it to
-  # config.force_kill_wait = 30
+	# Force the daemon to be killed after X seconds from asking it to
+	# config.force_kill_wait = 30
 
-  # Log backraces when a thread/daemon dies (Recommended)
-  # config.backtraces = true
+	# Log backraces when a thread/daemon dies (Recommended)
+	# config.backtraces = true
 
-  # Configure the safety net (see DaemonKit::Safety)
-  # config.safety_net.handler = :hoptoad
-  # config.safety_net.hoptoad.api_key = ''
+	# Configure the safety net (see DaemonKit::Safety)
+	# config.safety_net.handler = :hoptoad
+	# config.safety_net.hoptoad.api_key = ''
 end

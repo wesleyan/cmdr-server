@@ -209,7 +209,7 @@ task :deploy_roomtrol_server, :needs => [:collect_password] do
 				"cd #{path}",
 				"tar xvf roomtrol-server.tar.gz",
 				"rm roomtrol-server.tar.gz",
-				"rvm 1.9.1",
+				"rvm 1.9.2",
 				"bundle install"
 			]
 			puts ssh.exec!(commands.join("; "))
