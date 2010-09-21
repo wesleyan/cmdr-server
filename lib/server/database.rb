@@ -92,5 +92,19 @@ module Database
 		end
 		drivers.save_doc(doc).to_json + "\n"
 		
+		doc = {
+			"_id" => "_design/utils",
+			:language => "javascript",
+			:views => {
+				:nice_view => {
+					:map => "function(doc) {\n  if(doc.name)emit(doc.name, doc);\n  else if(doc.attributes && doc.attributes.name)emit(doc.attributes.name, doc);\n  else if(doc.class)emit(doc.class, doc);\n  else emit(doc._id, doc);\n}"  
+				}
+			}
+		}
+		begin 
+			doc["_rev"] = rooms.get("_design/utils").rev
+		rescue
+		end
+		rooms.save_doc(doc)
 	end
 end
