@@ -10,7 +10,7 @@ require 'base64'
 require 'net/ldap'
 require 'server/database'
 
-LOCAL_DEVEL = true
+LOCAL_DEVEL = false
 COOKIE_EXPIRE = 24*60*60
 
 class Server < Sinatra::Application

@@ -40,7 +40,7 @@ God.watch do |w|
 	w.interval = 30.seconds # default
 
 	# unicorn needs to be run from the rails root
-	w.start = "#{RVM_ENV}; unicorn -P #{ROOMTROL_ROOT}/tmp/unicorn.pid #{ROOMTROL_ROOT}/lib/config.ru"
+	w.start = "#{RVM_ENV}; unicorn -s 2 -C #{ROOMTROL_ROOT}/config/server.yml #{ROOMTROL_ROOT}/lib/config.ru start"
 
 	# QUIT gracefully shuts down workers
 	w.stop = "kill -QUIT `cat #{ROOMTROL_ROOT}/tmp/unicorn.pid`"
