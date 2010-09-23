@@ -1,5 +1,32 @@
 module Database
+	def self.update_devices
+		puts "Updating devices"
+		errors = []
+		couch = CouchRest.database!("http://127.0.0.1:5984/drivers")
+		Dir.glob("server/devices/*.rb").each{|device|
+			begin
+				require device
+				device_string = File.open(device).read
+				data = JSON.load device_string.split("\n").collect{|line| line[1..-1]}.join("") \
+				                                   .match(/---(.*)?---/)[1]
+				#puts data.inspect
+				if record = couch.view("drivers/by_name", {:key => data["name"]})["rows"][0]
+					data["_id"] = record["value"]["_id"]
+					data["_rev"] = record["value"]["_rev"]
+				end
+				data["driver"] = true
+				data["config"] = Object.const_get(data["name"]).config_vars
+				couch.save_doc(data)
+			rescue
+				errors << "Failed to load #{device}: #{$!}"
+			rescue LoadError
+				errors << "Failed to load #{device}: syntax error"
+			end
+		}
+		puts errors.join("\n")
+	end
 	def self.setup_database
+		puts "Setting up db"
 		rooms = CouchRest.database!("http://127.0.0.1:5984/rooms")
 		doc = {
 			"_id" => "_design/wescontrol_web",

@@ -308,40 +308,7 @@ CouchDataSource = SC.DataSource.extend(
 		
 		return NO ; // return YES if you handled the storeKey
 	},
-	
-	createRecord: function(store, storeKey) {
 		
-		// TODO: Add handlers to submit new records to the data source.
-		// call store.dataSourceDidComplete(storeKey) when done.
-		console.log("Create record");
-		var hash = store.readDataHash(storeKey);
-		if (SC.kindOf(store.recordTypeFor(storeKey), this.appObject.Device)) {
-			console.log("Creating record: %s", hash.name);
-			SC.Request.putUrl('/rooms/' + this.randomUUID).json()
-				.notify(this, this.didCreateDoc, store, storeKey)
-				.send({
-					belongs_to: hash.room,
-					attributes: {
-						state_vars: {},
-						name: hash.name
-					},
-					device: YES,
-					"class": hash.driver
-				});
-			return YES;
-		}
-		else if(SC.kindOf(store.recordTypeFor(storeKey),  this.appObject.Source)){
-			return YES;
-		}
-		/*else if(query.recordType == this.appObject.Action){
-			return YES;
-		}*/
-		else if(this.appObject.Driver && SC.kindOf(store.recordTypeFor(storeKey), this.appObject.Driver)){
-			return YES;
-		}
-		else return NO;
-	},
-	
 	updateRecord: function(store, storeKey) {
 		// TODO: Add handlers to submit modified record to the data source
 		// call store.dataSourceDidComplete(storeKey) when done.

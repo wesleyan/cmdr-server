@@ -46,7 +46,7 @@ WescontrolWeb.GeneralConfigurationView = SC.View.extend(
 				value: "Building:"
 			}),
 			
-			buildingField: SC.SelectFieldView.design({
+			buildingField: SC.SelectButtonView.design({
 				layout: {left: 120, right:0, height: 28, centerY:0},
 				objectsBinding: "WescontrolWeb.buildingController.arrangedBuildings",
 				nameKey: "name",
