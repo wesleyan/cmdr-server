@@ -18,7 +18,6 @@ WescontrolWeb.sourceController = SC.ArrayController.create(
 		
 	addNew: function() {
 		// create a new task in the store
-		console.log("Creating source");
 		var source = WescontrolWeb.store.createRecord(WescontrolWeb.Source, {
 			name: "unnamed",
 			displayNameBinding: "name",

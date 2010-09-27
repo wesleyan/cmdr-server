@@ -2,7 +2,7 @@
 // Project:   WescontrolWeb.DeviceConfigurationView
 // Copyright: ©2010 My Company, Inc.
 // ==========================================================================
-/*globals WescontrolWeb */
+/*globals WescontrolWeb _ */
 
 /** @class
 
@@ -26,7 +26,7 @@ WescontrolWeb.DeviceConfigurationView = SC.View.extend(
 		if(!driver || !driver.get('config'))return;
 		var heightCounter = 0;
 		_(driver.get('config')).each(function(c_var, name){
-			displaName = name.humanize().titleize();
+			var displayName = name.humanize().titleize();
 			var valueChanged = function(){
 				var config = WescontrolWeb.deviceController.get('config');
 				if(!config)config = {};
@@ -46,7 +46,7 @@ WescontrolWeb.DeviceConfigurationView = SC.View.extend(
 					childViews: "label field".w(),
 					label: SC.LabelView.design({
 						layout: {left:0, width: 200, height: 30, top: 0},
-						value: displaName.capitalize()
+						value: displayName.capitalize()
 					}),
 
 					field: SC.SelectFieldView.design({
@@ -69,7 +69,7 @@ WescontrolWeb.DeviceConfigurationView = SC.View.extend(
 					childViews: "label field".w(),
 					label: SC.LabelView.design({
 						layout: {left:0, width: 200, height: 30, top: 0},
-						value: displaName.capitalize()
+						value: displayName.capitalize()
 					}),
 
 					field: SC.TextFieldView.design({

@@ -65,7 +65,8 @@ WescontrolWeb.SourcesConfigurationView = SC.View.extend(
 					emptyName: false,
 					theme: 'square',
 					updateValue: function(){
-						if(WescontrolWeb.sourceSelectionController.get('input'))
+						if(WescontrolWeb.sourceSelectionController.get('input') &&
+							WescontrolWeb.sourceSelectionController.get('input').projector)
 						{
 							this.set('value', WescontrolWeb.sourceSelectionController.get('input').projector);
 						}

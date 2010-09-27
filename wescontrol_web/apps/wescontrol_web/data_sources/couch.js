@@ -57,6 +57,24 @@ WescontrolWeb.CouchDataSource = CouchDataSource.extend({
 		return NO ; // return YES if you handled the storeKey
 	},
 	
+	createRecord: function(store, storeKey) {
+		console.log("Create record");
+		var hash = store.readDataHash(storeKey);
+		var rt = store.recordTypeFor(storeKey);
+		console.log("Creating record: %s", hash.name);
+		if(SC.kindOf(rt, WescontrolWeb.Device) ||
+			SC.kindOf(rt, WescontrolWeb.Room) ||
+			SC.kindOf(rt, WescontrolWeb.Source) ||
+			SC.kindOf(rt, WescontrolWeb.Action))
+		{
+			SC.Request.putUrl('/rooms/' + this.randomUUID()).json()
+				.notify(this, this.didCommitRecord, store, storeKey)
+				.send(store.materializeRecord(storeKey).couchHash());
+			return YES;
+		}
+		return NO;
+	},
+	
 	didCommitRecord: function(response, store, storeKey){
 		var body = response.get('body');
 		WescontrolWeb.configurationController.set('commitCount', 
@@ -69,6 +87,5 @@ WescontrolWeb.CouchDataSource = CouchDataSource.extend({
 		else {
 			WescontrolWeb.configurationController.set("commitError", "conflict");
 		}
-		
 	}
 });
