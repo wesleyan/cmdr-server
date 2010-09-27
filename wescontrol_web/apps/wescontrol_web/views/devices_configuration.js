@@ -63,7 +63,7 @@ WescontrolWeb.DevicesConfigurationView = SC.View.extend(
 					nameKey: "name",
 					valueKey: "name",
 					disableSort: true,
-					emptyName: false,
+					emptyName: "Select a type",
 					theme: 'square',
 					driverChanged: function(){
 						var dr = WescontrolWeb.deviceController.get('driverRecord');
@@ -90,8 +90,12 @@ WescontrolWeb.DevicesConfigurationView = SC.View.extend(
 					valueKey: "name",
 					disableSort: true,
 					theme: 'square',
+					emptyName: "Select a driver",
 					typeChanged: function(){
-						this.set('emptyName', WescontrolWeb.deviceController.get('driver'));
+						var driver = WescontrolWeb.deviceController.get('driver');
+						WescontrolWeb.log("TypeChanged to %s, EmptyName set to %s", WescontrolWeb.driverController.get('currentType'), WescontrolWeb.deviceController.get('driver'));
+						if(driver !== undefined)this.set('emptyName', driver);
+						else this.set('emptyName', "Select a driver");
 					}.observes("WescontrolWeb.driverController.arrangedDrivers")
 				})				
 			}),

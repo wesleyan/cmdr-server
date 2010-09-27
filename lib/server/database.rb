@@ -30,7 +30,10 @@ module Database
 		rooms = CouchRest.database!("http://127.0.0.1:5984/rooms")
 		doc = {
 			"_id" => "_design/wescontrol_web",
-			:language => "javascript", 
+			:language => "javascript",
+			:filters => {
+				:device => "function(doc, req) { if(doc.device)return true; return false; }"
+			},
 			:views => {
 				:building => {
 					:map => "function(doc) {
