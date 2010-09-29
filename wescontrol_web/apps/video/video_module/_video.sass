@@ -1,0 +1,40 @@
+@import ../../../shared/mixins.sass
+
+.video-module
+	background: sc_static("grain.png"), #2D2D2D
+	
+	.sc-view.sc-label-view.sc-regular-size.title
+		font-family: 'Myriad Pro', Helvetica
+		font-size: 37px
+		line-height: 38px
+		color: #D3D3D3
+		+text-inset(#000000)
+		
+	.pan-controls
+
+
+.pan-button
+	position: absolute
+	width: 157px
+	height: 157px
+	top: 150px
+	left: 222px
+	background-image: sc_static("pan.png")
+	background-position-x: 50%
+	background-position-y: 0px
+	z-index: 62
+	&.right
+		background-position-y: -170px
+	&.down
+		background-position-y: -340px
+	&.left
+		background-position-y: -510px
+	&.up
+		background-position-y: -680px
+
+.zoom-control .zoom-slider
+	background:
+		image: sc_static("zoom_bg.png")
+		repeat: no-repeat
+		position-x: 50%
+		position-y: 0

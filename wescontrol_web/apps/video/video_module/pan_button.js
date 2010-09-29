@@ -1,8 +1,8 @@
 // ==========================================================================
-// Project:   Tp5.PanButtonView
+// Project:   Video.PanButtonView
 // Copyright: ©2010 My Company, Inc.
 // ==========================================================================
-/*globals Tp5 */
+/*globals Video */
 
 /** @class
 
@@ -12,8 +12,8 @@
 */
 sc_require('lib/mouse_handling');
 
-Tp5.PanButtonView = SC.View.extend(Tp5.MouseHandlingFix,
-/** @scope Tp5.ActionView.prototype */ {
+Video.PanButtonView = SC.View.extend(Video.MouseHandlingFix,
+/** @scope Video.ActionView.prototype */ {
 
 	classNames: ['pan-button'],
 	lastAction: null,

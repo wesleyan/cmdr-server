@@ -1,8 +1,8 @@
 // ==========================================================================
-// Project:   Tp5.ZoomControlView
+// Project:   Video.ZoomControlView
 // Copyright: ©2010 My Company, Inc.
 // ==========================================================================
-/*globals Tp5 sprintf */
+/*globals Video sprintf */
 
 /** @class
 
@@ -11,8 +11,8 @@
   @extends SC.View
 */
 
-Tp5.ZoomControlView = SC.View.extend(
-/** @scope Tp5.ZoomControlView.prototype */{
+Video.ZoomControlView = SC.View.extend(
+/** @scope Video.ZoomControlView.prototype */{
 	classNames: ['zoom-control'],
 
 	childViews: "zoomSlider".w(),
@@ -30,7 +30,7 @@ Tp5.ZoomControlView = SC.View.extend(
 				repeating: YES
 			});
 		},
-		layout: {height: 312, width: 50, bottom: 55, centerX: -2},
+		layout: {height: 164, width: 122, bottom: 55, centerX: -2},
 
 		transitions: {
 			backgroundPositionY: {duration: 0.25}
@@ -39,17 +39,17 @@ Tp5.ZoomControlView = SC.View.extend(
 		dragging: NO,
 
 		updateZoom: function(){
-			//Tp5.log("Updating volume: %f", Tp5.volumeController.volume);
-			Tp5.log("Setting to %s", sprintf("%.0f%%", Tp5.volumeController.volume*100));
-			Tp5.volumeController.updateLastVolumeSet();
-			this.$()[0].style.backgroundPositionY = sprintf("%.0f%%", 100-Tp5.volumeController.volume*100);
+			//Video.log("Updating volume: %f", Video.volumeController.volume);
+			//Video.log("Setting to %s", sprintf("%.0f%%", Video.volumeController.volume*100));
+			//Video.volumeController.updateLastVolumeSet();
+			//this.$()[0].style.backgroundPositionY = sprintf("%.0f%%", 100-Video.volumeController.volume*100);
 			//this.set("style", {backgroundPositionY: sprintf("%.0f%%", Tp5.volumeController.volume*100)});
 		},
 
 		mouseDown: function(){
 			this.set('dragging', YES);
 			this.updateTimer.invalidate();
-			Tp5.appController.set('disableChanges', YES);
+			//Video.appController.set('disableChanges', YES);
 		},
 
 		mouseUp: function(){
@@ -60,7 +60,7 @@ Tp5.ZoomControlView = SC.View.extend(
 				action: "updateVolume",
 				repeating: YES
 			});
-			Tp5.appController.set('disableChanges', NO);
+			//Video.appController.set('disableChanges', NO);
 		},
 
 		mouseMoved: function(evt){
@@ -71,7 +71,7 @@ Tp5.ZoomControlView = SC.View.extend(
 				if(percent < 0)percent = 0;
 				if(percent > 1)percent = 1;
 				SC.CoreQuery.find(".volume-slider")[0].style.backgroundPositionY = sprintf("%.1f%%", percent*100);
-				Tp5.volumeController.set_volume(1-percent);
+				//Video.volumeController.set_volume(1-percent);
 			}
 		}
 	})

@@ -1,0 +1,33 @@
+.video-module {
+  background: sc_static("grain.png"), #2d2d2d; }
+  .video-module .sc-view.sc-label-view.sc-regular-size.title {
+    font-family: "Myriad Pro", Helvetica;
+    font-size: 37px;
+    line-height: 38px;
+    color: #d3d3d3;
+    text-shadow: 0px 1px 0px black; }
+
+.pan-button {
+  position: absolute;
+  width: 157px;
+  height: 157px;
+  top: 150px;
+  left: 222px;
+  background-image: sc_static("pan.png");
+  background-position-x: 50%;
+  background-position-y: 0px;
+  z-index: 62; }
+  .pan-button.right {
+    background-position-y: -170px; }
+  .pan-button.down {
+    background-position-y: -340px; }
+  .pan-button.left {
+    background-position-y: -510px; }
+  .pan-button.up {
+    background-position-y: -680px; }
+
+.zoom-control .zoom-slider {
+  background-image: sc_static("zoom_bg.png");
+  background-repeat: no-repeat;
+  background-position-x: 50%;
+  background-position-y: 0; }
