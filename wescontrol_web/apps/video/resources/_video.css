@@ -26,8 +26,13 @@
   .pan-button.up {
     background-position-y: -680px; }
 
-.zoom-control .zoom-slider {
+.zoom-control {
   background-image: sc_static("zoom_bg.png");
   background-repeat: no-repeat;
-  background-position-x: 50%;
+  background-position-x: 20%;
   background-position-y: 0; }
+  .zoom-control .zoom-slider {
+    background-image: sc_static("zoom_handle.png");
+    background-repeat: no-repeat;
+    background-position-x: 50%;
+    background-position-y: 0; }

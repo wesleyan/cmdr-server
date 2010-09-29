@@ -11,13 +11,14 @@
   @extends SC.View
 */
 
-Video.ZoomControlView = SC.View.extend(
+Video.ZoomControlView = SC.View.extend(SC.Animatable,
 /** @scope Video.ZoomControlView.prototype */{
 	classNames: ['zoom-control'],
 
 	childViews: "zoomSlider".w(),
 
 	zoomSlider: SC.View.design({
+		layout: {height: 164, width: 122, bottom: 0, centerX: -2},
 		classNames: ["zoom-slider"],
 		
 		didCreateLayer: function(){
@@ -30,7 +31,6 @@ Video.ZoomControlView = SC.View.extend(
 				repeating: YES
 			});
 		},
-		layout: {height: 164, width: 122, bottom: 55, centerX: -2},
 
 		transitions: {
 			backgroundPositionY: {duration: 0.25}
@@ -70,7 +70,7 @@ Video.ZoomControlView = SC.View.extend(
 				var percent = (evt.clientY-evt.target.offsetTop-27)/h;
 				if(percent < 0)percent = 0;
 				if(percent > 1)percent = 1;
-				SC.CoreQuery.find(".volume-slider")[0].style.backgroundPositionY = sprintf("%.1f%%", percent*100);
+				SC.CoreQuery.find(".zoom-slider")[0].style.backgroundPositionY = sprintf("%.1f%%", percent*100);
 				//Video.volumeController.set_volume(1-percent);
 			}
 		}

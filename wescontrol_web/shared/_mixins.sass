@@ -10,6 +10,11 @@
 	
 =gradient($color1, $color2, $start:0, $end:1)
 	background: -webkit-gradient(linear, left top, left bottom, color-stop($start, $color1), color-stop($end, $color2))
+	background: -moz-linear-gradient(center top, $color1 $start*100%, $color2 $end*100%)
+	
+=gradient-band($color1, $color2, $start:0, $mid:.5, $end:1)
+	background: -webkit-gradient(linear, left top, left bottom, color-stop($start, $color1), color-stop($end, $color2))
+	background: -webkit-gradient(linear, left top, left bottom, color-stop($start, $color1), color-stop($mid, $color2), color-stop($end, $color1))
 	background: -moz-linear-gradient(center top, $color1 $start*100%, $color2 $end*100%)	
 
 =text-inset($color: rgba(255, 255, 255, 0.5))

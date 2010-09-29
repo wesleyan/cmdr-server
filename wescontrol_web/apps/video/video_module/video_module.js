@@ -46,7 +46,7 @@ Video.VideoModule = SC.View.extend(Video.MouseHandlingFix,
 		}).classNames('title'),
 		
 		zoom_control: Video.ZoomControlView.design({
-			layout: {centerX: 0, width: 50, top: 45, height: 162}
+			layout: {centerX: 0, width: 157, top: 45, height: 168}
 		})
 	})
 	
