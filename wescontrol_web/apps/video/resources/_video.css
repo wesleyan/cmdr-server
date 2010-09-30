@@ -29,10 +29,35 @@
 .zoom-control {
   background-image: sc_static("zoom_bg.png");
   background-repeat: no-repeat;
-  background-position-x: 20%;
+  background-position-x: 24%;
   background-position-y: 0; }
   .zoom-control .zoom-slider {
+    -webkit-transition-property: background-position-y;
+    -webkit-transition-duration: 0.25;
     background-image: sc_static("zoom_handle.png");
     background-repeat: no-repeat;
     background-position-x: 50%;
-    background-position-y: 0; }
+    background-position-y: 50%; }
+
+.record-control .record-button .control-button {
+  width: 87px;
+  height: 87px;
+  background: sc_static("button-top.png") no-repeat, -moz-radial-gradient(center 45deg, circle closest-corner, #ed2824 0%, #c1282d 100%);
+  background: sc_static("button-top.png") no-repeat, -webkit-gradient(radial, center center, 0, center center, 70, from(#ed2824), to(#c1282d));
+  border-radius: 50px;
+  border-color: #989898;
+  border-width: 1px;
+  border-style: solid;
+  -moz-box-shadow: 0 1px 6px #010101;
+  -webkit-box-shadow: 0 1px 6px #010101;
+  box-shadow: 0 1px 6px #010101; }
+
+.timecode-counter {
+  background: #92a091;
+  border-radius: 10px;
+  border-color: #3d3d3d;
+  border-width: 1px;
+  border-style: solid;
+  -moz-box-shadow: 0 0 5px black inset;
+  -webkit-box-shadow: 0 0 5px black inset;
+  box-shadow: 0 0 5px black inset; }

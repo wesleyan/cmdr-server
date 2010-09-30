@@ -11,13 +11,13 @@
   @extends SC.View
 */
 
-Video.ZoomControlView = SC.View.extend(SC.Animatable,
+Video.ZoomControlView = SC.View.extend(
 /** @scope Video.ZoomControlView.prototype */{
 	classNames: ['zoom-control'],
 
 	childViews: "zoomSlider".w(),
 
-	zoomSlider: SC.View.design({
+	zoomSlider: SC.View.design(SC.Animatable, {
 		layout: {height: 164, width: 122, bottom: 0, centerX: -2},
 		classNames: ["zoom-slider"],
 		
@@ -30,21 +30,15 @@ Video.ZoomControlView = SC.View.extend(SC.Animatable,
 				action: "updateZoom",
 				repeating: YES
 			});
+			
+			this.$()[0].style.backgroundPositionY = "50%";
 		},
 
 		transitions: {
-			backgroundPositionY: {duration: 0.25}
+			backgroundPositionY: {duration: 0.25, timing: SC.Animatable.TRANSITION_CSS_EASE_IN}
 		},
 
 		dragging: NO,
-
-		updateZoom: function(){
-			//Video.log("Updating volume: %f", Video.volumeController.volume);
-			//Video.log("Setting to %s", sprintf("%.0f%%", Video.volumeController.volume*100));
-			//Video.volumeController.updateLastVolumeSet();
-			//this.$()[0].style.backgroundPositionY = sprintf("%.0f%%", 100-Video.volumeController.volume*100);
-			//this.set("style", {backgroundPositionY: sprintf("%.0f%%", Tp5.volumeController.volume*100)});
-		},
 
 		mouseDown: function(){
 			this.set('dragging', YES);
@@ -54,23 +48,20 @@ Video.ZoomControlView = SC.View.extend(SC.Animatable,
 
 		mouseUp: function(){
 			this.set('dragging', NO);
-			this.updateTimer = SC.Timer.schedule({
-				interval: 500,
-				target: this,
-				action: "updateVolume",
-				repeating: YES
-			});
+			this.set("style", {backgroundPositionY: "50%"});
+			this.$()[0].style.backgroundPositionY = "50%";
+			
 			//Video.appController.set('disableChanges', NO);
 		},
 
 		mouseMoved: function(evt){
 			if(this.dragging)
 			{
-				var h = evt.target.offsetHeight-36; //height of the draggable area; 36 found empirically
-				var percent = (evt.clientY-evt.target.offsetTop-27)/h;
-				if(percent < 0)percent = 0;
+				var h = 160-evt.target.offsetTop; //height of the draggable area; found empirically
+				var percent = (evt.clientY-350-evt.target.offsetTop)/h;
+				if(percent < -0.05)percent = -0.05;
 				if(percent > 1)percent = 1;
-				SC.CoreQuery.find(".zoom-slider")[0].style.backgroundPositionY = sprintf("%.1f%%", percent*100);
+				this.$()[0].style.backgroundPositionY = sprintf("%.1f%%", percent*100);
 				//Video.volumeController.set_volume(1-percent);
 			}
 		}

@@ -34,11 +34,35 @@
 	background:
 		image: sc_static("zoom_bg.png")
 		repeat: no-repeat
-		position-x: 20%
+		position-x: 24%
 		position-y: 0
 	.zoom-slider
+		-webkit-transition-property: background-position-y
+		-webkit-transition-duration: 0.25
 		background:
 			image: sc_static("zoom_handle.png")
 			repeat: no-repeat
 			position-x: 50%
-			position-y: 0
+			position-y: 50%
+			
+.record-control
+	.record-button .control-button
+		width: 87px
+		height: 87px
+		background: sc_static('button-top.png') no-repeat, -moz-radial-gradient(center 45deg, circle closest-corner, #ED2824 0%, #C1282D 100%)
+		background: sc_static('button-top.png') no-repeat, -webkit-gradient(radial, center center, 0, center center, 70, from(#ED2824), to(#C1282D))
+		border:
+			radius: 50px
+			color: #989898
+			width: 1px
+			style: solid
+		+box-shadow(0 1px 6px #010101)	
+
+.timecode-counter
+	background: #92A091
+	border:
+		radius: 10px
+		color: #3D3D3D
+		width: 1px
+		style: solid
+	+box-shadow(0 0 5px #000 inset)
