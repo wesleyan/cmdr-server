@@ -57,6 +57,12 @@
 			width: 1px
 			style: solid
 		+box-shadow(0 1px 6px #010101)	
+		&:active 
+			background: -moz-radial-gradient(center 45deg, circle closest-corner, #883035 0%, #B82CDF 100%)
+			background: -webkit-gradient(radial, center center, 0, center center, 70, from(#883035), to(#B82C2F))
+
+.video-window
+	+box-shadow(0 0 5px #000 inset)
 
 .timecode-counter
 	background: #92A091
@@ -64,5 +70,12 @@
 		radius: 10px
 		color: #3D3D3D
 		width: 1px
-		style: solid
+		//style: solid
 	+box-shadow(0 0 5px #000 inset)
+	.sc-view.sc-label-view.sc-regular-size
+		font-family: Helvetica, Arial
+		font-size: 48px
+		color: black
+		+text-inset
+		text-align: center
+		line-height: 80px

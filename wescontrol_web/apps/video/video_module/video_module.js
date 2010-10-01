@@ -73,19 +73,26 @@ Video.VideoModule = SC.View.extend(Video.MouseHandlingFix,
 	}),
 	
 	video_display: SC.View.design({
-		layout: {left: 230, right: 30, top: 0, bottom: 0},
+		layout: {left: 240, right: 30, top: 0, bottom: 0},
 		childViews: "video_window bottom_controls".w(),
 		
 		video_window: SC.View.design({
-			layout: {left: 0, right: 0, top: 0, bottom: 160}
-		}),
+			layout: {left: 0, right: 0, top: 30, bottom: 160}
+		}).classNames('video-window'),
 		
 		bottom_controls: SC.View.design({
 			layout: {left: 0, right: 0, height: 160, bottom: 0},
 			childViews: "timecode_counter".w(),
 			timecode_counter: SC.View.design({
 				classNames: ['timecode-counter'],
-				layout: {centerX: 0, width: 280, height: 80, centerY: 0}
+				layout: {centerX: 0, width: 280, height: 80, centerY: 0},
+				childViews: "label".w(),
+				
+				label: SC.LabelView.design({
+					layout: {left: 0, right: 0, centerY: 0, height: 80},
+					value: "00:21:23",
+					textAlign: SC.ALIGN_CENTER
+				})
 			})
 		})
 	})
