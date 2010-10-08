@@ -41,9 +41,9 @@ WescontrolWeb.MonitorPage = SC.View.extend(
 	}),
 	
 	main: SC.View.design({
-		layout: {left: 300, right: 0, top: 0, bottom: 0}
+		layout: {left: 300, right: 0, top: 0, bottom: 0},
 		childViews: 'scrollView'.w(),
-		scrollView.design({
+		scrollView: SC.ScrollView.design({
 			borderStyle: SC.BORDER_NONE,
 			hasHorizontalScroller: NO,
 			layout: {top: 0, left: 0, right: 0, bottom: 0}
