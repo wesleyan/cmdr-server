@@ -6,6 +6,8 @@
 
 source "http://rubygems.org"
 
+gem 'rake'
+
 # daemon-kit
 gem 'extlib'
 gem 'daemon-kit'
