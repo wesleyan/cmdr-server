@@ -33,8 +33,7 @@ Tp5.main = function main() {
 	Tp5.sourceController.set('content', Tp5.store.find(sourceQuery));
 	
 	var actionQuery = SC.Query.local(Tp5.Action, 'belongs_to = {room_id}', {room_id: Tp5.appController.roomID});
-	Tp5.actionController.set('content', Tp5.store.find(actionQuery));
-	
+	Tp5.actionController.set('content', Tp5.store.find(actionQuery));	
 } ;
 
 function main() { Tp5.main(); }

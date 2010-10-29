@@ -18,6 +18,7 @@ Tp5.roomController = SC.ObjectController.create(
 		if(this.get('content') && this.get('content').get('attributes'))
 		{
 			Tp5.log("And not null");
+			Tp5.log(this.get('content').get('attributes'));
 			var attributes = Tp5.roomController.get('content').get('attributes');
 			this.set('attributes', attributes);
 			var devices = Tp5.deviceController.get('devices');
@@ -29,7 +30,11 @@ Tp5.roomController = SC.ObjectController.create(
 				this.set('switcher', devices[attributes.switcher]);
 				this.set('dvdplayer', devices["dvdplayer"]);
 				this.set('pc', devices["pc"]);
+				Tp5.log("Projector: ");
+				Tp5.log(attributes.projector);
+				
 			}
+			
 		}
 	}.observes('content') //, 'Tp5.deviceController.devices')
 

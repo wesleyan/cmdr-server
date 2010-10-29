@@ -14,7 +14,7 @@ Tp5 = SC.Application.create(
 	/** @scope Tp5.prototype */ {
 
 	NAMESPACE: 'Tp5',
-	VERSION: '0.1.0',
+	VERSION: '0.2.0',
 
 	// This is your application store.	You will use this store to access all
 	// of your model data.	You can also set a data source on this store to
@@ -25,7 +25,7 @@ Tp5 = SC.Application.create(
 	
 	// TODO: Add global constants or singleton objects needed by your app here.
 	
-	debugging: NO,
+	debugging: YES,
 	
 	log: function(){
 		if(this.debugging)console.log.apply(console, arguments);
