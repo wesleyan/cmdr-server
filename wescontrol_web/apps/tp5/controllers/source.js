@@ -2,7 +2,7 @@
 // Project:   Tp5.sourceController
 // Copyright: ©2010 My Company, Inc.
 // ==========================================================================
-/*globals Tp5 */
+/*globals Tp5 N */
 
 /** @class
 
@@ -56,7 +56,7 @@ Tp5.sourceController = SC.ArrayController.create(
 	
 	projectorChanged: function(){
 		if(this.get('content').get('length') === 0 || this.get('switcher'))return;
-		this.set("source",this.get('states')[this.projector_map[this.projector.get('states').input]]);
+		this.set("source",this.get('states')[this.projector_map[((this.projector||N).get('states')||{}).input]]);
 	}.observes("projector", "states", ".projector.states"),
 	
 	projectorPowerChanged: function(){

@@ -11,6 +11,6 @@ proxy "/rooms", :to => "roomtrol-sc509a.class.wesleyan.edu:5984"
 proxy "/auth", :to => "localhost:2352"
 proxy "/drivers", :to => "localhost:2352"
 
-proxy "/devices", :to => "129.133.124.142:1412"
+proxy "/devices", :to => "roomtrol-sc509a.class.wesleyan.edu:1412"
 
 proxy "/graph", :to => "localhost:2352"

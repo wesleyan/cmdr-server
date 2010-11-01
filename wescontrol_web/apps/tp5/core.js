@@ -2,7 +2,7 @@
 // Project:		Tp5
 // Copyright: ©2010 My Company, Inc.
 // ==========================================================================
-/*globals Tp5 */
+/*globals Tp5 p */
 
 /** @namespace
 
@@ -25,10 +25,14 @@ Tp5 = SC.Application.create(
 	
 	// TODO: Add global constants or singleton objects needed by your app here.
 	
-	debugging: YES,
+	debugging: NO,
 	
 	log: function(){
 		if(this.debugging)console.log.apply(console, arguments);
 	}
 
 }) ;
+
+p = function(path){
+	return SC.objectForPropertyPath(path);
+};
