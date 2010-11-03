@@ -2,7 +2,7 @@
 // Project:   Tp5.SourceButtonView
 // Copyright: ©2010 My Company, Inc.
 // ==========================================================================
-/*globals Tp5 */
+/*globals Tp5 p */
 
 /** @class
 
@@ -24,7 +24,7 @@ Tp5.SourceButtonView = Tp5.StatusButtonView.extend(
 		//value: sc_static("on.png")
 
 		valueBinding: SC.Binding.transform(function(value, binding) {
-			return Tp5.sourceController.source.image;
+			return p('Tp5.sourceController.source.image');
 		}).from("Tp5.sourceController.source")
 	}),
 	
@@ -43,7 +43,6 @@ Tp5.SourceButtonView = Tp5.StatusButtonView.extend(
 			var childViews = [];
 			var self = this;
 			var top = 65;
-			Tp5.log("Sources updated: %d", Tp5.sourceController.get('content').get('length'));
 			Tp5.sourceController.get('content').forEach(function(source){
 				childViews.push(self.createChildView(Tp5.ButtonView.design({
 					layout: {left: 5, right: 5, top: top, height: 35},
