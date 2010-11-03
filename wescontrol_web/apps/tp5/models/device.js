@@ -52,9 +52,8 @@ Tp5.Device = SC.Record.extend(
 	
 	set_var: function(cvar, state) {
 		try {
-			var json = {};
-			json[cvar] = state;
-			SC.Request.postUrl('/devices/' + this.get('name'), json).json()
+			var json = {value: state};
+			SC.Request.postUrl('/devices/' + this.get('name') + '/' + cvar, json).json()
 				.notify(this, "set_var_request_finished", cvar, state)
 				.send();
 		}
@@ -75,9 +74,8 @@ Tp5.Device = SC.Record.extend(
 	
 	send_command: function(command, arg){
 		try {
-			var json = {};
-			json[command] = arg;
-			SC.Request.postUrl('/devices/' + this.get('name') + '/command', json).json()
+			var json = {args: [arg]};
+			SC.Request.postUrl('/devices/' + this.get('name') + '/' + command, json).json()
 				.notify(this, "command_request_finished", command, arg)
 				.send();
 		}

@@ -26,7 +26,7 @@ Tp5.ComputerModule = SC.View.extend(Tp5.MouseHandlingFix,
 	childViews: "titleLabel computerOffView computerOnView".w(),
 	
 	onReachableChanged: function(){
-		if(Tp5.roomController.get('pc').get('states'))
+		if(p("Tp5.roomController.pc.states"))
 		{
 			this.computerOffView.set('isVisible', !p("Tp5.roomController.pc.states.reachable"));
 			this.computerOnView.set('isVisible', p("Tp5.roomController.pc.states.reachable"));
