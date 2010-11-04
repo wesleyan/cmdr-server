@@ -31,7 +31,7 @@ Tp5.roomController = SC.ObjectController.create(
 				this.set('volume', devices[attributes.volume]);
 				this.set('projector', devices[attributes.projector]);
 				this.set('switcher', devices[attributes.switcher]);
-				this.set('dvdplayer', devices["dvdplayer"]);
+				this.set('dvdplayer', devices[attributes.dvdplayer]);
 				this.set('pc', devices[attributes.pc]);				
 			}
 			

@@ -25,6 +25,7 @@ Tp5.ProjectorButtonView = Tp5.StatusButtonView.extend(
 		//value: sc_static("on.png")
 
 		valueBinding: SC.Binding.transform(function(value, binding) {
+			Tp5.log("ProjectoButton updating to %s",  p("Tp5.roomController.projector.states.state"));
 			//this may look strange, but it's necessary because of how SC does static resources
 			var buttonImages = {
 				on: sc_static('on.png'),
@@ -35,7 +36,7 @@ Tp5.ProjectorButtonView = Tp5.StatusButtonView.extend(
 			};
 			var image = buttonImages[p("Tp5.roomController.projector.states.state")];
 			return image? image : buttonImages.off;
-		}).from("Tp5.roomController.projector")
+		}).from("Tp5.roomController.projector.states")
 	}),
 	
 	controlDrawer: SC.View.design(SC.Animatable, {
@@ -68,7 +69,7 @@ Tp5.ProjectorButtonView = Tp5.StatusButtonView.extend(
 				var state = p("Tp5.roomController.projector.states.state");
 				if(["on", "muted", "warming"].indexOf(state) != -1)return "off";
 				else return "on";
-			}).from("Tp5.roomController.projector"),
+			}).from("Tp5.roomController.projector.states"),
 			
 			disableStates: ["warming", "cooling"]
 
@@ -90,7 +91,7 @@ Tp5.ProjectorButtonView = Tp5.StatusButtonView.extend(
 			valueBinding: SC.Binding.transform(function(value, binding){
 				var state = p("Tp5.roomController.projector.state_vars.state.state");
 				return state == "muted" ? "unmute" : "mute";
-			}).from("Tp5.roomController.projector"),
+			}).from("Tp5.roomController.projector.states"),
 			
 			disableStates: ["warming", "cooling", "off"]
 		})

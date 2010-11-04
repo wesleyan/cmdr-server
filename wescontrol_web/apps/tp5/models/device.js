@@ -52,6 +52,7 @@ Tp5.Device = SC.Record.extend(
 	
 	set_var: function(cvar, state) {
 		try {
+			Tp5.log("Sending request to %s", '/devices/' + this.get('name') + '/' + cvar);
 			var json = {value: state};
 			SC.Request.postUrl('/devices/' + this.get('name') + '/' + cvar, json).json()
 				.notify(this, "set_var_request_finished", cvar, state)
