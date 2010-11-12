@@ -2,7 +2,7 @@
 // Project:   Tp5.ProjectorButtonView
 // Copyright: ©2010 My Company, Inc.
 // ==========================================================================
-/*globals Tp5 */
+/*globals Tp5 p */
 
 /** @class
 
@@ -10,6 +10,8 @@
 
   @extends Tp5.StatusButtonView
 */
+
+//empty object
 
 sc_require('views/status_button');
 sc_require('views/button');
@@ -23,6 +25,7 @@ Tp5.ProjectorButtonView = Tp5.StatusButtonView.extend(
 		//value: sc_static("on.png")
 
 		valueBinding: SC.Binding.transform(function(value, binding) {
+			Tp5.log("ProjectoButton updating to %s",  p("Tp5.roomController.projector.states.state"));
 			//this may look strange, but it's necessary because of how SC does static resources
 			var buttonImages = {
 				on: sc_static('on.png'),
@@ -31,10 +34,9 @@ Tp5.ProjectorButtonView = Tp5.StatusButtonView.extend(
 				cooling: sc_static('cooling.png'),
 				warming: sc_static('warming.png')
 			};
-			var image = buttonImages[Tp5.deviceController.get('devices').projector.get('states').state];
-			Tp5.log("image");
+			var image = buttonImages[p("Tp5.roomController.projector.states.state")];
 			return image? image : buttonImages.off;
-		}).from("Tp5.deviceController.devices.projector.state_vars")
+		}).from("Tp5.roomController.projector.states")
 	}),
 	
 	controlDrawer: SC.View.design(SC.Animatable, {
@@ -54,20 +56,20 @@ Tp5.ProjectorButtonView = Tp5.StatusButtonView.extend(
 			layout: {left: 5, right: 5, bottom: 65, height: 35},
 			
 			action: function(){
-				var state = Tp5.deviceController.get('devices').projector.get("states").state;
-				Tp5.deviceController.devices.projector.set_var("power", state == "off");
+				var state = p("Tp5.roomController.projector.states.state");
+				Tp5.roomController.get('projector').set_var("power", state == "off");
 				Tp5.mainPage.mainPane.topBar.projectorButton.button.mouseClicked();
 			},
 			
 			statesChanged: function(){
-				this.set('state', Tp5.deviceController.get('devices').projector.get('state_vars').state.state);
-			}.observes("Tp5.deviceController.devices.projector.state_vars"),
+				this.set('state', p("Tp5.roomController.projector.state_vars.state.state"));
+			}.observes("Tp5.roomController.projector.state_vars"),
 			
 			valueBinding: SC.Binding.transform(function(value, binding){
-				var state = Tp5.deviceController.get('devices').projector.get('states').state;
+				var state = p("Tp5.roomController.projector.states.state");
 				if(["on", "muted", "warming"].indexOf(state) != -1)return "off";
 				else return "on";
-			}).from("Tp5.deviceController.devices.projector.state_vars"),
+			}).from("Tp5.roomController.projector.states"),
 			
 			disableStates: ["warming", "cooling"]
 
@@ -77,19 +79,19 @@ Tp5.ProjectorButtonView = Tp5.StatusButtonView.extend(
 			layout: {left: 5, right: 5, bottom: 15, height: 35},
 			
 			action: function(){
-				var state = Tp5.deviceController.get('devices').projector.get('states').state;
-				Tp5.deviceController.devices.projector.set_var("video_mute", state != "muted");
+				var state = p("Tp5.roomController.projector.state_vars.state.state");
+				Tp5.roomController.get('projector').set_var("video_mute", state != "muted");
 				Tp5.mainPage.mainPane.topBar.projectorButton.button.mouseClicked();
 			},
 			
 			statesChanged: function(){
-				this.set('state', Tp5.deviceController.get('devices').projector.get('state_vars').state.state);
-			}.observes("Tp5.deviceController.devices.projector.state_vars"),
+				this.set('state', p("Tp5.roomController.projector.state_vars.state.state"));
+			}.observes("Tp5.roomController.projector.state_vars"),
 			
 			valueBinding: SC.Binding.transform(function(value, binding){
-				var state = Tp5.deviceController.get('devices').projector.get('state_vars').state.state;
+				var state = p("Tp5.roomController.projector.state_vars.state.state");
 				return state == "muted" ? "unmute" : "mute";
-			}).from("Tp5.deviceController.devices.projector.state_vars"),
+			}).from("Tp5.roomController.projector.states"),
 			
 			disableStates: ["warming", "cooling", "off"]
 		})

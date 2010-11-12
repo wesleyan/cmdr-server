@@ -1,13 +1,14 @@
-require 'extlib'
 require 'json'
+
+MAC_VALUE = "REPLACE_WITH_REAL_MAC_THIS_SHOULD_BE_UNIQUE_e1599512ea6"
 
 PUBLIC_KEY = false #Are we using public key authentication on all the servers?
 
-WORKING = File.dirname(__FILE__) / '..'
+WORKING = File.dirname(__FILE__) + '/..'
 TARGETS = ['/tp5', '/wescontrol_web']
 
 # load server addresses from servers.json
-servers_file = File.open(WORKING / "servers.json")
+servers_file = File.open(WORKING + "/servers.json")
 exit "No servers.json file found" unless servers_file
 servers = JSON.parse(servers_file.read)
 SERVERS = servers['servers']
@@ -15,16 +16,15 @@ CONTROLLERS = servers['controllers']
 
 OPTS = {}
 
-$:
 desc "Builds sc apps for deployment"
 task :build do
-	Dir.chdir WORKING / 'wescontrol_web'
+	Dir.chdir WORKING + '/wescontrol_web'
 	puts `sc-build #{TARGETS * ' '} -rv`
 end
 
 desc "cleans the build output"
 task :clean do
-	path = WORKING / 'wescontrol_web' / 'tmp' / 'build' / 'production' / 'static'
+	path = WORKING + '/wescontrol_web/tmp/'
 	puts "Removing #{path}"
 	puts `rm -r #{path}`
 end
@@ -50,6 +50,28 @@ task :collect_password do
 	end
 end
 
+desc "setup controller databases"
+task :setup_db, :needs => [:collect_password] do
+	begin
+		require 'net/ssh'
+		require 'net/scp'
+		require 'couchrest'
+		require_relative "../lib/server/database.rb"
+	rescue LoadError => e
+		puts "\n ~ FATAL: net-scp gem is required.\n          Try: rake install_gems"
+		exit(1)
+	end
+	
+	password = OPTS[:password]
+	targets  = OPTS[:targets]
+
+	CONTROLLERS.each do |server|
+		Net::SSH.start(server, 'roomtrol', :password => password) do |ssh|
+			Database.setup_database
+		end
+	end
+end
+
 desc "finds all targets in the system and computes their build numbers" 
 task :prepare_targets do
 	begin
@@ -61,7 +83,7 @@ task :prepare_targets do
 
 	puts "discovering all installed targets"
 	SC.build_mode = :production
-	project = SC.load_project(WORKING/'wescontrol_web') 
+	project = SC.load_project(WORKING + '/wescontrol_web') 
 
 	# get all targets and prepare them so that build numbers work
 	targets = TARGETS.map do |name| 
@@ -108,7 +130,7 @@ task :deploy_assets, :to_controllers, :needs => [:collect_password, :build, :pre
 		puts "Copying static resources onto #{server}"
 		Net::SCP.start(server, 'roomtrol', :password => password) do |scp|
 			targets.each do |target|
-				local_path = target.build_root / 'en' / target.build_number
+				local_path = target.build_root + '/en/' + target.build_number
 				remote_path = "/var/www/static#{target.index_root}/en"
 				short_path = local_path.gsub /^#{Regexp.escape(target.build_root)}/,''
 				if installed["#{remote_path}/#{target.build_number}"]
@@ -116,6 +138,14 @@ task :deploy_assets, :to_controllers, :needs => [:collect_password, :build, :pre
 				elsif File.directory?(local_path)
 					puts " ~ uploading #{target.target_name}#{short_path}"
 					scp.upload! local_path, remote_path, :recursive => true
+					Net::SSH.start(server, 'roomtrol', :password => password) do |ssh|
+						# replace the mac address placeholder in the javascript file on the controller
+						# with the controller's actual mac address
+						output = ssh.exec!("ifconfig")
+						re = %r/[^:\-](?:[0-9A-F][0-9A-F][:\-]){5}[0-9A-F][0-9A-F][^:\-]/io
+						mac = output[re].strip
+						ssh.exec!("sed -i 's/#{MAC_VALUE}/#{mac}/g' #{remote_path}/#{target.build_number}/javascript.js")
+					end
 				else
 					puts "\n\n ~ WARN: cannot install #{target.target_name} - local path #{local_path} does not exist\n\n"
 				end

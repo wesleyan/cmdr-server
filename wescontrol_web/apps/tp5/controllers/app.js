@@ -35,9 +35,9 @@ Tp5.appController = SC.ObjectController.create(
 		this.set('clock', this.now());
 	},
 	
-	mac: '00:30:1b:82:ac:39',
+	mac: 'REPLACE_WITH_REAL_MAC_THIS_SHOULD_BE_UNIQUE_e1599512ea6',
 	
-	roomID: 'c180fad1e1599512ea68f1748eb601ea',
+	roomID: '99b9b6d7bc4c69844b9b70ff601e3124',
 	
 	disableChanges: NO,
 	
