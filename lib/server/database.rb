@@ -32,7 +32,7 @@ module Database
 			"_id" => "_design/wescontrol_web",
 			:language => "javascript",
 			:filters => {
-				:device => "function(doc, req) { if(doc.device)return true; return false; }"
+				:device => "function(doc, req) { if(doc.device && !doc.update)return true; return false; }"
 			},
 			:views => {
 				:building => {

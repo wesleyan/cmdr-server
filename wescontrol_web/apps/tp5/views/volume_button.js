@@ -63,7 +63,7 @@ Tp5.VolumeButtonView = Tp5.StatusButtonView.extend(
 				sc_super();
 				
 				this.updateTimer = SC.Timer.schedule({
-					interval: 5000,
+					interval: 3000,
 					target: this,
 					action: "updateVolume",
 					repeating: YES
@@ -79,11 +79,18 @@ Tp5.VolumeButtonView = Tp5.StatusButtonView.extend(
 			dragging: NO,
 			
 			updateVolume: function(){
-				//Tp5.log("Updating volume: %f", Tp5.volumeController.volume);
+				Tp5.log("Updating volume: %f", Tp5.volumeController.volume);
 				Tp5.log("Setting to %s", sprintf("%.0f%%", Tp5.volumeController.volume*100));
 				Tp5.volumeController.updateLastVolumeSet();
 				this.$()[0].style.backgroundPositionY = sprintf("%.0f%%", 100-Tp5.volumeController.volume*100);
 				//this.set("style", {backgroundPositionY: sprintf("%.0f%%", Tp5.volumeController.volume*100)});
+				this.updateTimer = SC.Timer.schedule({
+					interval: 3000,
+					target: this,
+					action: "updateVolume",
+					repeating: YES
+				});
+				
 			},
 			
 			mouseDown: function(){

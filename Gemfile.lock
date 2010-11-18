@@ -40,6 +40,7 @@ GEM
     net-ssh-gateway (1.0.1)
       net-ssh (>= 1.99.1)
     rack (1.2.1)
+    rake (0.8.7)
     rest-client (1.6.1)
       mime-types (>= 1.16)
     sinatra (1.1.0)
@@ -82,6 +83,7 @@ DEPENDENCIES
   net-ldap
   net-scp
   net-ssh
+  rake
   sinatra
   sproutcore
   unicorn

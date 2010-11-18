@@ -2,7 +2,7 @@
 // Project:		Tp5
 // Copyright: ©2010 My Company, Inc.
 // ==========================================================================
-/*globals Tp5 */
+/*globals Tp5 p */
 
 /** @namespace
 
@@ -14,7 +14,7 @@ Tp5 = SC.Application.create(
 	/** @scope Tp5.prototype */ {
 
 	NAMESPACE: 'Tp5',
-	VERSION: '0.1.0',
+	VERSION: '0.2.0',
 
 	// This is your application store.	You will use this store to access all
 	// of your model data.	You can also set a data source on this store to
@@ -32,3 +32,7 @@ Tp5 = SC.Application.create(
 	}
 
 }) ;
+
+p = function(path){
+	return SC.objectForPropertyPath(path);
+};
