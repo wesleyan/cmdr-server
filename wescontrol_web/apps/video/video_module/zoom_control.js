@@ -50,7 +50,6 @@ Video.ZoomControlView = SC.View.extend(
 			this.set('dragging', NO);
 			this.set("style", {backgroundPositionY: "50%"});
 			this.$()[0].style.backgroundPositionY = "50%";
-			
 			//Video.appController.set('disableChanges', NO);
 		},
 

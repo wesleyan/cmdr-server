@@ -86,6 +86,7 @@ Video.PanButtonView = SC.View.extend(Video.MouseHandlingFix,
 		if(SC.$('.pan-button')[0].className.split(" ").some(function(x){ return x != "pan-button'";}))
 		{
 			this.set('lastAction', this.getAction());
+			this.set('currentAction', null);
 			SC.$('.pan-button')[0].className = "pan-button";
 		}
 	},
