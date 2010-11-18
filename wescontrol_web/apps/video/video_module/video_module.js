@@ -42,7 +42,6 @@ Video.VideoModule = SC.View.extend(Video.MouseHandlingFix,
 						command = "move_" + this.get("currentAction");
 					}
 					if(Video.deviceController.get('devices').camera){
-						console.log("Sending command");
 						Video.deviceController.get('devices').camera.send_command(command, [0.4, 0.4]);
 					}
 				}.observes("currentAction")
@@ -60,7 +59,16 @@ Video.VideoModule = SC.View.extend(Video.MouseHandlingFix,
 			}).classNames('title'),
 		
 			zoom_control: Video.ZoomControlView.design({
-				layout: {centerX: 0, width: 157, top: 45, height: 168}
+				layout: {centerX: 0, width: 157, top: 45, height: 168},
+				onCommandChanged: function(){
+					if(Video.deviceController.get('devices').camera){
+						/*var offset = this.get('zoomOffset');
+						var command = "zoom_stop";
+						if(offset < 0)command = "zoom_in";
+						else if(offset > 0)command = "zoom_out";*/
+						Video.deviceController.get('devices').camera.send_command(this.command);
+					}
+				}.observes("command")
 			})
 		}),
 	

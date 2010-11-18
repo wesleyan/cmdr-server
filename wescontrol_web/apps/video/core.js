@@ -20,8 +20,13 @@ Video = SC.Application.create(
 	// of your model data.  You can also set a data source on this store to
 	// connect to a backend server.  The default setup below connects the store
 	// to any fixtures you define.
-	store: SC.Store.create().from('Video.CouchDataSource')
+	store: SC.Store.create().from('Video.CouchDataSource'),
 
 	// TODO: Add global constants or singleton objects needed by your app here.
+	debugging: YES,
+	
+	log: function(){
+		if(this.debugging)console.log.apply(console, arguments);
+	}
 
 }) ;

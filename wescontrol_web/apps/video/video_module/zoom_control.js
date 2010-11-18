@@ -16,6 +16,14 @@ Video.ZoomControlView = SC.View.extend(
 	classNames: ['zoom-control'],
 
 	childViews: "zoomSlider".w(),
+	
+	zoomOffset: 0.0,
+	command: "zoom_stop",
+	
+	zoomOffsetChanged: function(){
+		this.set('command', this.zoomOffset > 0.1 ? "zoom_in" :
+			this.zoomOffset < -0.1 ? "zoom_out" : "zoom_stop");
+	}.observes('zoomOffset'),
 
 	zoomSlider: SC.View.design(SC.Animatable, {
 		layout: {height: 164, width: 122, bottom: 0, centerX: -2},
@@ -50,6 +58,7 @@ Video.ZoomControlView = SC.View.extend(
 			this.set('dragging', NO);
 			this.set("style", {backgroundPositionY: "50%"});
 			this.$()[0].style.backgroundPositionY = "50%";
+			this.parentView.set('zoomOffset', 0.0);
 			//Video.appController.set('disableChanges', NO);
 		},
 
@@ -61,6 +70,7 @@ Video.ZoomControlView = SC.View.extend(
 				if(percent < -0.05)percent = -0.05;
 				if(percent > 1)percent = 1;
 				this.$()[0].style.backgroundPositionY = sprintf("%.1f%%", percent*100);
+				this.parentView.set('zoomOffset', (0.5-percent)*2);
 				//Video.volumeController.set_volume(1-percent);
 			}
 		}

@@ -75,7 +75,7 @@ Video.Device = SC.Record.extend(
 	
 	send_command: function(command, arg){
 		try {
-			if(!arg[0])arg = [arg];
+			if(!arg || !arg[0])arg = [arg];
 			var json = {args: [arg]};
 			SC.Request.postUrl('/devices/' + this.get('name') + '/' + command, json).json()
 				.notify(this, "command_request_finished", command, arg)
