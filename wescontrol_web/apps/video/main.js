@@ -2,7 +2,7 @@
 // Project:   Video
 // Copyright: ©2010 My Company, Inc.
 // ==========================================================================
-/*globals Video */
+/*globals Video*/
 
 // This is the function that will start your app running.  The default
 // implementation will load any fixtures you have created then instantiate
@@ -19,11 +19,10 @@ Video.main = function main() {
 	// create multiple pages and panes.  
 	Video.getPath('mainPage.mainPane').append() ;
 
-	// Step 2. Set the content property on your primary controller.
-	// This will make your app come alive!
-
-	// TODO: Set the content property on your primary controller
-	// ex: Video.contactsController.set('content',Video.contacts);
+	Video.store.find(Video.Building);
+	
+	var deviceQuery = SC.Query.local(Video.Device, 'belongs_to = {room_id}', {room_id: Video.appController.roomID});
+	Video.deviceController.set('content', Video.store.find(deviceQuery));
 
 } ;
 

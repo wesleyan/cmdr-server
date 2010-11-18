@@ -37,7 +37,14 @@ Video.VideoModule = SC.View.extend(Video.MouseHandlingFix,
 			pan_control: Video.PanButtonView.design({
 				layout: {centerX: 0, width: 157, top: 45, height: 162},
 				onCurrentActionChanged: function(){
-					console.log(this.get('currentAction'));
+					var command = "move_stop";
+					if(this.get("currentAction")){
+						command = "move_" + this.get("currentAction");
+					}
+					if(Video.deviceController.get('devices').camera){
+						console.log("Sending command");
+						Video.deviceController.get('devices').camera.send_command(command, [0.4, 0.4]);
+					}
 				}.observes("currentAction")
 			})
 		}),

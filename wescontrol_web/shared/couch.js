@@ -122,10 +122,11 @@ CouchDataSource = SC.DataSource.extend(
 	// 
 
 	fetch: function(store, query) {
-
+		console.log("Doing fetch for");
 		// TODO: Add handlers to fetch data for specific queries.	 
 		// call store.dataSourceDidFetchQuery(query) when done.
 		if(query.recordType == this.appObject.Building) {
+			console.log("Building");
 			SC.Request.getUrl('/rooms/_design/wescontrol_web/_view/building').json()
 				.notify(this, 'didFetchBuildings', store, query)
 				.send();
