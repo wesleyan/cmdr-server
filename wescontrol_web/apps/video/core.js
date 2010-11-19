@@ -2,7 +2,7 @@
 // Project:   Video
 // Copyright: ©2010 My Company, Inc.
 // ==========================================================================
-/*globals Video */
+/*globals Video p */
 
 /** @namespace
 
@@ -30,3 +30,7 @@ Video = SC.Application.create(
 	}
 
 }) ;
+
+p = function(path){
+	return SC.objectForPropertyPath(path);
+};

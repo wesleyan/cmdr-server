@@ -22,14 +22,12 @@ Video.deviceController = SC.ArrayController.create(
 			devices[device.get('name')] = device;
 		});
 		
-		this.devices = devices;
+		this.set('devices', devices);
 		
 	},
 	
 	refreshContent: function() {
 		this.set('content', Video.store.find(Video.Device));
-		console.log(Video.deviceController.get('content').mapProperty("name"));
 		this.contentChanged();
-		console.log(Video.deviceController.get('content').mapProperty("name"));
 	}
 }) ;

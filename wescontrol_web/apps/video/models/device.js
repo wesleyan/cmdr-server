@@ -74,6 +74,7 @@ Video.Device = SC.Record.extend(
 	},
 	
 	send_command: function(command, arg){
+		console.log("Sending command");
 		try {
 			if(!arg || !arg[0])arg = [arg];
 			var json = {args: [arg]};

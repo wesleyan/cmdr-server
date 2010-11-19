@@ -17,5 +17,5 @@ Video.appController = SC.ObjectController.create(
 	
 	roomID: '4d110d73562a184452c2befbdb1fa375',
 	
-	disableChanges: YES
+	disableChanges: NO
 }) ;
