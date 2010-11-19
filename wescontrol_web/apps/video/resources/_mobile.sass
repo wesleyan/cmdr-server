@@ -1,0 +1,58 @@
+/* sc_resource("mobile"); */
+@import ../../../shared/mixins.sass
+
+.video-module
+	background: sc_static("grain.png"), #2D2D2D
+	
+	.sc-view.sc-label-view.sc-regular-size.title
+		font-family: 'Myriad Pro', Helvetica
+		font-size: 37px
+		line-height: 38px
+		color: #D3D3D3
+		+text-inset(#000000)
+
+
+.pan-controls
+	display: none
+	
+.zoom-controls
+	display: none
+			
+.record-control
+	top: 200px !important
+	.record-button .control-button
+		width: 87px
+		height: 87px
+		background: sc_static('button-top.png') no-repeat, -moz-radial-gradient(center 45deg, circle closest-corner, #ED2824 0%, #C1282D 100%)
+		background: sc_static('button-top.png') no-repeat, -webkit-gradient(radial, center center, 0, center center, 70, from(#ED2824), to(#C1282D))
+		border:
+			radius: 50px
+			color: #989898
+			width: 1px
+			style: solid
+		+box-shadow(0 1px 6px #010101)	
+		&:active 
+			background: -moz-radial-gradient(center 45deg, circle closest-corner, #883035 0%, #B82CDF 100%)
+			background: -webkit-gradient(radial, center center, 0, center center, 70, from(#883035), to(#B82C2F))
+
+.sc-view.video-window
+	display: none
+
+.sc-view.timecode-counter
+	top: 5px !important
+	left: 5px !important
+	right: 5px !important
+	background: #92A091
+	border:
+		radius: 10px
+		color: #3D3D3D
+		width: 1px
+		//style: solid
+	+box-shadow(0 0 5px #000 inset)
+	.sc-view.sc-label-view.sc-regular-size
+		font-family: Helvetica, Arial
+		font-size: 48px
+		color: black
+		+text-inset
+		text-align: center
+		line-height: 80px
