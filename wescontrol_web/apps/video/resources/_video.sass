@@ -1,5 +1,14 @@
 @import ../../../shared/mixins.sass
 
+@-webkit-keyframes 'record-pulse'
+	from
+		opacity: 0
+	50%
+		opacity: 0.6
+	to
+		opacity: 0
+
+
 .video-module
 	background: sc_static("grain.png"), #2D2D2D
 	
@@ -60,6 +69,20 @@
 		&:active 
 			background: -moz-radial-gradient(center 45deg, circle closest-corner, #883035 0%, #B82CDF 100%)
 			background: -webkit-gradient(radial, center center, 0, center center, 70, from(#883035), to(#B82C2F))
+		&.recording
+			.highlight
+				opacity: 0
+				background-color: black
+				+fill-parent
+				width: 90px
+				height: 90px
+				border-radius: 50px
+				-webkit-animation-name: record-pulse
+				-moz-animation-name: pulse
+				-webkit-animation-duration: 3s
+				-moz-animation-duration: 3s
+				-webkit-animation-iteration-count: infinite
+				-moz-animation-iteration-count: infinite
 
 .video-window
 	+box-shadow(0 0 5px #000 inset)

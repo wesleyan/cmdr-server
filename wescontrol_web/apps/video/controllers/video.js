@@ -36,10 +36,12 @@ Video.videoController = SC.ObjectController.create(
 		console.log("Recorder state update");
 		var states = this.recorder.get('states');
 		if(states){
+			if(states.state == "stopped"){
+				this.get('recorder').set_var("state", "playing");
+			}
 			this.set('state', states.state);
 			this.set('recordingStarted', states.recording_started);
 		}
 	}.observes("Video.videoController.recorder.state_vars")
-	
 	
 }) ;

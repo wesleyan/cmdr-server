@@ -36,6 +36,7 @@ Video.ButtonView = SC.View.extend(Video.MouseHandlingFix,
 	render: function(context, firstTime) {
 		context = context.begin('div').addClass('control-button');
 		if(this.disableStates.indexOf(this.state) != -1)context.addClass('disabled');
+		context = context.begin('div').addClass("highlight").end();
 		context = context.begin('div').addClass('label').push(this.value).end().end();
 	}
 
