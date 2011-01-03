@@ -5,6 +5,22 @@ Roomtrol is split into three parts: the server code, [roomtrol-daemon](https://g
 
 **Note: in order to get device drivers, you need to run these two commands**: `git submodule init` and `git submodule update`.
 
+## Running Roomtrol Server
+Running roomtrol server is a bit involved at the moment as there are
+three different pieces that need to be invoked separately, in addition
+to CouchDB.
+
+### SproutCore
+Run sproutcore server by doing `sc-server` in the wescontrol_web/
+directory
+
+### Proxy server
+Start the proxy server by running `bin/roomtrol-server` in the root
+directory.
+
+### Authentication server
+Start the authenication server by running `thin start -p 4567` in lib/.
+
 ##Development notes
 ###Code style
 All code should match the following style: tabs for indentation and spaces for aligning and line lengths should be minized but there is no hard cut-off. For Ruby code, class names ShouldBeCamelCased, variable and method names should\_be\_underscored, every method and class should be documented using [Yardoc](yardoc.com) tags and [markdown](http://daringfireball.net/projects/markdown/) formatting and [RSpec](rpsec.org) tests should be written for all functionality.

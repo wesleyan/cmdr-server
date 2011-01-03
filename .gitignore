@@ -1,0 +1,11 @@
+.sass-cache/
+.bundle/
+log/*.log
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+.elc
+auto-save-list
+tramp
+/lib/.#server.rb
