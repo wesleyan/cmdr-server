@@ -46,14 +46,14 @@ CouchDataSource = SC.DataSource.extend(
 				SC.Timer.schedule({
 					target: this,
 					action: "doRequest",
-					interval: 5000
+					interval: 50
 				});
 			},
 			
 			doRequest: function(){
 				if(!this.get('disableChanges') && this.running)
 				{
-					SC.Request.getUrl('/rooms/_changes?feed=longpoll&filter=wescontrol_web/device&since=' + this.since).json()
+					SC.Request.getUrl('/rooms/_changes?filter=wescontrol_web/device&since=' + this.since).json()
 						.notify(this, "requestFinished")
 						.send();
 				}

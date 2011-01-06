@@ -79,6 +79,7 @@ WescontrolWeb.CouchDataSource = CouchDataSource.extend({
 		var body = response.get('body');
 		WescontrolWeb.configurationController.set('commitCount', 
 			WescontrolWeb.configurationController.get('commitCount')-1);
+        console.log("Commiting %s, count = %i", response, WescontrolWeb.configurationController.get('commitCount'));
 		if(SC.ok(response) && body["ok"]){
 			var attrs = store.materializeRecord(storeKey);
 			attrs["_rev"] = body.rev;

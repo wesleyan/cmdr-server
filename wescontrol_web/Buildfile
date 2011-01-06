@@ -7,7 +7,7 @@
 config :all, :required => [:sproutcore, :"sproutcore/animation"]
 
 #proxy "/*", :to => "localhost:2352"
-proxy "/rooms", :to => "roomtrol-sc509a.class.wesleyan.edu:5984"
+proxy "/rooms", :to => "localhost:2352"
 proxy "/auth", :to => "localhost:2352"
 proxy "/drivers", :to => "localhost:2352"
 
