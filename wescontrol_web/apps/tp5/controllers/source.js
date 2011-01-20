@@ -51,12 +51,13 @@ Tp5.sourceController = SC.ArrayController.create(
 	
 	switcherChanged: function(){
 		if(this.get('content').get('length') === 0 || !this.get('switcher'))return;
-		this.set("source", this.get('states')[this.switcher_map[p(".switcher.states.input")]]);
+		var input = p("Tp5.sourceController.switcher.states.input");			
+		this.set("source",this.get('states')[this.switcher_map[input]]);
 	}.observes("switcher", "states", ".switcher.states"),
 	
 	projectorChanged: function(){
 		if(this.get('content').get('length') === 0 || this.get('switcher'))return;
-		this.set("source", this.get('states')[this.projector_map[p(".projector.states.input")]]);
+		this.set("source", this.get('states')[this.projector_map[p("Tp5.sourceController.projector.states.input")]]);
 	}.observes("projector", "states", ".projector.states"),
 	
 	projectorPowerChanged: function(){
