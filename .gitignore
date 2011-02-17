@@ -1,0 +1,13 @@
+.sass-cache/
+.bundle/
+log/*.log
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+.elc
+auto-save-list
+tramp
+/lib/.#server.rb
+/wescontrol_web/apps/wescontrol_web/controllers/.#action.js
+/wescontrol_web/apps/wescontrol_web/views/.#sources_configuration.js

@@ -33,7 +33,7 @@ WescontrolWeb.configurationController = SC.Object.create(
 	viewCache: {},
 	
 	commitCount: 0,
-	
+
 	configDirty: function(){
 		return this.state == this.DIRTY_STATE || this.state == this.COMMITTING_STATE;
 	}.property('state'),
@@ -44,6 +44,7 @@ WescontrolWeb.configurationController = SC.Object.create(
 	
 	init: function(){
 		this.onCurrentTabChange();
+	    this.set('commitCount', 0);
 	},
 	
 	updateDirty: function(){
@@ -96,27 +97,37 @@ WescontrolWeb.configurationController = SC.Object.create(
 	}.observes("currentTab"),
 	
 	saveConfiguration: function(){
-		if(WescontrolWeb.deviceController.get('status') & SC.Record.DIRTY){
-			WescontrolWeb.deviceController.get('content').commitRecord();
-			this.commitCount++;
-		}
+        // save the array settings (devices, sources and actions)
+	    var controllers = [WescontrolWeb.roomController, 
+	                       WescontrolWeb.sourceController,
+	                       WescontrolWeb.actionController]
+	    var commits = controllers.map(this.saveConfigureGroup)
+	        .reduce(SC.Enumerable.reduceSum)
+	    
+	    this.set('commitCount', this.get('commitCount')+commits);
+
+        // save the room settings (name and building)
 		if(WescontrolWeb.roomListController.get('status') & SC.Record.DIRTY){
 			WescontrolWeb.roomListController.get('content').commitRecord();
-			this.commitCount++;
+		    this.set('commitCount', this.get('commitCount')+1);
+		    console.log("Submitting roomtrolList, count = %i", this.commitCount);
 		}
-		if(WescontrolWeb.sourceSelectionController.get('status') & SC.Record.DIRTY){
-			WescontrolWeb.sourceSelectionController.get('content').commitRecord();
-			this.commitCount++;
-		}
-		if(WescontrolWeb.actionSelectionController.get('status') & SC.Record.DIRTY){
-			WescontrolWeb.actionSelectionController.get('content').commitRecord();
-			this.commitCount++;
-		}
-		if(this.commitCount != 0)this.set('state', this.COMMITTING_STATE);
+        if(this.commitCount != 0)this.set('state', this.COMMITTING_STATE);
 	},
-	
+
+	saveConfigureGroup: function(controller){
+	    var commits = 0;
+		controller.get('content').forEach(function(record){
+            if(record.get('status') & SC.Record.DIRTY){
+                record.commitRecord();
+                commits++;
+            }
+        });
+	    return commits;
+    },
+
 	watchCommitCount: function(){
-		if(this.state == this.COMMITTING_STATE && this.commitCount == 0){
+	    if(this.state == this.COMMITTING_STATE && this.get('commitCount') == 0){
 			this.set('state', this.CLEAN_STATE);
 		}
 	}.observes('commitCount'),

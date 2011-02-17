@@ -100,7 +100,7 @@ Tp5.volumeController = SC.ObjectController.create(
 				target: this, 
 				action: 'update_volume_on_device', 
 				repeats: YES, 
-				interval: 500 
+				interval: 100
 			});
 		}
 	}.observes("Tp5.roomController.volume")

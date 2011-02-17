@@ -56,7 +56,6 @@ task :setup_db, :needs => [:collect_password] do
 		require 'net/ssh'
 		require 'net/scp'
 		require 'couchrest'
-		require_relative "../lib/server/database.rb"
 	rescue LoadError => e
 		puts "\n ~ FATAL: net-scp gem is required.\n          Try: rake install_gems"
 		exit(1)
@@ -66,8 +65,17 @@ task :setup_db, :needs => [:collect_password] do
 	targets  = OPTS[:targets]
 
 	CONTROLLERS.each do |server|
+    Net::SCP.start(server, 'roomtrol', :password => password) do |scp|
+      puts " ~ uploading database script"
+      local_path = WORKING + '/lib/server/database.rb'
+      scp.upload! local_path, "/tmp/database.rb"
+    end
 		Net::SSH.start(server, 'roomtrol', :password => password) do |ssh|
-			Database.setup_database
+      puts " ~ running database script"
+      commands = ["cd /var/roomtrol-daemon",
+                  "source /usr/local/rvm/environments/default",
+                  "ruby -r couchrest -r '/tmp/database.rb' -e 'Database.setup_database'"]
+		  puts ssh.exec!(commands.join(" && "))
 		end
 	end
 end
@@ -249,7 +257,7 @@ task :deploy_roomtrol_server, :needs => [:collect_password] do
 end
 
 desc "builds and then deploys the files onto every server in servers.json.  This will not clean the build first, which will be faster.  If you have trouble try deploy_clean"
-task :deploy_servers, :to_controllers, :needs => [:collect_password, :build, :deploy_assets, :link_current]
+task :deploy_servers, :to_controllers, :needs => [:collect_password, :build, :deploy_assets, :link_current, :setup_db]
 desc "builds and then deploys the files onto every controller in servers.json.  This will not clean the build first, which will be faster.  If you have trouble try deploy_clean"
 task :deploy_controllers do
   Rake::Task[:deploy_servers].invoke(true)
