@@ -22,11 +22,13 @@ Tp5.CouchDataSource = CouchDataSource.extend({
 		Tp5.deviceController.refreshContent();
 		//we break up the string in a funny manner so that it won't get replaced when we replace the
 		//other one
-		if(Tp5.appController.mac != "REPLACE_WITH_REAL_MAC" + "_THIS_SHOULD_BE_UNIQUE_e1599512ea6")
+    var compare_string = "REPLACE_WITH_REAL_MAC_THIS_SHOULD_BE_UNIQUE";
+    
+		if(Tp5.appController.mac.slice(0, compare_string.length) != compare_string)
 		{
-			var query = SC.Query.local(Tp5.Room, 'mac_address = {mac}', {mac: Tp5.appController.mac});
+			var query = SC.Query.local(Tp5.Room, 'mac = {mac}', {mac: Tp5.appController.mac});
 			
-			Tp5.roomController.set('content', Tp5.store.find(query));
+			Tp5.roomController.set('content', Tp5.store.find(query).firstObject());
 		}
 		else
 		{
