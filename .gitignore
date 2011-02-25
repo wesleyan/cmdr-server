@@ -1,3 +1,5 @@
+servers.json
+/wescontrol_web/Buildfile
 .sass-cache/
 .bundle/
 log/*.log
