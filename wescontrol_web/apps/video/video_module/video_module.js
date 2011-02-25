@@ -124,7 +124,21 @@ Video.VideoModule = SC.View.extend(Video.MouseHandlingFix,
 		bottom_controls: SC.View.design({
 			classNames: "bottom-controls".w(),
 			layout: {left: 0, right: 0, height: 160, bottom: 0},
-			childViews: "timecode_counter".w(),
+			childViews: "course_selector timecode_counter".w(),
+
+      course_selector: SC.SelectButtonView.design({
+        classNames: 'course-selector'.w(),
+        layout: {left: 0, height: 30, centerY: 0, width: 240},
+        controlSize: SC.HUGE_CONTROL_SIZE,
+        //objectsBinding: "Video.courseController.content",
+        //titleKey: 'name'
+        objectsBinding: 'Video.courseController.arrangedObjects',
+        nameKey: 'name',
+        theme: 'dark',
+        selectionBinding: 'Video.courseController.selection',
+        allowsEmptySelection: NO
+      }),
+
 			timecode_counter: SC.View.design({
 				classNames: ['timecode-counter'],
 				layout: {centerX: 0, width: 280, height: 80, centerY: 0},

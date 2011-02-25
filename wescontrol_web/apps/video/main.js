@@ -23,6 +23,9 @@ Video.main = function main() {
 	
 	var deviceQuery = SC.Query.local(Video.Device, 'belongs_to = {room_id}', {room_id: Video.appController.roomID});
 	Video.deviceController.set('content', Video.store.find(deviceQuery));
+  
+  Video.courseController.set('content',
+                             Video.store.find(Video.Course));
 
 } ;
 

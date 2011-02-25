@@ -39,7 +39,7 @@ Video.Device = SC.Record.extend(
 			var obj = this.get('state_vars')[key];
 			obj.name = key;
 			obj.name = obj.name.replace("_", " ");
-			vars_array.pushObject(obj);
+course			vars_array.pushObject(obj);
 		}
 		return vars_array;
 	}.property('state_vars').cacheable(),

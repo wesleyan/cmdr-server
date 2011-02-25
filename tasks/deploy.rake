@@ -31,8 +31,8 @@ end
 
 desc "installs gems needed for this Rakefile to run"
 task :install_gems do
-	puts "sudo gem install highline net-ssh net-scp sproutit-sproutcore git"
-	puts `sudo gem install highline net-ssh net-scp sproutit-sproutcore git`
+	puts "sudo gem install highline net-ssh net-scp sproutcore git"
+	puts `sudo gem install highline net-ssh net-scp sproutcore git`
 end
 
 desc "collects the login password from the operator"
