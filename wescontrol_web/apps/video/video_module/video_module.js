@@ -133,10 +133,20 @@ Video.VideoModule = SC.View.extend(Video.MouseHandlingFix,
         //objectsBinding: "Video.courseController.content",
         //titleKey: 'name'
         objectsBinding: 'Video.courseController.arrangedObjects',
+        valueKey: 'guid',
         nameKey: 'name',
         theme: 'dark',
-        selectionBinding: 'Video.courseController.selection',
-        allowsEmptySelection: NO
+        allowsEmptySelection: NO,
+        
+        onCourseChanged: function(){
+          console.log("Course changed: %s",
+                      p("Video.videoController.course"));
+          this.set('value', p("Video.videoController.course"));
+        }.observes('Video.videoController.course'),
+
+        valueChanged: function(){
+          Video.videoController.recorder.set_var("course", this.get('value'))
+        }.observes('value')
       }),
 
 			timecode_counter: SC.View.design({

@@ -17,6 +17,7 @@ Video.videoController = SC.ObjectController.create(
 	
 	state: null,
 	recordingStarted: null,
+  course: null,
 	
 	updateDevices: function(){
 		console.log("Updating asdf;lkjasd");
@@ -41,6 +42,7 @@ Video.videoController = SC.ObjectController.create(
 			}
 			this.set('state', states.state);
 			this.set('recordingStarted', states.recording_started);
+      this.set('course', states.course);
 		}
 	}.observes("Video.videoController.recorder.state_vars")
 	
