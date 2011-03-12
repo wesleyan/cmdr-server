@@ -4,14 +4,15 @@
 # ===========================================================================
 
 # Add initial buildfile information here
-config :all, :required => [:sproutcore, :"sproutcore/animation"]
+config :all, :required => [:sproutcore, :"sproutcore/animation", :sass]
 
 #proxy "/*", :to => "localhost:2352"
+
 proxy "/rooms", :to => "roomtrol-dev3.class.wesleyan.edu:5984"
 
 proxy "/auth", :to => "localhost:2352"
 proxy "/drivers", :to => "localhost:2352"
 
-proxy "/devices", :to => "roomtrol-allb004.class.wesleyan.edu:1412"
+proxy "/devices", :to => "129.133.127.241:1412"
 
 proxy "/graph", :to => "localhost:2352"

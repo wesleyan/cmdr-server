@@ -5,7 +5,7 @@ MAC_VALUE = "REPLACE_WITH_REAL_MAC_THIS_SHOULD_BE_UNIQUE_e1599512ea6"
 PUBLIC_KEY = false #Are we using public key authentication on all the servers?
 
 WORKING = File.dirname(__FILE__) + '/..'
-TARGETS = ['/tp5', '/wescontrol_web']
+TARGETS = ['/tp5', '/wescontrol_web', '/video']
 
 # load server addresses from servers.json
 servers_file = File.open(WORKING + "/servers.json")
@@ -31,8 +31,8 @@ end
 
 desc "installs gems needed for this Rakefile to run"
 task :install_gems do
-	puts "sudo gem install highline net-ssh net-scp sproutit-sproutcore git"
-	puts `sudo gem install highline net-ssh net-scp sproutit-sproutcore git`
+	puts "sudo gem install highline net-ssh net-scp sproutcore git"
+	puts `sudo gem install highline net-ssh net-scp sproutcore git`
 end
 
 desc "collects the login password from the operator"

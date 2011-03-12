@@ -10,6 +10,9 @@ GEM
       net-ssh-gateway (>= 1.0.0)
     capistrano-ext (1.2.1)
       capistrano (>= 1.0.0)
+    chunky_png (0.12.0)
+    compass (0.10.6)
+      haml (>= 3.0.4)
     couchrest (1.0.1)
       json (>= 1.4.6)
       mime-types (>= 1.15)
@@ -25,7 +28,7 @@ GEM
     extlib (0.9.15)
     git (1.2.5)
     god (0.11.0)
-    haml (3.0.22)
+    haml (3.0.24)
     highline (1.6.1)
     json (1.4.6)
     json_pure (1.4.6)
@@ -46,7 +49,7 @@ GEM
     sinatra (1.1.0)
       rack (~> 1.1)
       tilt (~> 1.1)
-    sproutcore (1.4.4)
+    sproutcore (1.5.0.pre.3)
       erubis (~> 2.6.6)
       eventmachine (>= 0.12.10)
       extlib (~> 0.9.15)
@@ -60,7 +63,7 @@ GEM
       rack (>= 1.0.0)
     thor (0.14.6)
     tilt (1.1)
-    unicorn (2.0.0)
+    unicorn (2.0.1)
       kgio (~> 1.3.1)
       rack
 
@@ -70,6 +73,8 @@ PLATFORMS
 DEPENDENCIES
   capistrano
   capistrano-ext
+  chunky_png
+  compass
   couchrest
   daemon-kit
   em-proxy
