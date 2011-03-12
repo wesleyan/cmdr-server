@@ -34,3 +34,35 @@ Video = SC.Application.create(
 p = function(path){
 	return SC.objectForPropertyPath(path);
 };
+
+function screenSize() {
+  console.log("ScreenSize");
+  var html = document.documentElement;
+
+	var w = window.outerWidth || html.clientWidth;
+	
+	// remove earlier widths
+	html.className = html.className.replace(/ (w|lt)-\d+/g, "");
+	
+  var klass = [];
+	var conf = {
+			screens: [320, 480, 640, 768, 1024, 1280, 1440, 1680, 1920],
+			section: "-section",
+			page: "-page",
+			head: "head"
+		 };
+
+	// add new ones
+	klass.push("w-" + Math.round(w / 100) * 100);
+	
+	conf.screens.forEach(function(width) {
+		if (w <= width) { klass.push("lt-" + width); } 
+	});
+
+  html.className += ' ' + klass.join( ' ' );
+}
+
+jQuery(document).ready(function(){
+  console.log("Ready");
+  screenSize();
+})

@@ -43,7 +43,7 @@ Video.VideoModule = SC.View.extend(Video.MouseHandlingFix,
 						command = "move_" + this.get("currentAction");
 					}
 					if(Video.videoController.camera){
-						Video.videoController.camera.send_command(command, [0.4, 0.4]);
+						Video.videoController.camera.send_command(command, [0.1, 0.1]);
 					}
 				}.observes("currentAction")
 			})
