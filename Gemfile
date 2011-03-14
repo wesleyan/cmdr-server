@@ -35,3 +35,6 @@ gem 'compass'
 gem 'git'
 gem 'haml'
 gem 'chunky_png'
+
+# Zeroconf gems
+gem 'dnssd'
