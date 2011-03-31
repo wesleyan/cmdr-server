@@ -21,6 +21,12 @@ directory.
 ### Authentication server
 Start the authenication server by running `thin start -p 4567` in lib/.
 
+Before this will work you need to create a document in the `roomtrol-server` couchDB that looks like:
+    {
+       "username": "ecarmi",
+       "is_user": true
+    }
+
 ##Development notes
 ###Code style
 All code should match the following style: tabs for indentation and spaces for aligning and line lengths should be minized but there is no hard cut-off. For Ruby code, class names ShouldBeCamelCased, variable and method names should\_be\_underscored, every method and class should be documented using [Yardoc](yardoc.com) tags and [markdown](http://daringfireball.net/projects/markdown/) formatting and [RSpec](rpsec.org) tests should be written for all functionality.
