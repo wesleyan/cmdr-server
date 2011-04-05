@@ -23,7 +23,7 @@ module Wescontrol
         # Initialize Client object. Select a unused port to establish ssh connections
         def initialize client_reply, db_uri=DB_URI
           # name of device broadcasted via zeroconf
-          @name = client_reply.name
+          @name = client_reply.name.split[-1]
           @ip_address = self.resolve client_reply
         end
 
@@ -47,7 +47,7 @@ module Wescontrol
             # Connect to client and get an ip address.
             ip = client_reply.connect[0][3]
           rescue
-            puts "connecet failed, retrying" unless retried
+            DaemonKit.logger.debug "#{@name}: connecet failed, retrying" unless retried
             #TODO log failed resolve
             #TODO only rescue from correct exception, not everything, then retry
             retry
@@ -65,39 +65,43 @@ module Wescontrol
         # remote:1412. Once this is all setup, we setup CouchDB replication.
         def establish_forwards
           # Setup forwarding to client's roomtrol-daemon at :1412.
-          puts "Establishing port forwards"
+          DaemonKit.logger.debug("#{@name}: Establishing port forwards")
           forward(1412, @ip_address) do |local_host, local_port|
             EM.defer do
               Thread.abort_on_exception = true
-              puts "trying to get room_id"
-              @room_id = JSON.parse(Net::HTTP.get(URI.parse("http://#{local_host}:#{local_port}/room/")))["id"]
-              puts @room_id
+              DaemonKit.logger.debug "#{@name}: trying to get room_id"
+              begin
+                url = "http://#{local_host}:#{local_port}/room/"
+                @room_id = JSON.parse(RestClient.get(url))["id"]
+                DaemonKit.logger.debug("#{@name}: Room ID of external device: #{@room_id}")
+              rescue Errno::ECONNREFUSED, RestClient::ResourceNotFound, RestClient::RequestTimeout => e
+                DaemonKit.logger.debug("#{@name}: Failed to retrieve RoomID: #{e}")
+              end
               
               # Get document from couchdb or create it if not in couchdb.
-
               doc = begin
                 @db.get(@room_id)
               rescue RestClient::ResourceNotFound
-                {'belongs_to' => @uberroom_id, "class" => "Eigenroom", "attributes" => {"room_id" => @room_id, "ip_address" => @ip_address }}
+                {'id' => @room_id, 'belongs_to' => @uberroom_id, "class" => "Eigenroom", "attributes" => {"room_id" => @room_id, "ip_address" => @ip_address }}
               end
               
-              # Save established connectino in couchdb document.
+              # Save established connection in couchdb document.
               doc["daemon_forward_port"] = local_port
-              puts doc
-              @db.save_doc(doc)
+              DaemonKit.logger.debug doc
+              puts @db.save_doc(doc)
               
               forward(5984, @ip_address) do |local_host, local_port|
                 EM.defer do
                   Thread.abort_on_exception = true
                   # Setup replication from device's couchdb rooms to server's rooms
                   data = {"source" => "http://#{local_host}:#{local_port}/rooms", "target" => "http://#{local_host}:5984/testrb", "continuous" => true}
-                  puts "Setting up replication"
+                  DaemonKit.logger.debug "#{@name}: Setting up replication"
                   begin
                     res = RestClient.post "http://#{local_host}:5984/_replicate", data.to_json, :content_type => :json
-                    puts "Response from couch: #{res}"
+                    DaemonKit.logger.debug "#{@name}: Response from couch: #{res}"
                   rescue => e
-                    puts "ERROR FROM REST"
-                    puts e.response
+                    DaemonKit.logger.debug "#{@name}: ERROR FROM REST"
+                    DaemonKit.logger.debug e.response
                   end
 
                   doc = begin
@@ -108,7 +112,7 @@ module Wescontrol
                   
                   # Save established connectino in couchdb document.
                   doc["couchdb_forward_port"] = local_port
-                  puts doc
+                  DaemonKit.logger.debug doc
                   @db.save_doc(doc)
                 end
               end
@@ -136,17 +140,18 @@ module Wescontrol
           EM.defer do
             Thread.abort_on_exception = true
             retry_count = 0
-            puts "Attempting to establish port fowarding from #{local_host}:#{local_port} to #{remote_host}:#{remote_port}"
+            DaemonKit.logger.debug("#{@name}: Attempting to establish port fowarding from #{local_host}:#{local_port} to #{remote_host}:#{remote_port}")
             begin
               #if is_port_in_use?('127.0.0.1', local_port) then puts "PORT IN USE #{local_port}" end
               #if !is_port_in_use?('127.0.0.1', local_port) then puts "PORT IS NOT IN USE #{local_port}" end
               Net::SSH.start(remote_host, user) do |ssh|
                 ssh.forward.local(local_host, local_port, remote_host, remote_port)
                 yield local_host, local_port
+                DaemonKit.logger.debug("#{@name}: Established SSH forwarding.")
                 ssh.loop { true }
               end
             rescue Errno::EADDRINUSE 
-              puts "Error, port #{local_port} in use"
+              #puts "Error, port #{local_port} in use, on retry count #{retry_count}"
               local_port += 2
               retry_count += 1
               retry unless retry_count > 1000
@@ -169,12 +174,12 @@ module Wescontrol
             elsif service == :roomtrol then ROOMTROL_DAEMON_PORT
             else 10000
             end
-          puts "Port starting at #{begin_port_range}"
+          DaemonKit.logger.debug "Port starting at #{begin_port_range}"
           while is_port_in_use?('127.0.0.1', begin_port_range) do
             begin_port_range+=2
-            puts "Incrementing port to #{begin_port_range}"
+            DaemonKit.logger.debug "Incrementing port to #{begin_port_range}"
           end
-          puts begin_port_range
+          DaemonKit.logger.debug begin_port_range
           return begin_port_range
         end
 
