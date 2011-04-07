@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
 # already included in your load path, so no need to specify it.
 require 'eventmachine'
 require 'em-proxy'
-require 'couchrest'
+#require 'couchrest'
 require 'net/ssh'
 require 'dnssd'
 

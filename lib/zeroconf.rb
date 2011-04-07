@@ -3,7 +3,8 @@ $LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
 
 # External dependencies
 require 'dnssd'
-require 'couchrest'
+require 'time'
+#require 'couchrest'
 require 'rubygems'
 require 'net/ssh'
 require 'net/http'
@@ -35,6 +36,17 @@ module Wescontrol
           # must establish connection to 1412 first
           establish_forwards
           #forward(5984, @ip_address)
+        end
+
+        # Fetch a document from couchdb db by roomid, or create it if it doesn't exist.
+        def get_doc
+            # views returns empty list if no key exits
+            doc = @db.get("_design/room").view("eigenroom_by_roomid", {:key => @room_id})['rows'][0]
+            if doc
+              doc = doc['value']
+            else
+              doc = {'belongs_to' => @uberroom_id, "class" => "Eigenroom", "attributes" => {"room_id" => @room_id, "ip_address" => @ip_address }}
+            end
         end
 
         # Resolves a browser_reply object to a ip address
@@ -78,17 +90,14 @@ module Wescontrol
                 DaemonKit.logger.debug("#{@name}: Failed to retrieve RoomID: #{e}")
               end
               
-              # Get document from couchdb or create it if not in couchdb.
-              doc = begin
-                @db.get(@room_id)
-              rescue RestClient::ResourceNotFound
-                {'id' => @room_id, 'belongs_to' => @uberroom_id, "class" => "Eigenroom", "attributes" => {"room_id" => @room_id, "ip_address" => @ip_address }}
-              end
-              
+              # Get document from couchdb by roomid or create it if not in couchdb.
+              doc = get_doc
+              puts doc
               # Save established connection in couchdb document.
               doc["daemon_forward_port"] = local_port
+              doc["last_updated"] = Time.now
               DaemonKit.logger.debug doc
-              puts @db.save_doc(doc)
+              DaemonKit.logger.debug @db.save_doc(doc)
               
               forward(5984, @ip_address) do |local_host, local_port|
                 EM.defer do
@@ -104,23 +113,18 @@ module Wescontrol
                     DaemonKit.logger.debug e.response
                   end
 
-                  doc = begin
-                    @db.get(@room_id)
-                  rescue RestClient::ResourceNotFound
-                    {'belongs_to' => @uberroom_id, "class" => "Eigenroom", "attributes" => {"room_id" => @room_id, "ip_address" => @ip_address }}
-                  end
-                  
-                  # Save established connectino in couchdb document.
+                  doc = get_doc
+                  # Save established connection in couchdb document.
                   doc["couchdb_forward_port"] = local_port
+                  doc["last_updated"] = Time.now
                   DaemonKit.logger.debug doc
-                  @db.save_doc(doc)
+                  DaemonKit.logger.debug @db.save_doc(doc)
                 end
               end
             end
           end
 
           # Setup forwarding to client's couchdb at :5984
-
         end
 
         # Establish port forwarding from a given port on local machine to
