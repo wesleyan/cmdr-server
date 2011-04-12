@@ -25,6 +25,7 @@ gem 'net-ldap'
 gem 'em-proxy'
 gem 'unicorn'
 gem 'god'
+gem 'rainbow'
 
 # WescontrolWeb gems
 gem 'highline'
