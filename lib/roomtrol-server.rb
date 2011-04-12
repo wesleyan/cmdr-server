@@ -49,16 +49,14 @@ module Wescontrol
           EM.defer do
             Thread.abort_on_exception = true
             browser = DNSSD.browse("_roomtrol._tcp") do |client_reply|
-              #require 'ruby-debug'; Debugger.start{debugger; foo}
               #begin - zeroconf detection
-              puts "Entered DNSSD browser on thread: #{Thread.current}"
               if (client_reply.flags.to_i & DNSSD::Flags::Add) != 0
-                #puts client_reply.connect
-                puts "Adding: #{client_reply.inspect}"
+                
+                DaemonKit.logger.debug("DNSSD Add: #{client_reply.name}")
                 client = Zeroconf::Client.new client_reply
                 client.setup(@db_rooms, @uberroom_id)
               else
-                puts "Removed: #{client_reply.inspect}"
+                DaemonKit.logger.debug("DNSSD Remove: #{client_reply.name}")
               end
               #end - zeroconf detection
             end

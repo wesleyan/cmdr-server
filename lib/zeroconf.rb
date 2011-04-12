@@ -59,9 +59,7 @@ module Wescontrol
             # Connect to client and get an ip address.
             ip = client_reply.connect[0][3]
           rescue
-            DaemonKit.logger.debug "#{@name}: connecet failed, retrying" unless retried
-            #TODO log failed resolve
-            #TODO only rescue from correct exception, not everything, then retry
+            DaemonKit.logger.debug "#{client_reply.inspect}: DNSSD connect failed, retrying...".foreground(:red) unless retried
             retry
           end
         end
@@ -77,17 +75,15 @@ module Wescontrol
         # remote:1412. Once this is all setup, we setup CouchDB replication.
         def establish_forwards
           # Setup forwarding to client's roomtrol-daemon at :1412.
-          DaemonKit.logger.debug("#{@name}: Establishing port forwards")
           forward(1412, @ip_address) do |local_host, local_port|
             EM.defer do
               Thread.abort_on_exception = true
-              DaemonKit.logger.debug "#{@name}: trying to get room_id"
               begin
                 url = "http://#{local_host}:#{local_port}/room/"
                 @room_id = JSON.parse(RestClient.get(url))["id"]
-                DaemonKit.logger.debug("#{@name}: Room ID of external device: #{@room_id}")
+                DaemonKit.logger.debug("#{@name} has room_id: #{@room_id}".foreground(:green))
               rescue Errno::ECONNREFUSED, RestClient::ResourceNotFound, RestClient::RequestTimeout => e
-                DaemonKit.logger.debug("#{@name}: Failed to retrieve RoomID: #{e}")
+                DaemonKit.logger.debug("#{@name}: Failed to retrieve RoomID: #{e}".foreground(:red))
               end
               
               # Get document from couchdb by roomid or create it if not in couchdb.
@@ -96,8 +92,7 @@ module Wescontrol
               # Save established connection in couchdb document.
               doc["daemon_forward_port"] = local_port
               doc["last_updated"] = Time.now
-              DaemonKit.logger.debug doc
-              DaemonKit.logger.debug @db.save_doc(doc)
+              #DaemonKit.logger.debug @db.save_doc(doc)
               
               forward(5984, @ip_address) do |local_host, local_port|
                 EM.defer do
@@ -109,16 +104,15 @@ module Wescontrol
                     res = RestClient.post "http://#{local_host}:5984/_replicate", data.to_json, :content_type => :json
                     DaemonKit.logger.debug "#{@name}: Response from couch: #{res}"
                   rescue => e
-                    DaemonKit.logger.debug "#{@name}: ERROR FROM REST"
-                    DaemonKit.logger.debug e.response
+                    DaemonKit.logger.debug "#{@name}: ERROR FROM REST".foreground(:red)
+                    DaemonKit.logger.debug e.response.inspect.foreground(:red)
                   end
 
                   doc = get_doc
                   # Save established connection in couchdb document.
                   doc["couchdb_forward_port"] = local_port
                   doc["last_updated"] = Time.now
-                  DaemonKit.logger.debug doc
-                  DaemonKit.logger.debug @db.save_doc(doc)
+                  #DaemonKit.logger.debug @db.save_doc(doc)
                 end
               end
             end
