@@ -41,11 +41,11 @@ module Wescontrol
         # Fetch a document from couchdb db by roomid, or create it if it doesn't exist.
         def get_doc
             # views returns empty list if no key exits
-            doc = @db.get("_design/room").view("eigenroom_by_roomid", {:key => @room_id})['rows'][0]
+            doc = @db.get("_design/wescontrol_web").view("eigenroom_by_roomid", {:key => @room_id})['rows'][0]
             if doc
               doc = doc['value']
             else
-              doc = {'belongs_to' => @uberroom_id, "class" => "Eigenroom", "attributes" => {"room_id" => @room_id, "ip_address" => @ip_address }}
+              doc = {'belongs_to' => @uberroom_id, "class" => "Eigenroom", "room_id" => @room_id, "room_name" => @name, "ip_address" => @ip_address }
             end
         end
 

@@ -79,6 +79,18 @@ module Database
 					"map"=>"function(doc) {
 						if(doc.action && doc.belongs_to)emit(doc.belongs_to, doc);
 					}"
+				},
+				"eigenroom_by_roomid" => {
+					"map"=> "function(doc) {
+						if(doc.class=='Eigenroom' && doc.room_id) {
+						emit(doc.room_id, doc);}
+				   }"
+				},
+				"eigenrooms_nice" => {
+					"map"=> "function(doc) {
+						if(doc.class=='Eigenroom' && doc.room_id) {
+						emit(('Hostname: ' + doc.room_name + ' IP: ' + doc.ip_address) , doc);}
+				   }"
 				}
 			}
 		}
