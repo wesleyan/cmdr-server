@@ -88,7 +88,6 @@ module Wescontrol
               
               # Get document from couchdb by roomid or create it if not in couchdb.
               doc = get_doc
-              puts doc
               # Save established connection in couchdb document.
               doc["daemon_forward_port"] = local_port
               doc["last_updated"] = Time.now

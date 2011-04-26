@@ -5,7 +5,6 @@ $LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
 # already included in your load path, so no need to specify it.
 require 'eventmachine'
 require 'em-proxy'
-#require 'couchrest'
 require 'net/ssh'
 require 'dnssd'
 
@@ -52,11 +51,11 @@ module Wescontrol
               #begin - zeroconf detection
               if (client_reply.flags.to_i & DNSSD::Flags::Add) != 0
                 
-                DaemonKit.logger.debug("DNSSD Add: #{client_reply.name}")
+                DaemonKit.logger.debug("DNSSD Add: #{client_reply.name}".foreground(:green))
                 client = Zeroconf::Client.new client_reply
                 client.setup(@db_rooms, @uberroom_id)
               else
-                DaemonKit.logger.debug("DNSSD Remove: #{client_reply.name}")
+                DaemonKit.logger.debug("DNSSD Remove: #{client_reply.name}".foreground(:red))
               end
               #end - zeroconf detection
             end
