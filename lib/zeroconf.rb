@@ -45,7 +45,7 @@ module Wescontrol
             if doc
               doc = doc['value']
             else
-              doc = {'belongs_to' => @uberroom_id, "class" => "Eigenroom", "room_id" => @room_id, "room_name" => @name, "ip_address" => @ip_address }
+              doc = {'belongs_to' => @uberroom_id, "device" => true, "class" => "Eigenroom", "room_id" => @room_id, "room_name" => @name, "ip_address" => @ip_address }
             end
         end
 
@@ -111,7 +111,9 @@ module Wescontrol
                   # Save established connection in couchdb document.
                   doc["couchdb_forward_port"] = local_port
                   doc["last_updated"] = Time.now
-                  #DaemonKit.logger.debug @db.save_doc(doc)
+                  # Save changes back to couch.
+                  save_res = @db.save_doc(doc)
+                  DaemonKit.logger.debug save_res
                 end
               end
             end

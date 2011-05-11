@@ -32,7 +32,14 @@ module Database
 			"_id" => "_design/wescontrol_web",
 			:language => "javascript",
 			:filters => {
-				:device => "function(doc, req) { if(doc.device && !doc.update)return true; return false; }"
+				:device => "function(doc, req) { if(doc.device && !doc.update)return true; return false; }",
+				:config_filter => "function(doc, req) {
+					if( (doc.action && doc.belongs_to && doc.belongs_to == req.query.key) ||
+						(doc.source && doc.belongs_to && doc.belongs_to == req.query.key) ||
+						(doc.device && doc.belongs_to && doc.belongs_to == req.query.key) ||
+						(doc.class && doc.class == \"Room\" && doc.id == req.query.key) )
+						return true; return false; 
+				}"
 			},
 			:views => {
 				:building => {
