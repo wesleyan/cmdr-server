@@ -47,11 +47,12 @@ module Wescontrol
         EM.run do
           EM.defer do
             Thread.abort_on_exception = true
+            DaemonKit.logger.debug "Starting browser!!!!"
             browser = DNSSD.browse("_roomtrol._tcp") do |client_reply|
               #begin - zeroconf detection
               if (client_reply.flags.to_i & DNSSD::Flags::Add) != 0
                 
-                DaemonKit.logger.debug("DNSSD Add: #{client_reply.name}".foreground(:green))
+                DaemonKit.logger.debug("DNSSD Add: #{client_reply.inspect}".foreground(:green))
                 client = Zeroconf::Client.new client_reply
                 client.setup(@db_rooms, @uberroom_id)
               else
@@ -61,12 +62,12 @@ module Wescontrol
             end
           end
 
-          Proxy.start(:host => "0.0.0.0", :port => 2352, :debug => true) do |conn|
+          Proxy.start(:host => "0.0.0.0", :port => 80, :debug => true) do |conn|
             puts "Entered Proxy on thread: #{Thread.current}"
             #begin - auth server
               conn.server :db_roomtrol_server, :host => "127.0.0.1", :port => 5984
               conn.server :roomtrol, :host => "127.0.0.1", :port => 4567
-              #conn.server :http, :host => "127.0.0.1", :port => 81
+              conn.server :http, :host => "127.0.0.1", :port => 81
               conn.server :cc180fad1e1599512ea68f1748eb601ea, :host => "127.0.0.1", :port => 5984
 
               conn.on_data do |data|

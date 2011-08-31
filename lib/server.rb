@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 libdir = File.dirname(__FILE__)
 $LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
 
@@ -57,7 +58,7 @@ module Wescontrol
                     puts "Authenticated"
                     #TODO: Figure out a more secure way of generating the token
                     token = Digest::SHA1.hexdigest("#{Time.now + Time.now.usec + (rand * 1000-500)}")
-                    response.set_cookie "auth_token", {:value => token, :expires => Time.now+COOKIE_EXPIRE}
+                    response.set_cookie "auth_token", {:value => token, :expires => Time.now+COOKIE_EXPIRE, :path => "/"}
                     user["value"]["auth_token"] = token
                     user["value"]["auth_expire"] = (Time.now+COOKIE_EXPIRE).to_i
                     couch.save_doc(user["value"])
@@ -93,17 +94,17 @@ module Wescontrol
                 if doc
                     doc = doc['value']
                     data = {"source" => "http://localhost:5984/rooms",
-                            "target" => "http://localhost:5984/test_push_db",
-                            #"target" => "http://localhost:#{doc["couchdb_forward_port"]}",
+                            #"target" => "http://localhost:5984/test_push_db",
+                "target" => "http://#{doc["ip_address"]}:#{doc["couchdb_forward_port"]}/rooms",
                             "filter" => "wescontrol_web/config_filter",
-                            "query_params" => {"key" => room_id}}
+                "query_params" => {"key" => room_id}}
+                  puts JSON.dump(data).inspect
                     begin
-                        puts "Pushing configuration documents to device"
-                        response = RestClient.post "http://localhost:5984/_replicate", data.to_json, :content_type => :json
+                      puts "Pushing configuration documents to device"
+                      response = RestClient::Request.execute(:method => :post, :url => "http://localhost:5984/_replicate", :payload => data.to_json, :timeout => 30, :headers => {:content_type => :json})
+
                     rescue => e
-                        puts "Error pushing configuration #{e}"
-                        puts e.response.inspect
-                        puts e
+                        puts "Error pushing configuration: #{e}"
                     end
                     if response
                         body response.body

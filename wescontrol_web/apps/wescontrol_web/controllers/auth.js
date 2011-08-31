@@ -49,12 +49,12 @@ WescontrolWeb.authController = SC.ObjectController.create(
 		console.log(response.get('body'));
 		if(response.get('body') && response.get('body').auth_token)
 		{
-			var cookie = SC.Cookie.create({
-				name: 'auth_token',
-				value: response.get('body').auth_token,
-				expires: 1
-			});
-			cookie.write();
+			// var cookie = SC.Cookie.create({
+			// 	name: 'auth_token',
+			// 	value: response.get('body').auth_token,
+			// 	expires: 100000
+			// });
+			// cookie.write();
 		}
 		this.set("authenticated", true);
 		this.set("loginError", false);

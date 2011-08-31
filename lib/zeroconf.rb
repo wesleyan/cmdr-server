@@ -54,13 +54,19 @@ module Wescontrol
         # @param [DNSSD::Reply::Browse] the DNSSD browser reply object of client device to be resolved.
         # @return [String] the ip address of the resolved client
         def resolve client_reply
-          retried = false
+          retries = 0
           begin
             # Connect to client and get an ip address.
-            ip = client_reply.connect[0][3]
+            #ip = client_reply.connect[0][3]
+            client_reply.name.match(/Roomtrol client on (.+)/)[1] + ".class"
           rescue
-            DaemonKit.logger.debug "#{client_reply.inspect}: DNSSD connect failed, retrying...".foreground(:red) unless retried
-            retry
+            if retries < 5
+              DaemonKit.logger.debug "#{client_reply.inspect}: DNSSD connect failed, retrying...: #{$!}".foreground(:red)
+              retries += 1
+              retry
+            else
+              raise "Unable to resolve client: #{client_reply.name}"
+            end
           end
         end
 
@@ -76,46 +82,42 @@ module Wescontrol
         def establish_forwards
           # Setup forwarding to client's roomtrol-daemon at :1412.
           forward(1412, @ip_address) do |local_host, local_port|
-            EM.defer do
+            Thread.abort_on_exception = true
+            begin
+              url = "http://#{local_host}:#{local_port}/room/"
+              @room_id = JSON.parse(RestClient.get(url))["id"]
+              DaemonKit.logger.debug("#{@name} has room_id: #{@room_id}".foreground(:green))
+            rescue Errno::ECONNREFUSED, RestClient::ResourceNotFound, RestClient::RequestTimeout => e
+              DaemonKit.logger.debug("#{@name}: Failed to retrieve RoomID: #{e}".foreground(:red))
+            end
+            
+            # Get document from couchdb by roomid or create it if not in couchdb.
+            doc = get_doc
+            # Save established connection in couchdb document.
+            doc["daemon_forward_port"] = local_port
+            doc["last_updated"] = Time.now
+            #DaemonKit.logger.debug @db.save_doc(doc)
+
+            forward(5984, @ip_address, 11000) do |local_host, local_port|
               Thread.abort_on_exception = true
+              # Setup replication from device's couchdb rooms to server's rooms
+              data = {"source" => "http://#{local_host}:#{local_port}/rooms", "target" => "http://127.0.0.1:5984/rooms", "continuous" => true}
+              DaemonKit.logger.debug "#{@name}: Setting up replication"
               begin
-                url = "http://#{local_host}:#{local_port}/room/"
-                @room_id = JSON.parse(RestClient.get(url))["id"]
-                DaemonKit.logger.debug("#{@name} has room_id: #{@room_id}".foreground(:green))
-              rescue Errno::ECONNREFUSED, RestClient::ResourceNotFound, RestClient::RequestTimeout => e
-                DaemonKit.logger.debug("#{@name}: Failed to retrieve RoomID: #{e}".foreground(:red))
+                res = RestClient.post "http://#{local_host}:5984/_replicate", data.to_json, :content_type => :json
+                DaemonKit.logger.debug "#{@name}: Response from couch: #{res}"
+              rescue => e
+                DaemonKit.logger.debug "#{@name}: ERROR FROM REST".foreground(:red)
+                DaemonKit.logger.debug e.response.inspect.foreground(:red)
               end
-              
-              # Get document from couchdb by roomid or create it if not in couchdb.
+
               doc = get_doc
               # Save established connection in couchdb document.
-              doc["daemon_forward_port"] = local_port
+              doc["couchdb_forward_port"] = local_port
               doc["last_updated"] = Time.now
-              #DaemonKit.logger.debug @db.save_doc(doc)
-              
-              forward(5984, @ip_address) do |local_host, local_port|
-                EM.defer do
-                  Thread.abort_on_exception = true
-                  # Setup replication from device's couchdb rooms to server's rooms
-                  data = {"source" => "http://#{local_host}:#{local_port}/rooms", "target" => "http://#{local_host}:5984/testrb", "continuous" => true}
-                  DaemonKit.logger.debug "#{@name}: Setting up replication"
-                  begin
-                    res = RestClient.post "http://#{local_host}:5984/_replicate", data.to_json, :content_type => :json
-                    DaemonKit.logger.debug "#{@name}: Response from couch: #{res}"
-                  rescue => e
-                    DaemonKit.logger.debug "#{@name}: ERROR FROM REST".foreground(:red)
-                    DaemonKit.logger.debug e.response.inspect.foreground(:red)
-                  end
-
-                  doc = get_doc
-                  # Save established connection in couchdb document.
-                  doc["couchdb_forward_port"] = local_port
-                  doc["last_updated"] = Time.now
-                  # Save changes back to couch.
-                  save_res = @db.save_doc(doc)
-                  DaemonKit.logger.debug save_res
-                end
-              end
+              # Save changes back to couch.
+              save_res = @db.save_doc(doc)
+              DaemonKit.logger.debug save_res
             end
           end
 
@@ -130,7 +132,8 @@ module Wescontrol
         # @param local_port local port to listen on.
         # @param local_host local address to bind to.
         # @param user user account on remote host.
-        # Note: passwords are not used. Public/Private keys must be setup on remote and local machines.
+        # Note: passwords are not used. Public/Private keys must be
+        # setup on remote and local machines.
         #
         # *Example usage*: Forward traffic from localhost:1234 to user@remote.com:80
         # port_forward(1234, 'roomtrol-allb004.class.wesleyan.edu', 80) or
@@ -143,12 +146,16 @@ module Wescontrol
             begin
               #if is_port_in_use?('127.0.0.1', local_port) then puts "PORT IN USE #{local_port}" end
               #if !is_port_in_use?('127.0.0.1', local_port) then puts "PORT IS NOT IN USE #{local_port}" end
-              Net::SSH.start(remote_host, user) do |ssh|
-                ssh.forward.local(local_host, local_port, remote_host, remote_port)
-                yield local_host, local_port
-                DaemonKit.logger.debug("#{@name}: Established SSH forwarding.")
-                ssh.loop { true }
-              end
+              
+              # I've disabled the actual forwarding because it's
+              # not working and we just need something to work right now
+              # Net::SSH.start(remote_host, user) do |ssh|
+              #   ssh.forward.local(local_port, remote_host, remote_port)
+              #   yield local_host, local_port
+              #   DaemonKit.logger.debug("#{@name}: Established SSH forwarding.")
+              #   ssh.loop { true }
+              # end
+              yield remote_host, remote_port
             rescue Errno::EADDRINUSE 
               #puts "Error, port #{local_port} in use, on retry count #{retry_count}"
               local_port += 2
