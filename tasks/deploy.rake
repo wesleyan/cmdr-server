@@ -5,7 +5,7 @@ MAC_VALUE = "REPLACE_WITH_REAL_MAC_THIS_SHOULD_BE_UNIQUE_e1599512ea6"
 PUBLIC_KEY = false #Are we using public key authentication on all the servers?
 
 WORKING = File.dirname(__FILE__) + '/..'
-TARGETS = ['/tp5', '/wescontrol_web', '/video']
+TARGETS = ['/tp5', '/wescontrol_web']
 
 # load server addresses from servers.json
 servers_file = File.open(WORKING + "/servers.json")
@@ -51,7 +51,7 @@ task :collect_password do
 end
 
 desc "setup controller databases"
-task :setup_db, :needs => [:collect_password] do
+task :setup_db, :to_controllers, :needs => [:collect_password] do |t, args|
 	begin
 		require 'net/ssh'
 		require 'net/scp'
@@ -63,8 +63,8 @@ task :setup_db, :needs => [:collect_password] do
 	
 	password = OPTS[:password]
 	targets  = OPTS[:targets]
-
-	CONTROLLERS.each do |server|
+    
+	(args[:to_controllers] ? CONTROLLERS : SERVERS).each do |server|
     Net::SCP.start(server, 'roomtrol', :password => password) do |scp|
       puts " ~ uploading database script"
       local_path = WORKING + '/lib/server/database.rb'
@@ -72,8 +72,7 @@ task :setup_db, :needs => [:collect_password] do
     end
 		Net::SSH.start(server, 'roomtrol', :password => password) do |ssh|
       puts " ~ running database script"
-      commands = ["cd /var/roomtrol-daemon",
-                  "source /usr/local/rvm/environments/default",
+      commands = ["source /usr/local/rvm/environments/default",
                   "ruby -r couchrest -r '/tmp/database.rb' -e 'Database.setup_database'"]
 		  puts ssh.exec!(commands.join(" && "))
 		end
@@ -257,10 +256,14 @@ task :deploy_roomtrol_server, :needs => [:collect_password] do
 end
 
 desc "builds and then deploys the files onto every server in servers.json.  This will not clean the build first, which will be faster.  If you have trouble try deploy_clean"
-task :deploy_servers, :to_controllers, :needs => [:collect_password, :build, :deploy_assets, :link_current, :setup_db]
+task :deploy_servers, :to_controllers, :needs => [:collect_password, :build, :deploy_assets, :link_current] do |t, args|
+  Rake::Task[:setup_db].invoke(args[:to_controllers])
+end
+
 desc "builds and then deploys the files onto every controller in servers.json.  This will not clean the build first, which will be faster.  If you have trouble try deploy_clean"
 task :deploy_controllers do
   Rake::Task[:deploy_servers].invoke(true)
 end
+
 desc "first cleans, then deploys the files"
 task :deploy_clean => [:clean, :deploy]

@@ -32,7 +32,14 @@ module Database
 			"_id" => "_design/wescontrol_web",
 			:language => "javascript",
 			:filters => {
-				:device => "function(doc, req) { if(doc.device && !doc.update)return true; return false; }"
+				:device => "function(doc, req) { if(doc.device && !doc.update)return true; return false; }",
+				:config_filter => "function(doc, req) {
+					if( (doc.action && doc.belongs_to && doc.belongs_to == req.query.key) ||
+						(doc.source && doc.belongs_to && doc.belongs_to == req.query.key) ||
+						(doc.device && doc.belongs_to && doc.belongs_to == req.query.key) ||
+						(doc.class && doc.class == \"Room\" && doc.id == req.query.key) )
+						return true; return false; 
+				}"
 			},
 			:views => {
 				:building => {
@@ -42,32 +49,32 @@ module Database
 							emit([doc._id, 0], {
 								name: doc.attributes[\"name\"],
 								guid: doc._id, rooms:[]});
-							}
-							if(doc.class && doc.class == \"Room\" && doc.belongs_to){
-								var room = {
-									guid: doc._id,
-									_rev: doc._rev,
-									building: doc.belongs_to,
-									devices: []
-								};
-								for(var attr in doc.attributes){
-									room[attr] = doc.attributes[attr];
-								}
-								emit([doc.belongs_to, 1], room);
-							}
-							if(doc.device && doc.belongs_to){
-								//the [0] in the key makes sure all of the devices are sorted after the other docs
-								var device = {
-									guid: doc._id,
-									_rev: doc._rev,
-									name: doc.attributes.name,
-									room: doc.belongs_to,
-									state_vars: doc.attributes.state_vars,
-									driver: doc.class,
-									config: doc.attributes.config
-								};
-							emit([[0], 2], device);
 						}
+						if(doc.class && doc.class == \"Room\" && doc.belongs_to){
+							var room = {
+								guid: doc._id,
+								_rev: doc._rev,
+								building: doc.belongs_to,
+								devices: []
+							};
+							for(var attr in doc.attributes){
+								room[attr] = doc.attributes[attr];
+							}
+							emit([doc.belongs_to, 1], room);
+						}
+						if(doc.device && doc.belongs_to){
+							//the [0] in the key makes sure all of the devices are sorted after the other docs
+							var device = {
+								guid: doc._id,
+								_rev: doc._rev,
+								name: doc.attributes.name,
+								room: doc.belongs_to,
+								state_vars: doc.attributes.state_vars,
+								driver: doc.class,
+								config: doc.attributes.config
+							};
+						emit([[0], 2], device);
+					}
 					}"
 				}, 
 				"sources" => {
@@ -79,6 +86,18 @@ module Database
 					"map"=>"function(doc) {
 						if(doc.action && doc.belongs_to)emit(doc.belongs_to, doc);
 					}"
+				},
+				"eigenroom_by_roomid" => {
+					"map"=> "function(doc) {
+						if(doc.class=='Eigenroom' && doc.room_id) {
+						emit(doc.room_id, doc);}
+				   }"
+				},
+				"eigenrooms_nice" => {
+					"map"=> "function(doc) {
+						if(doc.class=='Eigenroom' && doc.room_id) {
+						emit(('Hostname: ' + doc.room_name + ' IP: ' + doc.ip_address) , doc);}
+				   }"
 				}
 			}
 		}

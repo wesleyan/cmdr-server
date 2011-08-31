@@ -4,4 +4,4 @@ $LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
 require 'server'
 use Rack::ShowExceptions
 
-run RoomtrolServer::AuthServer.new
+run Wescontrol::RoomtrolServer::AuthServer.new

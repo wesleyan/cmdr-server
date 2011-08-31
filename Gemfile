@@ -25,6 +25,7 @@ gem 'net-ldap'
 gem 'em-proxy'
 gem 'unicorn'
 gem 'god'
+gem 'rainbow'
 
 # WescontrolWeb gems
 gem 'highline'
@@ -35,3 +36,6 @@ gem 'compass'
 gem 'git'
 gem 'haml'
 gem 'chunky_png'
+
+# Zeroconf gems
+gem 'dnssd'
