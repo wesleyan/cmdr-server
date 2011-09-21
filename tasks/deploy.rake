@@ -2,17 +2,14 @@ require 'json'
 
 MAC_VALUE = "REPLACE_WITH_REAL_MAC_THIS_SHOULD_BE_UNIQUE_e1599512ea6"
 
-PUBLIC_KEY = false #Are we using public key authentication on all the servers?
-
 WORKING = File.dirname(__FILE__) + '/..'
-TARGETS = ['/tp5', '/wescontrol_web']
+TARGETS = ['/wescontrol_web']
 
 # load server addresses from servers.json
 servers_file = File.open(WORKING + "/servers.json")
 exit "No servers.json file found" unless servers_file
 servers = JSON.parse(servers_file.read)
 SERVERS = servers['servers']
-CONTROLLERS = servers['controllers']
 
 OPTS = {}
 
@@ -35,23 +32,8 @@ task :install_gems do
 	puts `sudo gem install highline net-ssh net-scp sproutcore git`
 end
 
-desc "collects the login password from the operator"
-task :collect_password do
-	unless PUBLIC_KEY
-		begin
-			require 'highline/import'
-		rescue LoadError => e
-		    puts "\n ~ FATAL: sproutcore gem is required.\n          Try: rake install_gems"
-		    exit(1)
-		end
-	
-		puts "Enter roomtrol password to complete this task"
-		OPTS[:password] = ask("Password: "){|q| q.echo = '*'}
-	end
-end
-
 desc "setup controller databases"
-task :setup_db, :to_controllers, :needs => [:collect_password] do |t, args|
+task :setup_db do
 	begin
 		require 'net/ssh'
 		require 'net/scp'
@@ -64,7 +46,7 @@ task :setup_db, :to_controllers, :needs => [:collect_password] do |t, args|
 	password = OPTS[:password]
 	targets  = OPTS[:targets]
     
-	(args[:to_controllers] ? CONTROLLERS : SERVERS).each do |server|
+	SERVERS.each do |server|
     Net::SCP.start(server, 'roomtrol', :password => password) do |scp|
       puts " ~ uploading database script"
       local_path = WORKING + '/lib/server/database.rb'
@@ -108,8 +90,7 @@ end
 
 
 desc "copies the files to the controllers"
-task :deploy_assets, :to_controllers, :needs => [:collect_password, :build, :prepare_targets] do |t, args|
-	puts "Deploying for controllers: #{args.inspect}"
+task :deploy_assets, [] => [:build, :prepare_targets] do
 	begin
 		require 'net/ssh'
 		require 'net/scp'
@@ -121,7 +102,7 @@ task :deploy_assets, :to_controllers, :needs => [:collect_password, :build, :pre
 	password = OPTS[:password]
 	targets  = OPTS[:targets]
 
-	(args[:to_controllers] ? CONTROLLERS : SERVERS).each do |server|
+	SERVERS.each do |server|
 		installed = {}
 		puts "building directory structure on #{server}"
 		Net::SSH.start(server, 'roomtrol', :password => password) do |ssh|
@@ -162,7 +143,7 @@ task :deploy_assets, :to_controllers, :needs => [:collect_password, :build, :pre
 end
 
 desc "creates symlinks to the latest versions of all pages and apps on the controllers."
-task :link_current, :to_controllers, :needs => [:collect_password, :prepare_targets] do |t, args|
+task :link_current, [] => [:prepare_targets] do
 	# don't require unless this task runs to avoid dependency problems
 	begin
 		require 'net/ssh'
@@ -183,7 +164,7 @@ task :link_current, :to_controllers, :needs => [:collect_password, :prepare_targ
 
 	# SSH in and do the symlink
 	password = OPTS[:password]
-	(args[:to_controllers] ? CONTROLLERS : SERVERS).each do |server|
+	SERVERS.each do |server|
 		Net::SSH.start(server, "roomtrol", :password => password) do |ssh|
 			targets.each do |target|
 			# find the local build number
@@ -210,17 +191,13 @@ task :link_current, :to_controllers, :needs => [:collect_password, :prepare_targ
 					puts ssh.exec!("rm #{to_path}") || " ~ Removed link at #{to_path}"
 				end
 				puts ssh.exec!("ln -s #{from_path} #{to_path}") || " ~ Linked #{from_path} => #{to_path}"
-				if args[:to_controllers]
-					puts "Restarting X"
-					puts ssh.exec!("echo '#{password}' | sudo -S restart x")
-				end
 			end
 		end
 	end
 end
 
 desc "deploy server code"
-task :deploy_roomtrol_server, :needs => [:collect_password] do
+task :deploy_roomtrol_server do
 	begin
 		require 'net/ssh'
 		require 'net/scp'
@@ -256,14 +233,7 @@ task :deploy_roomtrol_server, :needs => [:collect_password] do
 end
 
 desc "builds and then deploys the files onto every server in servers.json.  This will not clean the build first, which will be faster.  If you have trouble try deploy_clean"
-task :deploy_servers, :to_controllers, :needs => [:collect_password, :build, :deploy_assets, :link_current] do |t, args|
-  Rake::Task[:setup_db].invoke(args[:to_controllers])
-end
-
-desc "builds and then deploys the files onto every controller in servers.json.  This will not clean the build first, which will be faster.  If you have trouble try deploy_clean"
-task :deploy_controllers do
-  Rake::Task[:deploy_servers].invoke(true)
-end
+task :deploy_servers, [] => [ :build, :deploy_assets, :link_current, :setup_db]
 
 desc "first cleans, then deploys the files"
 task :deploy_clean => [:clean, :deploy]
