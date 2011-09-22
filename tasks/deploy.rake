@@ -1,4 +1,6 @@
 require 'json'
+require 'pty'
+require 'expect'
 
 MAC_VALUE = "REPLACE_WITH_REAL_MAC_THIS_SHOULD_BE_UNIQUE_e1599512ea6"
 
@@ -200,34 +202,28 @@ desc "deploy server code"
 task :deploy_roomtrol_server do
 	begin
 		require 'net/ssh'
-		require 'net/scp'
 	rescue LoadError => e
 		puts "\n ~ FATAL: net-scp gem is required.\n          Try: rake install_gems"
 		exit(1)
 	end
 	
-	puts "\tCreating tar of roomtrol-server"
-	`tar cf /tmp/roomtrol-server.tar.gz #{WORKING}`
-	
 	SERVERS.each do |server|
-		Net::SCP.start(server, 'roomtrol', :password => OPTS[:password]) do |scp|
-			local_path = "/tmp/roomtrol-server.tar.gz"
-			remote_path = "/var/roomtrol-server"
-			puts "\tCopying roomtrol-server to #{server}"
-			scp.upload! local_path, remote_path, :recursive => false
-		end
-		Net::SSH.start(server, "roomtrol", :password => OPTS[:password]) do |ssh|
-			puts "\tInstalling gems on server"
-			path = "/var/roomtrol-server"
-			commands = [
-				"cd #{path}",
-				"tar xvf roomtrol-server.tar.gz",
-				"rm roomtrol-server.tar.gz",
-				"rvm 1.9.2",
-				"bundle install"
-			]
-			puts ssh.exec!(commands.join("; "))
-		end
+    cmd = "rsync -arvz -e ssh #{WORKING} roomtrol@#{server}:/var/roomtrol-server --exclude '.git'"
+    PTY.spawn(cmd){|read,write,pid|
+      write.sync = true
+      $expect_verbose = false
+      read.expect(/total size/) do
+      end
+    }
+		# Net::SSH.start(server, "roomtrol", :password => OPTS[:password]) do |ssh|
+		# 	puts "\tInstalling gems on server"
+		# 	path = "/var/roomtrol-server"
+		# 	commands = [
+		# 		"rvm 1.9.2",
+		# 		"bundle install"
+		# 	]
+		# 	puts ssh.exec!(commands.join("; "))
+		# end
 		puts "\tInstallation finished on #{server}"
 	end
 end

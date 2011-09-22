@@ -125,6 +125,7 @@ module Database
 		rescue
 		end
 		roomtrol_server.save_doc(doc)
+
 		drivers = CouchRest.database!("http://127.0.0.1:5984/drivers")
 		doc = {
 			"_id" => "_design/drivers",

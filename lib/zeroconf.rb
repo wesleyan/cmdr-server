@@ -152,18 +152,20 @@ module Wescontrol
             retry_count = 0
             DaemonKit.logger.debug("#{@name}: Attempting to establish port fowarding from #{local_host}:#{local_port} to #{remote_host}:#{remote_port}")
             begin
-              #if is_port_in_use?('127.0.0.1', local_port) then puts "PORT IN USE #{local_port}" end
-              #if !is_port_in_use?('127.0.0.1', local_port) then puts "PORT IS NOT IN USE #{local_port}" end
+              if is_port_in_use?('127.0.0.1', local_port)
+                puts "PORT IN USE #{local_port}"
+              else
+                puts "PORT IS NOT IN USE #{local_port}"
+              end
               
-              # I've disabled the actual forwarding because it's
-              # not working and we just need something to work right now
-              # Net::SSH.start(remote_host, user) do |ssh|
-              #   ssh.forward.local(local_port, remote_host, remote_port)
-              #   yield local_host, local_port
-              #   DaemonKit.logger.debug("#{@name}: Established SSH forwarding.")
-              #   ssh.loop { true }
-              # end
-              yield remote_host, remote_port
+              Net::SSH.start(remote_host, user) do |ssh|
+                ssh.forward.local(local_port, remote_host, remote_port)
+                EM.defer do
+                  yield local_host, local_port
+                end
+                DaemonKit.logger.debug("#{@name}: Established SSH forwarding.")
+                ssh.loop { true }
+              end
             rescue Errno::EADDRINUSE 
               #puts "Error, port #{local_port} in use, on retry count #{retry_count}"
               local_port += 2
@@ -197,7 +199,9 @@ module Wescontrol
           return begin_port_range
         end
 
-        # Check if a port is in use. Should return instantly on localhost, if doesn't might need to implement a different free port finder.
+        # Check if a port is in use. Should return instantly on
+        # localhost, if doesn't might need to implement a different
+        # free port finder.
         # @param [String] ip ip to connect to.
         # @param [Integer] port port to check if in use.
         def is_port_in_use?(ip, port)

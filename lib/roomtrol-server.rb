@@ -63,15 +63,17 @@ module Wescontrol
             end
           end
 
-          Proxy.start(:host => "0.0.0.0", :port => 80, :debug => true) do |conn|
-            puts "Entered Proxy on thread: #{Thread.current}"
+          Proxy.start(:host => "0.0.0.0", :port => 80, :debug => false) do |conn|
             #begin - auth server
               conn.server :db_roomtrol_server, :host => "127.0.0.1", :port => 5984
               conn.server :roomtrol, :host => "127.0.0.1", :port => 4567
               conn.server :http, :host => "127.0.0.1", :port => 81
               conn.server :cc180fad1e1599512ea68f1748eb601ea, :host => "127.0.0.1", :port => 5984
 
-              conn.on_data do |data|
+            conn.on_data do |data|
+              unless data.match(HTTP_MATCHER)
+                DaemonKit.logger.debug(data)
+              end
                 begin
                   action, path = data.match(HTTP_MATCHER)[1..2]
                   result = case path.split("/")[1]
@@ -100,6 +102,7 @@ module Wescontrol
                   result
                 rescue
                   DaemonKit.logger.error("Error: #{$!}")
+                  DaemonKit.logger.error($!.backtrace.to_s)
                 end
               end
 
