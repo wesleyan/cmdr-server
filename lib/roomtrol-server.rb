@@ -28,6 +28,7 @@ module Wescontrol
         # Get id of uberroom document, devices should belong to this room.
         @uberroom_id = @db_rooms.get("_design/room").view("by_mac", {:key => MAC.addr})['rows'][0]["id"]
       end
+      
       #Replace this code
       def authenticate data, server, conn
         begin

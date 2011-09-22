@@ -15,11 +15,10 @@ require 'constants'
 
 module Wescontrol
   module RoomtrolServer
+    # A module for managing interactions with zeroconf devices.
     module Zeroconf
-      # A module for managing interactions with zeroconf devices.
-     
+      # Each Client object represents a roomtrol device client in a given room.     
       class Client
-        # Each Client object represents a roomtrol device client in a given room.
 
         # Initialize Client object. Select a unused port to establish ssh connections
         def initialize client_reply, db_uri=DB_URI
@@ -28,8 +27,7 @@ module Wescontrol
           @ip_address = self.resolve client_reply
         end
 
-        # Setup a client device.
-        # takes a Couchdb database connection
+        # Setup a client device. Takes a Couchdb database connection.
         def setup db, uberroom_id
           @db = db
           @uberroom_id = uberroom_id
@@ -38,20 +36,30 @@ module Wescontrol
           #forward(5984, @ip_address)
         end
 
-        # Fetch a document from couchdb db by roomid, or create it if it doesn't exist.
+        # Fetch a document from couchdb db by roomid, or create it if
+        # it doesn't exist.
         def get_doc
-            # views returns empty list if no key exits
-            doc = @db.get("_design/wescontrol_web").view("eigenroom_by_roomid", {:key => @room_id})['rows'][0]
-            if doc
-              doc = doc['value']
-            else
-              doc = {'belongs_to' => @uberroom_id, "device" => true, "class" => "Eigenroom", "room_id" => @room_id, "room_name" => @name, "ip_address" => @ip_address }
-            end
+          # views returns empty list if no key exits
+          doc = @db.get("_design/wescontrol_web")
+                   .view("eigenroom_by_roomid", {:key => @room_id})['rows'][0]
+          if doc
+            doc = doc['value']
+          else
+            doc = {
+              belongs_to: @uberroom_id,
+              device: true,
+              :class => "Eigenroom",
+              room_id: @room_id,
+              room_name: @name,
+              ip_address: @ip_address
+            }
+          end
         end
 
         # Resolves a browser_reply object to a ip address
         # 
-        # @param [DNSSD::Reply::Browse] the DNSSD browser reply object of client device to be resolved.
+        # @param [DNSSD::Reply::Browse] the DNSSD browser reply
+        #   object of client device to be resolved.
         # @return [String] the ip address of the resolved client
         def resolve client_reply
           retries = 0
