@@ -49,7 +49,7 @@ module Wescontrol
           EM.defer do
             Thread.abort_on_exception = true
             DaemonKit.logger.debug "Starting browser!!!!"
-            browser = DNSSD.browse("_roomtrol._tcp") do |client_reply|
+            browser = DNSSD.browse("_roomtrol2._tcp") do |client_reply|
               #begin - zeroconf detection
               if (client_reply.flags.to_i & DNSSD::Flags::Add) != 0
                 
@@ -62,6 +62,7 @@ module Wescontrol
               #end - zeroconf detection
             end
           end
+          this = self
 
           Proxy.start(:host => "0.0.0.0", :port => 80, :debug => false) do |conn|
             #begin - auth server
@@ -78,9 +79,9 @@ module Wescontrol
                   action, path = data.match(HTTP_MATCHER)[1..2]
                   result = case path.split("/")[1]
                   when "rooms", "drivers"
-                    authenticate data, :db_roomtrol_server, conn
+                    this.authenticate data, :db_roomtrol_server, conn
                   when "device"
-                    authenticate data, :roomtrol, conn
+                    this.authenticate data, :roomtrol, conn
                   when "config"
                     #/config/uuid_of_room/rooms/xxx
                     if authenticate data, nil, conn
@@ -95,7 +96,7 @@ module Wescontrol
                   when "auth"
                     [data, [:roomtrol]]
                   when "graph"
-                    authenticate data, :roomtrol, conn
+                    this.authenticate data, :roomtrol, conn
                   else
                     [data, [:http]]
                   end

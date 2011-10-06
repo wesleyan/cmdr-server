@@ -26,6 +26,7 @@ gem 'em-proxy'
 gem 'unicorn'
 gem 'god'
 gem 'rainbow'
+gem 'rubybits'
 
 # WescontrolWeb gems
 gem 'highline'
