@@ -109,7 +109,11 @@ module Wescontrol
             forward(5984, @ip_address, 11000) do |local_host, local_port|
               Thread.abort_on_exception = true
               # Setup replication from device's couchdb rooms to server's rooms
-              data = {"source" => "http://#{local_host}:#{local_port}/rooms", "target" => "http://127.0.0.1:5984/rooms", "continuous" => true}
+              data = {
+                source: "http://#{local_host}:#{local_port}/rooms",
+                target: "rooms",
+                continuous: true
+              }
               DaemonKit.logger.debug "#{@name}: Setting up replication"
               begin
                 res = RestClient.post "http://#{local_host}:5984/_replicate", data.to_json, :content_type => :json

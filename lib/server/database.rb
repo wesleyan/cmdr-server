@@ -25,6 +25,7 @@ module Database
 		}
 		puts errors.join("\n")
 	end
+  
 	def self.setup_database
 		puts "Setting up db"
 		rooms = CouchRest.database!("http://127.0.0.1:5984/rooms")
@@ -33,14 +34,17 @@ module Database
 			:language => "javascript",
 			:filters => {
 				:device => "function(doc, req) { if(doc.device && !doc.update)return true; return false; }",
-				:config_filter => "function(doc, req) {
-					if( (doc.action && doc.belongs_to && doc.belongs_to == req.query.key) ||
-						(doc.source && doc.belongs_to && doc.belongs_to == req.query.key) ||
-						(doc.device && doc.belongs_to && doc.belongs_to == req.query.key) ||
-						(doc.class && doc.class == \"Room\" && doc.id == req.query.key) )
-						return true; return false; 
-				}"
+				:config_filter => <<eos
+function (doc, req) {
+  if(((doc.action || doc.source || doc.device) && doc.belongs_to == req.query.key) ||
+    (doc.class == "Room" && doc.id == req.query.key)){
+    return true;
+  }
+  else return false; 
+}
+eos
 			},
+      
 			:views => {
 				:building => {
 					:map => "function(doc) {
@@ -76,7 +80,19 @@ module Database
 						emit([[0], 2], device);
 					}
 					}"
-				}, 
+				},
+        "by_source_room" => {
+          "map" => <<eos
+function (doc) {
+  if(doc.action || doc.source || doc.device){
+    emit(doc.belongs_to, doc);
+  }
+  else if(doc.class == "Room"){
+    emit(doc._id, doc);
+  }
+}
+eos
+        },
 				"sources" => {
 					"map" => "function(doc) {
 						if(doc.source && doc.belongs_to)emit(doc.belongs_to, doc);

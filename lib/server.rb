@@ -87,30 +87,42 @@ module Wescontrol
       post '/config/sync' do
         #TODO: debug errors; get config/sync to initiate a sync, then call it from sc.
         db = CouchRest.database('http://localhost:5984/rooms')
+
         post_json = JSON.parse(request.body.read.to_s)
-        puts "Json from post = #{post_json}"
         room_id = post_json["room_id"]
-        puts "ROOMID is #{room_id}"
+
         # Fetch the eigenroom document with port information.
-        doc = db.get("_design/wescontrol_web").view("eigenroom_by_roomid", {:key => room_id})['rows'][0]
-        if doc
-          doc = doc['value']
-          data = {"source" => "http://localhost:5984/rooms",
-            #"target" => "http://localhost:5984/test_push_db",
-            "target" => "http://#{doc["ip_address"]}:#{doc["couchdb_forward_port"]}/rooms",
-            "filter" => "wescontrol_web/config_filter",
-            "query_params" => {"key" => room_id}}
-          puts JSON.dump(data).inspect
+        eigenroom = db.get("_design/wescontrol_web")
+          .view("eigenroom_by_roomid", {:key => room_id})['rows'][0]
+        
+        if eigenroom
+          eigenroom = eigenroom['value']
+          
+          docs = db.get("_design/wescontrol_web")
+            .view("by_source_room", {:key => room_id})["rows"]
+          
+          data = {
+            source: "http://localhost:5984/rooms",
+            target: "http://localhost:#{eigenroom["couchdb_forward_port"]}/rooms",
+            doc_ids: docs.map{|d| d["id"]},
+            query_params: {"key" => room_id}
+          }
+          
+          puts JSON.dump(data)
+          
           begin
             puts "Pushing configuration documents to device"
-            response = RestClient::Request.execute(:method => :post, :url => "http://localhost:5984/_replicate", :payload => data.to_json, :timeout => 30, :headers => {:content_type => :json})
+            resp = RestClient::Request.execute(method: :post,
+                                               url: "http://localhost:5984/_replicate",
+                                               payload: data.to_json,
+                                               timeout: 30,
+                                               headers: {:content_type => :json})
 
           rescue => e
             puts "Error pushing configuration: #{e}"
           end
-          if response
-            body response.body
-            status response.status
+          if resp
+            body resp
           else 
             body "Response is nil"
             status 500
