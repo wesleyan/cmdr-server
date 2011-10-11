@@ -180,7 +180,7 @@ module Wescontrol
               # TODO: implement a port finder
               # try a different port and retry
               
-            rescue OpenSSL::PBKey::RSAError
+            rescue OpenSSL::PKey::RSAError
               DaemonKit.logger.error "Failed to unlock private key"
             end
           end
