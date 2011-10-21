@@ -1,0 +1,12 @@
+<div class="room-list">
+  <ul class="buildings">
+    {{#buildings}}
+      <li><a href="#" id="building-{{id}}">{{name}}</a></li>
+      <ul class="rooms">
+        {{#rooms}}
+          <li><a href="#" id="room={{id}}">{{name}}</a></li>
+        {{/rooms}}
+       </ul>
+    {{/buildings}}
+  </ul>
+</div>
