@@ -1,0 +1,44 @@
+@import 'mixins'
+
+body
+  font-family: Helvetica, Arial
+
+div, img, p
+  +user-select(none)
+  cursor: url("../images/blank.png"), none !important
+
+a
+  color: black
+  text-decoration: none
+
+#tab-bar
+  background-image: url('/images/header.png')
+  background-repeat: no-repeat
+  background-position: 98% 50%
+  background-color: #333
+  +fill-width(72px)
+
+  li.tab-button
+    font-size: 2.8em
+    line-height: 40px
+    display: block
+    float: left
+    height: 31px
+    padding: 20px
+    padding-top: 5px
+    a
+      color: white
+    &.selected
+      a
+        color: black
+
+  #control-button.selected
+    background-color: #EFEBE3
+  
+  #monitor-button.selected
+    background-color: white
+
+  #monitor-button.selected
+    background-color: #C1D699
+
+
