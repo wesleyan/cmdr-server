@@ -40,7 +40,23 @@ module Wescontrol
       end
 
       def onopen ws
-        ws
+        @sid = @update_channel.subscribe{|msg|
+          ws.send msg.to_json
+        }
+
+        init_message = {
+          id: UUIDTools::UUID.random_create.to_s,
+          type: 'connection',
+          bulidings: @buildings,
+          rooms: @rooms,
+          devices: @devices,
+          drivers:  @drivers
+        }
+
+        ws.send JSON.dump(init_message)
+      end
+
+      def onmessage ws, json
       end
     end
   end
