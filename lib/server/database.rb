@@ -47,8 +47,8 @@ eos
       
 			:views => {
 				:buildings => {
-					:map => <<-eos
-            function(doc) {
+					:map => 
+            'function(doc){
               if(doc.class && doc.class == "Building" &&
                  doc.attributes && doc.attributes["name"])
               {
@@ -57,38 +57,39 @@ eos
                   id: doc._id
                 });
               }
-            }
-          eos
+            }'
         },
         :rooms => {
-          :map => <<-eos
-            function(doc) {
-              if(doc.class && doc.class == "Room" && doc.belongs_to){
-                emit(doc._id, {
-                  id: doc._id,
-                  building: doc.belongs_to,
-                  attributes: doc.attributes
-                });
-							}
-						}
-          eos
+          :map => <<'eos'
+function(doc){
+  if(doc.class && doc.class == "Room" && doc.belongs_to){
+    emit(doc._id, {
+      id: doc._id,
+      building: doc.belongs_to,
+      attributes: doc.attributes
+    });
+  }
+}
+eos
         },
         :devices => {
-          :map => <<-eos
-            if(doc.device && doc.belongs_to){
-              emit(doc._id, {
-                id: doc._id,
-                name: doc.name,
-                room: doc.belongs_to,
-                driver: doc.class,
-                attributes: doc.attributes
-              });
+          :map => <<-eos.strip
+            function(doc){
+              if(doc.device && doc.belongs_to){
+                emit(doc._id, {
+                  id: doc._id,
+                  name: doc.name,
+                  room: doc.belongs_to,
+                  driver: doc.class,
+                  attributes: doc.attributes
+                });
+              }
             }
           eos
         },
         "by_source_room" => {
-          "map" => <<-eos
-            function (doc) {
+          "map" => <<-eos.strip
+            function (doc){
               if(doc.action || doc.source || doc.device){
                 emit(doc.belongs_to, doc);
               }

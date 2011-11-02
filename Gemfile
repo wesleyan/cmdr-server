@@ -23,10 +23,13 @@ gem 'couchrest'
 gem 'json'
 gem 'net-ldap'
 gem 'em-proxy'
+gem 'em-websocket'
 gem 'unicorn'
 gem 'god'
 gem 'rainbow'
 gem 'rubybits'
+gem 'slinky'
+gem 'amqp'
 
 # WescontrolWeb gems
 gem 'highline'

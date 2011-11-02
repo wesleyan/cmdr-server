@@ -1,17 +1,22 @@
 libdir = File.dirname(__FILE__)
 $LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
 
+
 # Your starting point for daemon specific classes. This directory is
 # already included in your load path, so no need to specify it.
 require 'eventmachine'
 require 'em-proxy'
+require 'em-websocket'
+require 'amqp'
 require 'net/ssh'
 require 'dnssd'
+require 'thread'
 
+# lib files
 require 'zeroconf'
 require 'MAC'
+require 'server/websocket_server'
 
-require 'thread'
 
 module Wescontrol
   module RoomtrolServer

@@ -1,20 +1,20 @@
 module Wescontrol
-  module Server
+  module RoomtrolServer
     class WebsocketServer
       def initialize
         @db = CouchRest.database("http://localhost:5984/rooms")
 
         @buildings = @db.get("_design/roomtrol_web").
-          view('buildings').map{|x| x['value']}
+          view('buildings')["rows"].map{|x| x['value']}
 
         @rooms = @db.get("_design/roomtrol_web").
-          view('rooms').map{|x| x['value']}
+          view('rooms')["rows"].map{|x| x['value']}
 
         @devices = @db.get("_design/roomtrol_web").
-          view('rooms').map{|x| x['value']}
+          view('rooms')["rows"].map{|x| x['value']}
 
-        @drivers = CouchRest.database("http://localhost:5984/rooms").
-          get("_design/drivers").map{|x| x['value']}
+        @drivers = CouchRest.database("http://localhost:5984/drivers").
+          get("_design/drivers").view("by_name")["rows"].map{|x| x['value']}
       end
 
       # Starts the websocket server. This is a blocking call if run
