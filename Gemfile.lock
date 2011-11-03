@@ -112,6 +112,7 @@ GEM
       kgio (~> 2.4)
       rack
       raindrops (~> 0.6)
+    uuidtools (2.1.2)
     yui-compressor (0.9.6)
       POpen4 (>= 0.1.4)
 
@@ -145,3 +146,4 @@ DEPENDENCIES
   slinky
   sproutcore (~> 1.6.0.1)
   unicorn
+  uuidtools

@@ -1,4 +1,5 @@
 slinky_require('vendor/backbone.js')
+slinky_require('vendor/backbone-relational.js')
 slinky_require('vendor/handlebars.js')
 
 window.App =

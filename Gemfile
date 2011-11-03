@@ -30,6 +30,7 @@ gem 'rainbow'
 gem 'rubybits'
 gem 'slinky'
 gem 'amqp'
+gem 'uuidtools'
 
 # WescontrolWeb gems
 gem 'highline'

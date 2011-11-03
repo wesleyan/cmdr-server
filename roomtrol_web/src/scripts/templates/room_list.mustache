@@ -1,12 +1,14 @@
 <div class="room-list">
   <ul class="buildings">
     {{#buildings}}
-      <li><a href="#" id="building-{{id}}">{{name}}</a></li>
-      <ul class="rooms">
-        {{#rooms}}
-          <li><a href="#" id="room={{id}}">{{name}}</a></li>
-        {{/rooms}}
-       </ul>
+      <li>
+        <a href="#" id="building-{{id}}">{{name}}</a>
+        <ul class="rooms">
+          {{#rooms}}
+            <li><a href="#" id="room={{id}}">{{params.name}}</a></li>
+          {{/rooms}}
+         </ul>
+      </li>
     {{/buildings}}
   </ul>
 </div>

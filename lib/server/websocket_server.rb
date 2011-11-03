@@ -11,7 +11,7 @@ module Wescontrol
           view('rooms')["rows"].map{|x| x['value']}
 
         @devices = @db.get("_design/roomtrol_web").
-          view('rooms')["rows"].map{|x| x['value']}
+          view('devices')["rows"].map{|x| x['value']}
 
         @drivers = CouchRest.database("http://localhost:5984/drivers").
           get("_design/drivers").view("by_name")["rows"].map{|x| x['value']}
@@ -47,7 +47,7 @@ module Wescontrol
         init_message = {
           id: UUIDTools::UUID.random_create.to_s,
           type: 'connection',
-          bulidings: @buildings,
+          buildings: @buildings,
           rooms: @rooms,
           devices: @devices,
           drivers:  @drivers

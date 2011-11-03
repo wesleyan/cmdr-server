@@ -25,7 +25,8 @@ module Database
 		}
 		puts errors.join("\n")
 	end
-  
+
+
 	def self.setup_database
 		puts "Setting up db"
 		rooms = CouchRest.database!("http://127.0.0.1:5984/rooms")
@@ -60,17 +61,17 @@ eos
             }'
         },
         :rooms => {
-          :map => <<'eos'
-function(doc){
-  if(doc.class && doc.class == "Room" && doc.belongs_to){
-    emit(doc._id, {
-      id: doc._id,
-      building: doc.belongs_to,
-      attributes: doc.attributes
-    });
-  }
-}
-eos
+          :map => <<-eos.strip
+            function(doc){
+              if(doc.class && doc.class == "Room" && doc.belongs_to){
+                emit(doc._id, {
+                  id: doc._id,
+                  building: doc.belongs_to,
+                  params: doc.attributes
+                });
+              }
+            } 
+          eos
         },
         :devices => {
           :map => <<-eos.strip
@@ -81,7 +82,7 @@ eos
                   name: doc.name,
                   room: doc.belongs_to,
                   driver: doc.class,
-                  attributes: doc.attributes
+                  params: doc.attributes
                 });
               }
             }

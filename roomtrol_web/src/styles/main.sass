@@ -1,11 +1,12 @@
 @import 'mixins'
 
+$tab-bar-height: 72px
+
 body
   font-family: Helvetica, Arial
 
 div, img, p
   +user-select(none)
-  cursor: url("../images/blank.png"), none !important
 
 a
   color: black
@@ -16,7 +17,7 @@ a
   background-repeat: no-repeat
   background-position: 98% 50%
   background-color: #333
-  +fill-width(72px)
+  +fill-width($tab-bar-height)
 
   li.tab-button
     font-size: 2.8em
@@ -41,4 +42,31 @@ a
   #monitor-button.selected
     background-color: #C1D699
 
+#main-view
+  position: absolute
+  top: $tab-bar-height
+  left: 0
+  right: 0
+  bottom: 0
+
+.room-list
+  +fill-height(300px)
+  background-color: #EFEBE3
+
+  ul
+    list-style: none
+
+    li
+      font-weight: bold
+      font-size: 24px
+      text-align: left
+      padding-bottom: 10px
+
+      ul li
+        display: block
+        font-size: 16px
+        margin-left: 100px
+        padding: 5px
+        &.selected
+          background-color: white
 

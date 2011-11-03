@@ -11,6 +11,7 @@ require 'amqp'
 require 'net/ssh'
 require 'dnssd'
 require 'thread'
+require 'uuidtools'
 
 # lib files
 require 'zeroconf'
