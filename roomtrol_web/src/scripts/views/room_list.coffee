@@ -13,6 +13,7 @@ App.RoomListView = Backbone.View.extend
 
   room_clicked: (e) ->
     App.rooms.select e.target.id
+    false
 
   selection_changed: () ->
     $('.rooms li').removeClass 'selected'
