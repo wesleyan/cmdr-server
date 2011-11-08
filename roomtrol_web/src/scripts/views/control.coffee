@@ -6,6 +6,6 @@ App.ControlView = Backbone.View.extend
 
   render: () ->
     room_list_el = @room_list.render().el
-    @el = App.templates.control
-      left_pane: room_list_el
+    @el = App.templates.control()
+    $(".left-pane", @el).html room_list_el
     this

@@ -1,5 +1,13 @@
 slinky_require('core.coffee')
 
+App.SelectionCollection = Backbone.Collection.extend
+  select: (id) ->
+    item = this.get(id)
+    if item
+      @selected = item
+      @trigger("change:selection")
+      item.trigger("selected")
+
 ##### BUILDINGS
 
 App.Building = Backbone.RelationalModel.extend
@@ -33,7 +41,7 @@ App.Room = Backbone.RelationalModel.extend
     ]
 
 
-App.RoomController = Backbone.Collection.extend
+App.RoomController = App.SelectionCollection.extend
   model: App.Room
 
 App.rooms = new App.RoomController

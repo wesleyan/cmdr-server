@@ -2,10 +2,10 @@
   <ul class="buildings">
     {{#buildings}}
       <li>
-        <a href="#" id="building-{{id}}">{{name}}</a>
+        <a href="#" id="{{id}}">{{name}}</a>
         <ul class="rooms">
           {{#rooms}}
-            <li><a href="#" id="room={{id}}">{{params.name}}</a></li>
+            <li><a href="#" id="{{id}}">{{params.name}}</a></li>
           {{/rooms}}
          </ul>
       </li>

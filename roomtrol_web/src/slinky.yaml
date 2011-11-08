@@ -1,2 +1,2 @@
 ignore:
-  - scripts/vendor/jquery-1.6.4.js
+  - scripts/vendor/jquery-1.7.js
