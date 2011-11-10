@@ -1,7 +1,12 @@
 <ul>
   {{#devices}}
     <li class="device" id="{{id}}">
-      <h3>{{params.name}}
+      <h3>{{name}}</h3>
+      <ul>
+        {{#vars}}
+          <li>{{name}}</li>
+        {{/vars}}
+      </ul>
     </li>
   {{/devices}}
 </ul>

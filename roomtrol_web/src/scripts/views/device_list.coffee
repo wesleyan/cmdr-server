@@ -8,22 +8,20 @@ App.DeviceListView = Backbone.View.extend
     App.devices.bind "change:selection", () => @selection_changed()
 
   render: () ->
-    devices = App.rooms.selected?.get('devices').toJSON()
-      # name: "Projector"
-      # vars: [
-      #   {name: "Power", value: true},
-      #   {name: "Video Mute", value: true},
-      #   {name: "Input", value: "RGB"},
-      #   {name: "Brightness", value: 0.1},
-      #   {name: "Lamp Remaining", value: "50 hours"}
-      # ]
+    devices = App.rooms.selected?.get('devices').map (d) ->
+      id: d.id
+      name: d.get('params').name
+      vars: d.display_vars()
 
+    console.log(devices)
     $(@el).html App.templates.device(devices: devices)
     $(".device", @el).click @device_clicked
     this
 
   device_clicked: (e) ->
+    console.log(e)
     id = $(e.target).closest(".device").attr('id')
+    console.log(id)
     App.devices.select id
 
   selection_changed: () ->
