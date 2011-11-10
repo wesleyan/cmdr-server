@@ -7,7 +7,6 @@ App.RoomListView = Backbone.View.extend
   render: () ->
     @el = App.templates.room_list(buildings: App.buildings.toJSON())
     $(".rooms a", @el).click @room_clicked
-    console.log $(".rooms a", @el)
 
     this
 

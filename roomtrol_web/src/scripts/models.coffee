@@ -50,7 +50,7 @@ App.rooms = new App.RoomController
 
 App.Device = Backbone.RelationalModel.extend()
 
-App.DeviceController = Backbone.Collection.extend
+App.DeviceController = App.SelectionCollection.extend
   model: App.Device
 
 App.devices = new App.DeviceController
