@@ -1,3 +1,4 @@
+/*! slinky_require("reset.css")
 @import 'mixins'
 
 $tab-bar-height: 72px
@@ -27,6 +28,7 @@ a
     height: 31px
     padding: 20px
     padding-top: 5px
+    margin-top: 16px
     a
       color: white
     &.selected
@@ -52,9 +54,9 @@ a
 .room-list
   +fill-height(300px)
   background-color: #EFEBE3
+  padding-top: 30px
 
   ul
-    padding: 0
     width: 100%
     list-style: none
 
@@ -97,7 +99,15 @@ a
     
 
 .device-list
-  .device
+  +fill-parent
+
+  ul
+    list-style: none
+    margin: 0
+    padding: 0
+
+  li.device
+    display: block
     height: 80px
     cursor: default
   

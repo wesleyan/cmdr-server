@@ -5,7 +5,7 @@ App.DeviceListView = Backbone.View.extend
 
   initialize: () ->
     App.rooms.bind "change:selection", () => @render()
-    App.rooms.bind "change:selection", @selection_changed
+    App.devices.bind "change:selection", () => @selection_changed()
 
   render: () ->
     devices = App.rooms.selected?.get('devices').toJSON()
@@ -23,9 +23,9 @@ App.DeviceListView = Backbone.View.extend
     this
 
   device_clicked: (e) ->
-    App.devices.select e.target.id
+    id = $(e.target).closest(".device").attr('id')
+    App.devices.select id
 
   selection_changed: () ->
     $('.device', @el).removeClass 'selected'
-    console.log(".device##{App.devices.selected?.id}")
     $(".device##{App.devices.selected?.id}").addClass 'selected'
