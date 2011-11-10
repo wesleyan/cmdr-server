@@ -4,7 +4,6 @@ slinky_require('models.coffee')
 class Server
   constructor: () ->
     @websock = new Websock()
-    @websock.options.host = "ws://localhost:8000"
     @websock.bind "message", (msg) => @handle_msg msg
 
     $(window).load =>
