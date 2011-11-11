@@ -6,18 +6,20 @@ module Wescontrol
         @db = CouchRest.database("#{DB_URL}/rooms")
 
         @seq = @db.get("")[:update_seq]
-        
-        @buildings = @db.get("_design/roomtrol_web").
-          view('buildings')["rows"].map{|x| x['value']}
 
-        @rooms = @db.get("_design/roomtrol_web").
-          view('rooms')["rows"].map{|x| x['value']}
+        @state = {
+          buildings: @db.get("_design/roomtrol_web").
+            view('buildings')["rows"].map{|x| x['value']},
+          
+          rooms: @db.get("_design/roomtrol_web").
+            view('rooms')["rows"].map{|x| x['value']},
 
-        @devices = @db.get("_design/roomtrol_web").
-          view('devices')["rows"].map{|x| x['value']}
+          devices: @db.get("_design/roomtrol_web").
+            view('devices')["rows"].map{|x| x['value']},
 
-        @drivers = CouchRest.database("#{DB_URL}/drivers").
-          get("_design/drivers").view("by_name")["rows"].map{|x| x['value']}
+          drivers: CouchRest.database("#{DB_URL}/drivers").
+            get("_design/drivers").view("by_name")["rows"].map{|x| x['value']}
+        }
       end
 
       # Starts the websocket server. This is a blocking call if run
@@ -60,10 +62,10 @@ module Wescontrol
         init_message = {
           id: UUIDTools::UUID.random_create.to_s,
           type: 'connection',
-          buildings: @buildings,
-          rooms: @rooms,
-          devices: @devices,
-          drivers:  @drivers
+          buildings: @state[:buildings],
+          rooms: @state[:rooms],
+          devices: @state[:devices],
+          drivers:  @state[:drivers]
         }
 
         ws.send JSON.dump(init_message)
@@ -83,9 +85,9 @@ module Wescontrol
         http = EM::HttpRequest.new(url).get
         http.callback{
           doc = JSON.parse(http.response)
-          view = if    doc["device"] then "devices"
-                 elsif doc["class"] == "Room" then "rooms"
-                 elsif doc["class"] == "Building" then "buildings"
+          view = if    doc["device"] then :devices
+                 elsif doc["class"] == "Room" then :rooms
+                 elsif doc["class"] == "Building" then :buildings
                  end
           if view
             url = %@#{DB_URL}/rooms/_design/roomtrol_web/_view/#{view}?key="#{doc["_id"]}"@
@@ -94,7 +96,9 @@ module Wescontrol
               msg = JSON.parse(http.response)
 
               doc = msg["rows"].map{|x| x['value']}.first
-              send_update view[0..-2], doc
+              i = @state[view].find_index{|d| d["id"] == doc["id"]}
+              @state[view][i] = doc
+              send_update view.to_s[0..-2], doc
             }
           end
         }
