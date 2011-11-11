@@ -1,9 +1,12 @@
 module Wescontrol
   module RoomtrolServer
     class WebsocketServer
+      DB_URL = "http://localhost:5984"
       def initialize
-        @db = CouchRest.database("http://localhost:5984/rooms")
+        @db = CouchRest.database("#{DB_URL}/rooms")
 
+        @seq = @db.get("")[:update_seq]
+        
         @buildings = @db.get("_design/roomtrol_web").
           view('buildings')["rows"].map{|x| x['value']}
 
@@ -13,7 +16,7 @@ module Wescontrol
         @devices = @db.get("_design/roomtrol_web").
           view('devices')["rows"].map{|x| x['value']}
 
-        @drivers = CouchRest.database("http://localhost:5984/drivers").
+        @drivers = CouchRest.database("#{DB_URL}/drivers").
           get("_design/drivers").view("by_name")["rows"].map{|x| x['value']}
       end
 
@@ -23,6 +26,16 @@ module Wescontrol
         AMQP.start(:host => "localhost"){
 
           @update_channel = EM::Channel.new
+
+          url = "#{DB_URL}/rooms/_changes?feed=continuous&since=#{@seq}&heartbeat=500"
+          DaemonKit.logger.debug url
+          http = EM::HttpRequest.new(url).get
+          http.stream{|chunk|
+            msg = JSON.parse chunk rescue nil
+            update msg if msg
+          }
+          http.callback{ DaemonKit.logger.debug "CouchDB connection closed" }
+
           
           EM::WebSocket.start({
                                 :host => "0.0.0.0",
@@ -30,7 +43,7 @@ module Wescontrol
                               }) do |ws|
             ws.onopen { onopen ws }
 
-            ws.onmessage {|json| onmessage ws, jon}
+            ws.onmessage {|json| onmessage ws, json}
 
             ws.onclose {
               DaemonKit.logger.debug("Connection on #{ws.signature} closed")
@@ -56,6 +69,37 @@ module Wescontrol
         ws.send JSON.dump(init_message)
       end
 
+      def send_update type, update
+        update_msg = {
+          id: UUIDTools::UUID.random_create.to_s,
+          type: "#{type}_changed",
+          update: update
+        }
+        @update_channel.push(update_msg)
+      end
+
+      def update change
+        url = "#{DB_URL}/rooms/#{change["id"]}"
+        http = EM::HttpRequest.new(url).get
+        http.callback{
+          doc = JSON.parse(http.response)
+          view = if    doc["device"] then "devices"
+                 elsif doc["class"] == "Room" then "rooms"
+                 elsif doc["class"] == "Building" then "buildings"
+                 end
+          if view
+            url = %@#{DB_URL}/rooms/_design/roomtrol_web/_view/#{view}?key="#{doc["_id"]}"@
+            http = EM::HttpRequest.new(url).get
+            http.callback{
+              msg = JSON.parse(http.response)
+
+              doc = msg["rows"].map{|x| x['value']}.first
+              send_update view[0..-2], doc
+            }
+          end
+        }
+      end
+      
       def onmessage ws, json
       end
     end
