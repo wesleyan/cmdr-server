@@ -5,17 +5,17 @@
   {{#vars}}
     <h2>{{titleize name}}</h2>
     <div class="control" id="var-{{name}}">
-      {{#if type.boolean}}
-        <a href="javascript:" class="button">off</a>
-        <a href="javascript:" class="button">on</a>
+      {{#if _type.boolean}}
+        <a href="javascript:" class="button off">off</a>
+        <a href="javascript:" class="button on">on</a>
       {{/if}}
-      {{#if type.percentage}}
+      {{#if _type.percentage}}
         <input type="range" min="0" max="1" step="0.01">
       {{/if}}
-      {{#if type.option}}
+      {{#if _type.option}}
         <select>
           {{#options}}
-            <option>{{this}}</option>
+            <option value="{{this}}">{{this}}</option>
           {{/options}}
         </select>
       {{/if}}

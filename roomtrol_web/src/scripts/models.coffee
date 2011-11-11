@@ -70,11 +70,13 @@ App.Device = Backbone.RelationalModel.extend
       .filter((h) -> h.editable == undefined or h.editable)
       .sortBy((h) -> if h.display_order then h.display_order else Infinity)
       .map (h) ->
-        hp = _(h).chain().clone().extend(type: {}).value()
-        hp.type[h.type] = true;
+        hp = _(h).chain().clone().extend(_type: {}).value()
+        hp._type[h.type] = true;
         hp
       .value()
 
+  state_set: (v, state) ->
+    App.server.state_set(this, v, state)
 
 App.DeviceController = App.SelectionCollection.extend
   model: App.Device
