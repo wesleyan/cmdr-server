@@ -16,9 +16,10 @@ class Server
     switch msg.type
       when "connection"
         @connected msg
+      when "device_changed"
+        @device_changed msg
       else
         console.log("Unhandled message type: " + msg.type)
-
 
   connected: (msg) ->
     # Initialize our collections
@@ -30,12 +31,17 @@ class Server
 
     App.main_view = new App.MainView().render()
 
-
   send_message: (msg) ->
     msg['id'] = @createUUID()
     console.log("SENDING: " + JSON.stringify(msg))
     @websock.send(JSON.stringify(msg))
     msg['id']
+
+  device_changed: (msg) ->
+    if d = App.devices.get(msg.update?.id)
+      d.set(msg.update)
+    else
+      App.devices.add msg.update
 
   state_set: (device, variable, value) ->
     msg =

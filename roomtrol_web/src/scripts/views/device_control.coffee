@@ -5,13 +5,17 @@ App.DeviceControlView = Backbone.View.extend
 
   initialize: () ->
     App.devices.bind "change:selection", () => @render()
+    @bound_update = () => @update()
 
   render: () ->
-    d = App.devices.selected
-    if d
+    @device?.unbind "change", @bound_update
+    @device = App.devices.selected
+    if @device
+      @device.bind "change", @bound_update
+
       hash =
-        name: d.get('params')?.name
-        vars: d.controllable_vars()
+        name: @device.get('params')?.name
+        vars: @device.controllable_vars()
 
       $(@el).html App.templates.device_control(hash)
 
@@ -35,7 +39,6 @@ App.DeviceControlView = Backbone.View.extend
         when "option"
           el.find("select").change () ->
             d.state_set(v.name, el.find("input").val())
-
 
   update: () ->
     _(App.devices.selected?.controllable_vars()).each (v) =>
