@@ -3,6 +3,20 @@
 
 $tab-bar-height: 72px
 
+h1
+  font-size: 25px
+h2 
+  font-size: 23px
+h3 
+  font-size: 21px
+h4 
+  font-size: 19px
+h5 
+  font-size: 17px
+h6 
+  font-size: 15px
+
+
 body
   font-family: Helvetica, Arial
 
@@ -111,9 +125,52 @@ a
     height: 80px
     cursor: default
     overflow: hidden
+    border-bottom: 1px solid #ddd
   
     &.selected
       background-color: #5498FF
       color: white
   
   
+.device-control
+  padding: 20px
+
+  h1, h2
+    font-weight: normal
+  h1
+    font-size: 38px
+    text-align: center
+    padding-bottom: 20px
+
+  h2
+    font-size: 24px
+    padding-bottom: 10px
+
+  .control
+    padding-bottom: 10px
+    height: 40px
+    padding-left: 20px
+
+    a.button
+      display: block
+      +button(#e7e7e7)
+      +border-radius(15px)
+      border: none
+      text-transform: uppercase
+      font-size: 20px
+      line-height: 34px
+      text-align: center
+      float: left
+      height: 32px
+      width: 90px
+      margin-left: 10px
+
+      &.on
+        color: white
+        +gradient(#73a4eb, #73a4eb*0.8, 0.25, 1)
+        
+        &:active
+          +gradient(#73a4eb*0.8, #73a4eb*0.7, 0.25, 1)
+
+    select
+      font-size: 16px

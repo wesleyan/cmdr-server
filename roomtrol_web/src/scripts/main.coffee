@@ -12,6 +12,9 @@ $(window).ready () ->
     div.innerHTML = html
     div.childNodes
 
+  # This converts things like "this_is_a_name" to "this is a name"
+  Handlebars.registerHelper "titleize", (name) -> name.split("_").join(" ")
+
   _($("script[type='text/x-handlebars-template']")).each (d) ->
     App.templates[d.id] =
       (params) -> dommify Handlebars.compile($(d).html())(params)

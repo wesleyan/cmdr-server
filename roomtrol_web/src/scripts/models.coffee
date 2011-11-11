@@ -56,9 +56,7 @@ App.Device = Backbone.RelationalModel.extend
   vars_array: () ->
     state_vars = @state_vars()
     _(state_vars).chain().keys().map (k) ->
-      h = state_vars[k]
-      h.name = k
-      h
+      _(state_vars[k]).chain().clone().extend(name: k).value()
     .value()
 
   display_vars: () ->
@@ -68,6 +66,14 @@ App.Device = Backbone.RelationalModel.extend
       .value()
 
   controllable_vars: () ->
+    _(@vars_array()).chain()
+      .filter((h) -> h.editable == undefined or h.editable)
+      .sortBy((h) -> if h.display_order then h.display_order else Infinity)
+      .map (h) ->
+        hp = _(h).chain().clone().extend(type: {}).value()
+        hp.type[h.type] = true;
+        hp
+      .value()
 
 
 App.DeviceController = App.SelectionCollection.extend

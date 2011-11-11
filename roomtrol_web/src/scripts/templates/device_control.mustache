@@ -1,0 +1,24 @@
+<h1>{{name}}</h1>
+
+
+<div class="vars">
+  {{#vars}}
+    <h2>{{titleize name}}</h2>
+    <div class="control" id="var-{{name}}">
+      {{#if type.boolean}}
+        <a href="javascript:" class="button">off</a>
+        <a href="javascript:" class="button">on</a>
+      {{/if}}
+      {{#if type.percentage}}
+        <input type="range" min="0" max="1" step="0.01">
+      {{/if}}
+      {{#if type.option}}
+        <select>
+          {{#options}}
+            <option>{{this}}</option>
+          {{/options}}
+        </select>
+      {{/if}}
+    </div>
+  {{/vars}}
+</div>
