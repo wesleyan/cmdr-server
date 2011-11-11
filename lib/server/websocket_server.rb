@@ -105,6 +105,17 @@ module Wescontrol
       end
       
       def onmessage ws, json
+        msg = JSON.parse json
+        case msg["type"]
+        when "state_set"
+          state_set(msg)
+        else
+          DaemonKit.logger.debug("Unknown msg: " + msg.inspect)
+        end
+      end
+
+      def state_set msg
+        DaemonKit.logger.debug("State set: " + msg.inspect)
       end
     end
   end
