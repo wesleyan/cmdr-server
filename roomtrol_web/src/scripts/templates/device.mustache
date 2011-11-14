@@ -2,11 +2,11 @@
   {{#devices}}
     <li class="device" id="{{id}}">
       <h3>{{name}}</h3>
-      <ul>
+      <dl>
         {{#vars}}
-          <li>{{name}}</li>
+          <dt>{{titleize name}}</dt> <dd>{{state}}</dd>
         {{/vars}}
-      </ul>
+      </dl>
     </li>
   {{/devices}}
 </ul>
