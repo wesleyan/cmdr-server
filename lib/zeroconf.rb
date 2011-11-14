@@ -19,7 +19,8 @@ module Wescontrol
     module Zeroconf
       # Each Client object represents a roomtrol device client in a given room.     
       class Client
-
+        attr_reader :daemon_port, :couchdb_port, :room_id
+        
         # Initialize Client object. Select a unused port to establish ssh connections
         def initialize client_reply, db_uri=DB_URI
           # name of device broadcasted via zeroconf
@@ -106,6 +107,8 @@ module Wescontrol
             doc["last_updated"] = Time.now
             #DaemonKit.logger.debug @db.save_doc(doc)
 
+            @daemon_port = local_port
+
             forward(5984, @ip_address, 11000) do |local_host, local_port|
               Thread.abort_on_exception = true
               # Setup replication from device's couchdb rooms to server's rooms
@@ -130,6 +133,8 @@ module Wescontrol
               # Save changes back to couch.
               save_res = @db.save_doc(doc)
               DaemonKit.logger.debug save_res
+
+              @couchdb_port = local_port
             end
           end
 

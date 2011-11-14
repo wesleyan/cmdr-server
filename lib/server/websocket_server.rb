@@ -1,9 +1,11 @@
 module Wescontrol
   module RoomtrolServer
     class WebsocketServer
-      DB_URL = "http://localhost:5984"
+      # Time to wait for response from server in seconds
+      TIMEOUT = 4.0
+      
       def initialize
-        @db = CouchRest.database("#{DB_URL}/rooms")
+        @db = CouchRest.database("#{DB_URI}/rooms")
 
         @seq = @db.get("")[:update_seq]
 
@@ -17,7 +19,7 @@ module Wescontrol
           devices: @db.get("_design/roomtrol_web").
             view('devices')["rows"].map{|x| x['value']},
 
-          drivers: CouchRest.database("#{DB_URL}/drivers").
+          drivers: CouchRest.database("#{DB_URI}/drivers").
             get("_design/drivers").view("by_name")["rows"].map{|x| x['value']}
         }
       end
@@ -29,8 +31,7 @@ module Wescontrol
 
           @update_channel = EM::Channel.new
 
-          url = "#{DB_URL}/rooms/_changes?feed=continuous&since=#{@seq}&heartbeat=500"
-          DaemonKit.logger.debug url
+          url = "#{DB_URI}/rooms/_changes?feed=continuous&since=#{@seq}&heartbeat=500"
           http = EM::HttpRequest.new(url).get
           http.stream{|chunk|
             msg = JSON.parse chunk rescue nil
@@ -41,7 +42,7 @@ module Wescontrol
           
           EM::WebSocket.start({
                                 :host => "0.0.0.0",
-                                :port => 8000
+                                :port => WEBSOCKET_PORT
                               }) do |ws|
             ws.onopen { onopen ws }
 
@@ -81,7 +82,7 @@ module Wescontrol
       end
 
       def update change
-        url = "#{DB_URL}/rooms/#{change["id"]}"
+        url = "#{DB_URI}/rooms/#{change["id"]}"
         http = EM::HttpRequest.new(url).get
         http.callback{
           doc = JSON.parse(http.response)
@@ -90,7 +91,7 @@ module Wescontrol
                  elsif doc["class"] == "Building" then :buildings
                  end
           if view
-            url = %@#{DB_URL}/rooms/_design/roomtrol_web/_view/#{view}?key="#{doc["_id"]}"@
+            url = %@#{DB_URI}/rooms/_design/roomtrol_web/_view/#{view}?key="#{doc["_id"]}"@
             http = EM::HttpRequest.new(url).get
             http.callback{
               msg = JSON.parse(http.response)
@@ -106,6 +107,14 @@ module Wescontrol
       
       def onmessage ws, json
         msg = JSON.parse json
+
+        deferrable = EM::DefaultDeferrable.new
+        deferrable.callback {|resp|
+          resp['id'] = msg['id']
+          ws.send resp.to_json
+        }
+        deferrable.timeout TIMEOUT
+
         case msg["type"]
         when "state_set"
           state_set(msg)
@@ -114,8 +123,28 @@ module Wescontrol
         end
       end
 
-      def state_set msg
+      def state_set msg, df
         DaemonKit.logger.debug("State set: " + msg.inspect)
+        req = {
+          id: UUIDTools::UUID.random_create.to_s,
+          queue: @queue_name,
+          type: :state_set,
+          room: msg["room"],
+          var: msg["var"],
+          device: msg["device"],
+          value: msg["value"]
+        }
+
+        deferrable = EM::DefaultDeferrable.new
+        deferrable.timeout TIMEOUT
+        deferrable.callback{|result|
+          df.succeed({:ack => true})
+        }
+        deferrable.errback{|error|
+          df.succeed({:error => error})
+        }
+        @deferred_responses[req[:id]] = df
+        @mq.queue(SERVER_QUEUE).publish(req.to_json)
       end
     end
   end
