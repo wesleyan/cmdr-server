@@ -4,7 +4,9 @@
       <h3>{{name}}</h3>
       <dl>
         {{#vars}}
-          <dt>{{titleize name}}</dt> <dd>{{state}}</dd>
+          <dt>{{titleize name}}</dt> 
+          <dd>{{state}}</dd>
+          <dd>{{^state}}false{{/state}}</dd>
         {{/vars}}
       </dl>
     </li>
