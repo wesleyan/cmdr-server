@@ -12,4 +12,4 @@ DaemonKit::Application.running! do |config|
 end
 
 # Sample loop to show process
-Wescontrol::RoomtrolServer::WebsocketServer.new.run
+Wescontrol::RoomtrolServer::Server.new.run

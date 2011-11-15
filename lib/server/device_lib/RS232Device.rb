@@ -1,4 +1,3 @@
-require 'bit-struct'
 module Wescontrol
 	class RS232Device < Device
 		attr_accessor :serialport

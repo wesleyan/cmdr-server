@@ -1,28 +1,35 @@
 libdir = File.dirname(__FILE__)
 $LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
 
-
 # Your starting point for daemon specific classes. This directory is
 # already included in your load path, so no need to specify it.
 require 'eventmachine'
 require 'em-proxy'
 require 'em-websocket'
-require 'amqp'
+require 'mq'
 require 'net/ssh'
 require 'dnssd'
 require 'thread'
 require 'uuidtools'
 
 # lib files
-require 'zeroconf'
-require 'MAC'
+require 'server/zeroconf'
+require 'server/MAC'
 require 'server/websocket_server'
 
+require 'server/database'
+require 'server/device'
+require 'server/device_lib/RS232Device'
+require 'server/devices/Projector'
+require 'server/devices/VideoSwitcher'
+require 'server/devices/Computer'
 
 module Wescontrol
   module RoomtrolServer
     class Server
       def initialize
+        Database.update_devices
+
         @db_roomtrol_server = CouchRest.database!("http://127.0.0.1:5984/roomtrol_server")
         @db_rooms = CouchRest.database!("http://127.0.0.1:5984/rooms")
         @couch_forwards = {
@@ -68,13 +75,13 @@ module Wescontrol
         handle_feedback = proc {|feedback, req, resp, job|
           if feedback.is_a? EM::Deferrable
             feedback.callback do |fb|
-              @amq_responder.queue(req["queue"]).publish(resp.to_json)
+              MQ.new.queue(req["queue"]).publish(resp.to_json)
             end
           elsif feedback == nil
-            @amq_responder.queue(req["queue"]).publish(resp.to_json)
+            MQ.new.queue(req["queue"]).publish(resp.to_json)
           else
             resp["result"] = feedback
-            @amq_responder.queue(req["queue"]).publish(resp.to_json)
+            MQ.new.queue(req["queue"]).publish(resp.to_json)
           end
         }
 
@@ -92,7 +99,7 @@ module Wescontrol
         deferrable = EM::DefaultDeferrable.new
         room = @clients[req["room"]]
         if room.nil?
-          deferrable.succeed :error => "room #{room_id} does not exist"
+          deferrable.succeed :error => "room #{req["room"]} does not exist"
         else
           url = "http://localhost:#{room.daemon_port}/devices/#{req["device"]}/#{req["var"]}"
           data = {:value => msg["value"]}.to_json
@@ -106,7 +113,6 @@ module Wescontrol
         end
         deferrable
       end
-      
     end
   end
 end

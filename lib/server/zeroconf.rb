@@ -41,7 +41,7 @@ module Wescontrol
         # it doesn't exist.
         def get_doc
           # views returns empty list if no key exits
-          doc = @db.get("_design/wescontrol_web")
+          doc = @db.get("_design/roomtrol_web")
                    .view("eigenroom_by_roomid", {:key => @room_id})['rows'][0]
           if doc
             doc = doc['value']
@@ -50,6 +50,7 @@ module Wescontrol
               belongs_to: @uberroom_id,
               device: true,
               :class => "Eigenroom",
+              eigenroom: true,
               room_id: @room_id,
               room_name: @name,
               ip_address: @ip_address
@@ -113,13 +114,20 @@ module Wescontrol
               Thread.abort_on_exception = true
               # Setup replication from device's couchdb rooms to server's rooms
               data = {
+                _id: "server_replication_#{@room_id}",
                 source: "http://#{local_host}:#{local_port}/rooms",
                 target: "rooms",
                 continuous: true
               }
               DaemonKit.logger.debug "#{@name}: Setting up replication"
               begin
-                res = RestClient.post "http://#{local_host}:5984/_replicate", data.to_json, :content_type => :json
+                url = "http://#{local_host}:5984/_replicator/#{data[:_id]}"
+                res = RestClient.get(url) rescue nil
+                if res
+                  rev = JSON.parse(res)["_rev"]
+                  RestClient.delete "#{url}?rev=#{rev}"
+                end
+                res = RestClient.put url, data.to_json, :content_type => :json
                 DaemonKit.logger.debug "#{@name}: Response from couch: #{res}"
               rescue => e
                 DaemonKit.logger.debug "#{@name}: ERROR FROM REST".foreground(:red)

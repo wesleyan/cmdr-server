@@ -67,7 +67,7 @@ desc "set up local database"
 task :local_db do
   require 'couchrest'
   require_relative '../lib/server/database.rb'
-  Database.setup_database  
+  Database.setup_database
 end
 
 desc "finds all targets in the system and computes their build numbers" 

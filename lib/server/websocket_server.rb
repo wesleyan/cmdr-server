@@ -22,6 +22,8 @@ module Wescontrol
           drivers: CouchRest.database("#{DB_URI}/drivers").
             get("_design/drivers").view("by_name")["rows"].map{|x| x['value']}
         }
+
+        @deferred_responses = {}
       end
 
       # Starts the websocket server. This is a blocking call if run
@@ -39,6 +41,14 @@ module Wescontrol
           }
           http.callback{ DaemonKit.logger.debug "CouchDB connection closed" }
 
+          MQ.queue(WEBSOCKET_QUEUE).subscribe{|json|
+            #begin
+              msg = JSON.parse(json)
+              @deferred_responses[msg["id"]].succeed(msg)
+            #rescue
+            #  DaemonKit.logger.debug "Got error: #{$!}" 
+            #end
+          }
           
           EM::WebSocket.start({
                                 :host => "0.0.0.0",
@@ -86,7 +96,7 @@ module Wescontrol
         http = EM::HttpRequest.new(url).get
         http.callback{
           doc = JSON.parse(http.response)
-          view = if    doc["device"] then :devices
+          view = if    doc["device"] && ! doc["eigenroom"] then :devices
                  elsif doc["class"] == "Room" then :rooms
                  elsif doc["class"] == "Building" then :buildings
                  end
@@ -95,10 +105,14 @@ module Wescontrol
             http = EM::HttpRequest.new(url).get
             http.callback{
               msg = JSON.parse(http.response)
-
+              
               doc = msg["rows"].map{|x| x['value']}.first
               i = @state[view].find_index{|d| d["id"] == doc["id"]}
-              @state[view][i] = doc
+              if i
+                @state[view][i] = doc
+              elsif
+                @state[view] << doc
+              end
               send_update view.to_s[0..-2], doc
             }
           end
@@ -117,7 +131,7 @@ module Wescontrol
 
         case msg["type"]
         when "state_set"
-          state_set(msg)
+          state_set(msg, deferrable)
         else
           DaemonKit.logger.debug("Unknown msg: " + msg.inspect)
         end
@@ -127,7 +141,7 @@ module Wescontrol
         DaemonKit.logger.debug("State set: " + msg.inspect)
         req = {
           id: UUIDTools::UUID.random_create.to_s,
-          queue: @queue_name,
+          queue: WEBSOCKET_QUEUE,
           type: :state_set,
           room: msg["room"],
           var: msg["var"],
@@ -138,13 +152,18 @@ module Wescontrol
         deferrable = EM::DefaultDeferrable.new
         deferrable.timeout TIMEOUT
         deferrable.callback{|result|
-          df.succeed({:ack => true})
+          DaemonKit.logger.debug "GOT: <#{result.inspect}>"
+          if result["error"]
+            df.succeed({:error => result["error"]})
+          else
+            df.succeed({:ack => true})
+          end
         }
         deferrable.errback{|error|
           df.succeed({:error => error})
         }
-        @deferred_responses[req[:id]] = df
-        @mq.queue(SERVER_QUEUE).publish(req.to_json)
+        @deferred_responses[req[:id]] = deferrable
+        MQ.new.queue(SERVER_QUEUE).publish(req.to_json)
       end
     end
   end
