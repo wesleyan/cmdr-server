@@ -35,10 +35,10 @@ App.DeviceControlView = Backbone.View.extend
             d.state_set(v.name, false)
         when "percentage"
           el.find("input").change () ->
-            d.state_set(v.name, el.find("input").val())
+            d.state_set(v.name, parseFloat(el.find("input").val()))
         when "option"
           el.find("select").change () ->
-            d.state_set(v.name, el.find("input").val())
+            d.state_set(v.name, el.find("select").val())
 
   update: () ->
     _(App.devices.selected?.controllable_vars()).each (v) =>

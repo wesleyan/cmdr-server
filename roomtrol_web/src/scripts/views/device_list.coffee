@@ -6,6 +6,7 @@ App.DeviceListView = Backbone.View.extend
   initialize: () ->
     App.rooms.bind "change:selection", () => @render()
     App.devices.bind "change:selection", () => @selection_changed()
+    App.devices.bind "change", () => @render()
 
   render: () ->
     devices = App.rooms.selected?.get('devices').map (d) ->
@@ -13,8 +14,8 @@ App.DeviceListView = Backbone.View.extend
       name: d.get('params').name
       vars: d.display_vars()
 
-    console.log(devices)
     $(@el).html App.templates.device(devices: devices)
+    @selection_changed()
     $(".device", @el).click @device_clicked
     this
 

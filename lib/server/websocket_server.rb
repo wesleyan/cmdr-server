@@ -43,7 +43,8 @@ module Wescontrol
 
           MQ.queue(WEBSOCKET_QUEUE).subscribe{|json|
             #begin
-              msg = JSON.parse(json)
+            msg = JSON.parse(json)
+            DaemonKit.logger.debug("Websocket:MQ: " + msg.inspect)
               @deferred_responses[msg["id"]].succeed(msg)
             #rescue
             #  DaemonKit.logger.debug "Got error: #{$!}" 
@@ -118,7 +119,7 @@ module Wescontrol
           end
         }
       end
-      
+
       def onmessage ws, json
         msg = JSON.parse json
 

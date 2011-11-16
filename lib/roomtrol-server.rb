@@ -38,8 +38,8 @@ module Wescontrol
         # Get id of uberroom document, devices should belong to this room.
         @uberroom_id = @db_rooms.get("_design/room").view("by_mac", {:key => MAC.addr})['rows'][0]["id"]
         
-        # A map from client room ids to their corresponding daemon ports
-        @clients = {}
+        # A list of clients
+        @clients = []
       end
 
       def run
@@ -61,7 +61,8 @@ module Wescontrol
               DaemonKit.logger.debug("DNSSD Add: #{client_reply.inspect}".foreground(:green))
               client = Zeroconf::Client.new client_reply
               client.setup(@db_rooms, @uberroom_id)
-              @clients[client.room_id] = client.daemon_port
+              @clients << client
+              DaemonKit.logger.debug(@clients.inspect)
             else
               DaemonKit.logger.debug("DNSSD Remove: #{client_reply.name}".foreground(:red))
             end
@@ -96,18 +97,20 @@ module Wescontrol
       end
 
       def state_set req
+        DaemonKit.logger.debug("REQ: #{req.inspect}")
         deferrable = EM::DefaultDeferrable.new
-        room = @clients[req["room"]]
+        room = @clients.find{|r| r.room_id == req["room"]}
         if room.nil?
           deferrable.succeed :error => "room #{req["room"]} does not exist"
         else
           url = "http://localhost:#{room.daemon_port}/devices/#{req["device"]}/#{req["var"]}"
-          data = {:value => msg["value"]}.to_json
-          http = EM::HttpRequest.new(url).post(data)
-          http.callback{|resp|
-            deferrable.succeed JSON.parse(resp)
+          data = {:value => req["value"]}.to_json
+          http = EM::HttpRequest.new(url).post :body => data
+          http.callback{
+            DaemonKit.logger.debug("GOT: #{http.response}")
+            deferrable.succeed JSON.parse(http.response)
           }
-          http.errback{|err|
+          http.errback{
             deferrable.succeed :error => "HTTP request to device failed"
           }
         end
