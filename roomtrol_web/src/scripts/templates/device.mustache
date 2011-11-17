@@ -5,8 +5,7 @@
       <dl>
         {{#vars}}
           <dt>{{titleize name}}</dt> 
-          <dd>{{state}}</dd>
-          <dd>{{^state}}false{{/state}}</dd>
+          <dd>{{falsey state}}</dd>
         {{/vars}}
       </dl>
     </li>
