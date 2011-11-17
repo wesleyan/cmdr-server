@@ -10,13 +10,13 @@
       {{/if}}
       {{#if _type.percentage}}
         <input type="range" min="0" max="1" step="0.01">
+        <span class="range-value"></span>
       {{/if}}
       {{#if _type.option}}
-        <select>
-          {{#options}}
-            <option value="{{this}}">{{this}}</option>
-          {{/options}}
-        </select>
+        {{#options}}
+          <a href="javascript:" class="button select"
+          data-value="{{this}}">{{this}}</a>
+        {{/options}}
       {{/if}}
     </div>
   {{/vars}}

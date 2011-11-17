@@ -35,10 +35,14 @@ App.DeviceControlView = Backbone.View.extend
             d.state_set(v.name, false)
         when "percentage"
           el.find("input").change () ->
-            d.state_set(v.name, parseFloat(el.find("input").val()))
+            val = parseFloat el.find("input").val()
+            el.find(".range-value").html Math.round(val * 100) + "%"
+            d.state_set(v.name, val)
         when "option"
-          el.find("select").change () ->
-            d.state_set(v.name, el.find("select").val())
+          # el.find("select").change () ->
+          #   d.state_set(v.name, el.find("select").val())
+          el.find(".button").click (e) ->
+            d.state_set(v.name, $(e.target).data('value'))
 
   update: () ->
     _(App.devices.selected?.controllable_vars()).each (v) =>
@@ -51,5 +55,8 @@ App.DeviceControlView = Backbone.View.extend
           el.find(".button.#{selected}").addClass "selected"
         when "percentage"
           el.find("input").val(v.state)
+          el.find(".range-value").html Math.round(v.state * 100) + "%"
         when "option"
-          el.find("select").val(v.state)
+          #el.find("select").val(v.state)
+          el.find(".button").removeClass "selected"
+          el.find(".button[data-value='#{v.state}']").addClass "selected"

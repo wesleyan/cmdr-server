@@ -163,8 +163,9 @@ a
 
   .control
     padding-bottom: 10px
-    height: 40px
+    min-height: 40px
     padding-left: 20px
+    display: table
 
     a.button
       display: block
@@ -186,6 +187,14 @@ a
         
         &:active
           +gradient(#73a4eb*0.8, #73a4eb*0.7, 0.25, 1)
+
+      &.select
+        +border-radius(0)
+        margin-left: 0
+        width: inherit
+        min-width: 20px
+        padding-right: 8px
+        padding-left: 8px
 
     select
       font-size: 16px
