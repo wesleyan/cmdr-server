@@ -1,11 +1,29 @@
 slinky_require('control.coffee')
+slinky_require('monitor.coffee')
+slinky_require('configure.coffee')
 
 App.MainView = Backbone.View.extend
-  current_view: new App.ControlView
+  control_view: new App.ControlView
+  monitor_view: new App.MonitorView
+  configure_view: new App.ConfigureView
+
+  initialize: () ->
+    @current_view = @control_view
+
+  select_control: () ->
+    @set_current_view(@control_view)
+
+  select_monitor: () ->
+    @set_current_view(@monitor_view)
+
+  select_configure: () ->
+    @set_current_view(@configure_view)
+
+  set_current_view: (view) ->
+    @current_view = view
+    @render()
 
   render: () ->
     $('#main-view').html @current_view.render().el
-    
-    $("#99b9b6d7bc4c69844b9b70ff601e3124").click()
-    $("#977A97A2-434A-440C-B800-5889BB4367BB").click()
+
     this

@@ -2,9 +2,11 @@ slinky_require('../core.coffee')
 
 App.RoomListView = Backbone.View.extend
   initialize: () ->
+    App.rooms.bind "change", () => @render()
     App.rooms.bind "change:selection", @selection_changed
 
   render: () ->
+    console.log("RENDERING")
     @el = App.templates.room_list(buildings: App.buildings.toJSON())
     $(".rooms a", @el).click @room_clicked
 

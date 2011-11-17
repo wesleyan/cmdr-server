@@ -1,7 +1,7 @@
 slinky_require('core.coffee')
 slinky_require('models.coffee')
 slinky_require('server.coffee')
-slinky_require('views/main_view.coffee')
+slinky_require('router.coffee')
 
 App.server = new App.Server
 
@@ -19,4 +19,6 @@ $(window).ready () ->
     App.templates[d.id] =
       (params) -> dommify Handlebars.compile($(d).html())(params)
 
+  new App.Router()
+  Backbone.history.start()
 

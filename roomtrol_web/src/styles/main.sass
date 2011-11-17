@@ -58,7 +58,7 @@ a
   #monitor-button.selected
     background-color: white
 
-  #monitor-button.selected
+  #configure-button.selected
     background-color: #C1D699
 
 #main-view
@@ -113,7 +113,15 @@ a
     top: 0
     bottom: 0
     background-color: #EFEBE3
-    
+
+#monitor-view
+  .main-pane
+    +fill-parent
+
+#configure-view
+  .main-pane
+    +fill-parent
+    left: 300px
 
 .device-list
   +fill-parent
@@ -148,7 +156,7 @@ a
         color: #ddd
 
 .device-control
-  padding: 20px
+  padding: 0px
 
   h1, h2
     font-weight: normal
@@ -195,6 +203,7 @@ a
         min-width: 20px
         padding-right: 8px
         padding-left: 8px
+        margin-top: 1px
 
     select
       font-size: 16px

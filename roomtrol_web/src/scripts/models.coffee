@@ -1,6 +1,11 @@
 slinky_require('core.coffee')
 
 App.SelectionCollection = Backbone.Collection.extend
+  initialize: () ->
+    #@bind("change", () => @fix_selection)
+
+  fix_selection: () ->
+
   select: (id) ->
     item = this.get(id)
     if item

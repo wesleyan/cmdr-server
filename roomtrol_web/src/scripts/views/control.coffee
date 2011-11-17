@@ -13,4 +13,5 @@ App.ControlView = Backbone.View.extend
     $(".left-pane", @el).html @room_list.render().el
     $(".center-pane", @el).html @device_list.render().el
     $(".right-pane", @el).html @device_control.render().el
+
     this
