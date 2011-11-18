@@ -1,6 +1,13 @@
-<div id="control-view">
+<div id="configure-view">
   <div class="left-pane scroll">
   </div>
   <div class="main-pane scroll">
+    <div class="tab-view">
+      <ul id="configure-tabs">
+        {{#tabs}}
+          <li class="tab-button"><a class="label" href="javascript:">{{this}}</a></li>
+        {{/tabs}}
+      </ul>
+    </div>
   </div>
 </div>

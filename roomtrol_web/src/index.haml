@@ -13,7 +13,7 @@
   %body
     #top-bar
       #tab-bar
-        %ul
+        %ul.tab-view
           %li#control-button.tab-button
             %a.label{:href => "#control"} control
           %li#monitor-button.tab-button
@@ -21,4 +21,6 @@
           %li#configure-button.tab-button
             %a.label{:href => "#configure"} configure
     #main-view
-    
+      #control.subview
+      #monitor.subview
+      #configure.subview

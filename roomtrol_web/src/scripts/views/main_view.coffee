@@ -7,23 +7,16 @@ App.MainView = Backbone.View.extend
   monitor_view: new App.MonitorView
   configure_view: new App.ConfigureView
 
-  initialize: () ->
-    @current_view = @control_view
-
-  select_control: () ->
-    @set_current_view(@control_view)
-
-  select_monitor: () ->
-    @set_current_view(@monitor_view)
-
-  select_configure: () ->
-    @set_current_view(@configure_view)
-
-  set_current_view: (view) ->
-    @current_view = view
-    @render()
+  select_tab: (tab) ->
+    $(".tab-button").removeClass("selected")
+    $(".tab-button##{tab}-button").addClass("selected")
+    $("#main-view .subview").hide()
+    $("#main-view ##{tab}").show()
 
   render: () ->
-    $('#main-view').html @current_view.render().el
+    $('#main-view #control').html @control_view.render().el
+    $('#main-view #monitor').html @monitor_view.render().el
+    $('#main-view #configure').html @configure_view.render().el
+    @select_tab("configure")
 
     this
