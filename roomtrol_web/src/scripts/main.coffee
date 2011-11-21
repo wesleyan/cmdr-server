@@ -22,7 +22,7 @@ $(window).ready () ->
     else if state == false
       "false"
     else
-      ""
+      "&nbsp;"
 
   _($("script[type='text/x-handlebars-template']")).each (d) ->
     App.templates[d.id] =
