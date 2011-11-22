@@ -6,8 +6,17 @@ App.RoomListView = Backbone.View.extend
     App.rooms.bind "change:selection", @selection_changed
 
   render: () ->
-    console.log("RENDERING")
-    @el = App.templates.room_list(buildings: App.buildings.toJSON())
+    buildings = App.buildings.map (b) ->
+      id: b.id
+      name: b.get('name')
+      rooms: b.get('rooms').chain()
+                           .sortBy((r) -> r.get('params')?.name)
+                           .invoke("toJSON")
+                           .value()
+
+    console.log(buildings)
+
+    @el = App.templates.room_list(buildings: buildings)
     $(".rooms a", @el).click @room_clicked
     @selection_changed()
 

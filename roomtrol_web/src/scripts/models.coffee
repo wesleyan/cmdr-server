@@ -49,7 +49,7 @@ App.RoomController = App.SelectionCollection.extend
 
   fix_selection: () ->
     unless @selected
-      @select(@first()?.id)
+      @select(@min((r) -> r.get('params').name)?.id)
 
 
 App.rooms = new App.RoomController
@@ -99,7 +99,8 @@ App.DeviceController = App.SelectionCollection.extend
     @trigger("change:content")
     if not @content
       @select(null)
-    else if not _(@content).include @selected
+    else if !@content.include @selected
+      console.log("selected", @selected)
       @select(@content.first()?.id)
 
 App.devices = new App.DeviceController
