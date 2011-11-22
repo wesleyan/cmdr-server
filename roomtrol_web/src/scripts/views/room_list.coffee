@@ -9,6 +9,7 @@ App.RoomListView = Backbone.View.extend
     console.log("RENDERING")
     @el = App.templates.room_list(buildings: App.buildings.toJSON())
     $(".rooms a", @el).click @room_clicked
+    @selection_changed()
 
     this
 
@@ -17,6 +18,6 @@ App.RoomListView = Backbone.View.extend
     false
 
   selection_changed: () ->
-    $('.rooms li').removeClass 'selected'
-    $(".rooms li:has(a##{App.rooms.selected.id})").addClass 'selected'
+    $('.rooms li', @el).removeClass 'selected'
+    $(".rooms li:has(a##{App.rooms.selected.id})", @el).addClass 'selected'
 

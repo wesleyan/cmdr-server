@@ -21,6 +21,8 @@ App.DeviceControlView = Backbone.View.extend
 
       @setup_handlers()
       @update()
+    else
+      $(@el).html ""
     this
 
   setup_handlers: () ->

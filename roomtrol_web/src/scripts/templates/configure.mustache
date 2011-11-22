@@ -5,9 +5,11 @@
     <div class="tab-view">
       <ul id="configure-tabs">
         {{#tabs}}
-          <li class="tab-button"><a class="label" href="javascript:">{{this}}</a></li>
+          <li class="tab-button {{this}}-tab"><a class="label" href="javascript:">{{this}}</a></li>
         {{/tabs}}
       </ul>
+    </div>
+    <div id="configure-content">
     </div>
   </div>
 </div>

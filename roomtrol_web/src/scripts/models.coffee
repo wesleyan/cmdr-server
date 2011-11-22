@@ -1,17 +1,11 @@
 slinky_require('core.coffee')
 
 App.SelectionCollection = Backbone.Collection.extend
-  initialize: () ->
-    #@bind("change", () => @fix_selection)
-
-  fix_selection: () ->
-
   select: (id) ->
     item = this.get(id)
-    if item
-      @selected = item
-      @trigger("change:selection")
-      item.trigger("selected")
+    @selected = item
+    @trigger("change:selection")
+    if item then item.trigger("selected")
 
 ##### BUILDINGS
 
@@ -49,6 +43,15 @@ App.Room = Backbone.RelationalModel.extend
 App.RoomController = App.SelectionCollection.extend
   model: App.Room
 
+  initialize: () ->
+    @bind("change", @fix_selection, this)
+    @bind("reset", @fix_selection, this)
+
+  fix_selection: () ->
+    unless @selected
+      @select(@first()?.id)
+
+
 App.rooms = new App.RoomController
 
 ##### DEVICES
@@ -85,6 +88,19 @@ App.Device = Backbone.RelationalModel.extend
 
 App.DeviceController = App.SelectionCollection.extend
   model: App.Device
+
+  initialize: () ->
+    App.rooms.bind "change:selection", @parent_changed, this
+    App.rooms.bind "change", @parent_changed, this
+    @parent_changed()
+
+  parent_changed: () ->
+    @content = App.rooms.selected?.get("devices")
+    @trigger("change:content")
+    if not @content
+      @select(null)
+    else if not _(@content).include @selected
+      @select(@content.first()?.id)
 
 App.devices = new App.DeviceController
 

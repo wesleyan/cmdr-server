@@ -8,8 +8,8 @@ App.MainView = Backbone.View.extend
   configure_view: new App.ConfigureView
 
   select_tab: (tab) ->
-    $(".tab-button").removeClass("selected")
-    $(".tab-button##{tab}-button").addClass("selected")
+    $("#top-bar #tab-bar .tab-button").removeClass("selected")
+    $("#top-bar .tab-button##{tab}-button").addClass("selected")
     $("#main-view .subview").hide()
     $("#main-view ##{tab}").show()
 
@@ -17,6 +17,5 @@ App.MainView = Backbone.View.extend
     $('#main-view #control').html @control_view.render().el
     $('#main-view #monitor').html @monitor_view.render().el
     $('#main-view #configure').html @configure_view.render().el
-    @select_tab("configure")
 
     this
