@@ -1,5 +1,6 @@
 slinky_require('../core.coffee')
 slinky_require('room_list.coffee')
+slinky_require("general_configure.coffee")
 
 App.ConfigureView = Backbone.View.extend
   room_list: new App.RoomListView
@@ -19,7 +20,7 @@ App.ConfigureView = Backbone.View.extend
 
     view = App[tab[0].toUpperCase() + tab.slice(1) + "ConfigureView"]
     if view
-      $("#configure-view #configure-content", @el).html new view.render().el
+      $("#configure-view #configure-content", @el).html (new view).render().el
     else
       $("#configure-view #configure-content", @el).html "<h1>not implemented</h1>"
 
