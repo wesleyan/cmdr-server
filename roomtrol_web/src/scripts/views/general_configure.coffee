@@ -9,27 +9,31 @@ App.GeneralConfigureView = Backbone.View.extend
       ((r) -> r.get('params')?.name),
       ((r, v) -> r.set(params: _(r.get('params')).extend(name: v)))
 
+
   field_bind: (field, model, get, set) ->
     el = $(field, @el)
     model.bind "change", () ->
-      el.val get(model)
+      if el.val() != get(model)
+        el.val get(model)
 
     el.keyup () ->
-      console.log("SETTING=" + el.val())
-      set(model, el.val())
+      if el.val() != get(model)
+        set(model, el.val())
+        model.trigger("change")
 
-  render: () ->
-    @room?.unbind "change", @update
-    @room = App.rooms.selected
+   render: () ->
+    @model?.unbind "change", @update
+    @model = App.rooms.selected
 
-    if @room
+    if @model
       hash =
-        name: @room.get('params')?.name
         buildings: App.buildings.toJSON()
+        name: @model.get('params').name
 
       $(@el).html App.templates.general_configure(hash)
 
-      @set_up_bindings(@room)
+      @set_up_bindings(@model)
+      #Backbone.ModelBinding.bind(this)
 
     this
 

@@ -1,6 +1,7 @@
 slinky_require('vendor/backbone.js')
 slinky_require('vendor/backbone-relational.js')
 slinky_require('vendor/handlebars.js')
+slinky_require('vendor/backbone.modelbinding.js')
 
 window.App =
   debugging: on

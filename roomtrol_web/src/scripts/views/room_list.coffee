@@ -8,7 +8,6 @@ App.RoomListView = Backbone.View.extend
   html_bind: (selector, model, get) ->
     el = $(selector, @el)
     model.bind "change", () ->
-      console.log("Changed: " + selector)
       el.html get(model)
 
   render: () ->
