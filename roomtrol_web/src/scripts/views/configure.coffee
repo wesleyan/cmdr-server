@@ -1,6 +1,7 @@
 slinky_require('../core.coffee')
 slinky_require('room_list.coffee')
-slinky_require("general_configure.coffee")
+slinky_require('general_configure.coffee')
+slinky_require('device_configure.coffee')
 
 App.ConfigureView = Backbone.View.extend
   room_list: new App.RoomListView
@@ -8,15 +9,12 @@ App.ConfigureView = Backbone.View.extend
   tabs: ["general", "devices", "sources", "actions", "preview"]
 
   initialize: () ->
-    @select_tab @tabs[0]
+    @select_tab @tabs[1]
 
   select_tab: (tab) ->
     @selected_tab = tab
     $("#configure-tabs .tab-button", @el).removeClass "selected"
     $("#configure-tabs .tab-button.#{tab}-tab", @el).addClass "selected"
-
-    console.log("Selecting #{tab}")
-    console.log($("#configure-tabs .tab-button.#{tab}-tab", @el))
 
     view = App[tab[0].toUpperCase() + tab.slice(1) + "ConfigureView"]
     if view
