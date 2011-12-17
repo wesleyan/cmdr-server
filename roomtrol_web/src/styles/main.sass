@@ -31,6 +31,7 @@ a
   color: black
   text-decoration: none
 
+
 .scroll
   overflow-y: auto
 
@@ -233,6 +234,7 @@ a
     select
       font-size: 16px
 
+
 #general-configure
   .controls
     +fill-width(60px)
@@ -279,6 +281,43 @@ ul.configure-list
       a
         color: white
     a
-      display: block
-      
+      display: block      
     
+.configure-form
+  +fill-parent
+  left: 200px
+
+  form
+    width: 400px
+    margin-left: auto
+    margin-right: auto
+    margin-top: 100px
+
+    .field
+      margin-top: 20px
+
+  label
+    color: black
+    font-size: 22px
+    line-height: 1.8
+    display: inline-block
+    vertical-align: top
+    text-align: right
+    width: 75px
+    margin-left: 25px
+    +user-select(none)
+
+  input, select
+    //-webkit-appearance: none
+    border: thin solid rgb(103, 103, 103)
+    height: 25px
+    width: 230px
+    margin-left: 10px
+    font-size: 16px
+    line-height: 1.2em
+    margin-top: 8px
+
+    &.invalid
+      border: thin solid rgb(255, 118, 111)
+
+      

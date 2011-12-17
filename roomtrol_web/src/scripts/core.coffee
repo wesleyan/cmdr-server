@@ -9,4 +9,3 @@ window.App =
   log: (args...) -> if @debugging then console.log.apply(console, args)
 
   modules: {}
-

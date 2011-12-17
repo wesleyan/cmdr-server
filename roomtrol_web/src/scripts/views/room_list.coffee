@@ -22,6 +22,7 @@ App.RoomListView = Backbone.View.extend
 
     $(@el).html App.templates.room_list(buildings: buildings)
     $(".rooms a", @el).click @room_clicked
+    $(".buildings>li>a", @el).click @building_clicked
     @selection_changed()
 
     get = (r) -> r.get('params')?.name
@@ -35,7 +36,10 @@ App.RoomListView = Backbone.View.extend
     App.rooms.select e.target.id
     false
 
+  building_clicked: (e) ->
+    # This should probably implement according-like functionality
+    false
+
   selection_changed: () ->
     $('.rooms li', @el).removeClass 'selected'
     $(".rooms li:has(a##{App.rooms.selected.id})", @el).addClass 'selected'
-
