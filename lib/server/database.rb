@@ -3,13 +3,17 @@ module Database
 		puts "Updating devices"
 		errors = []
 		couch = CouchRest.database!("http://127.0.0.1:5984/drivers")
-		Dir.glob("server/devices/*.rb").each{|device|
+    dir = File.dirname(__FILE__)
+		Dir.glob("#{dir}/devices/*.rb").each{|device|
 			begin
 				require device
 				device_string = File.open(device).read
-				data = JSON.load device_string.split("\n").collect{|line| line[1..-1]}.join("") \
-				                                   .match(/---(.*)?---/)[1]
-				#puts data.inspect
+				data = JSON.load(device_string
+          .split("\n")
+          .collect{|line| line[1..-1]}
+          .join("")
+          .match(/---(.*)?---/)[1])
+        
 				if record = couch.view("drivers/by_name", {:key => data["name"]})["rows"][0]
 					data["_id"] = record["value"]["_id"]
 					data["_rev"] = record["value"]["_rev"]
@@ -17,7 +21,7 @@ module Database
 				data["driver"] = true
 				data["config"] = Object.const_get(data["name"]).config_vars
 				couch.save_doc(data)
-			rescue
+			rescue => e
 				errors << "Failed to load #{device}: #{$!}"
 			rescue LoadError
 				errors << "Failed to load #{device}: syntax error"
@@ -76,7 +80,7 @@ eos
         :devices => {
           :map => <<-eos.strip
             function(doc){
-              if(doc.device && doc.belongs_to){
+              if(doc.device && doc.belongs_to && !doc.eigenroom){
                 emit(doc._id, {
                   id: doc._id,
                   name: doc.name,

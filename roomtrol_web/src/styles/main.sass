@@ -1,7 +1,11 @@
 /*! slinky_require("reset.css")
 @import 'mixins'
 
+$side-bar-color: #EFEBE3
 $tab-bar-height: 72px
+$control-tab-color: $side-bar-color
+$monitor-tab-color: white
+$configure-tab-color: #C1D699
 
 h1
   font-size: 25px
@@ -27,8 +31,24 @@ a
   color: black
   text-decoration: none
 
+
 .scroll
   overflow-y: auto
+
+.tab-view li.tab-button
+  font-size: 2.8em
+  line-height: 40px
+  display: block
+  float: left
+  height: 31px
+  padding: 20px
+  padding-top: 5px
+  margin-top: 16px
+  a
+    color: white
+  &.selected
+    a
+      color: black
 
 #tab-bar
   background-image: url('/images/header.png')
@@ -37,29 +57,14 @@ a
   background-color: #333
   +fill-width($tab-bar-height)
 
-  li.tab-button
-    font-size: 2.8em
-    line-height: 40px
-    display: block
-    float: left
-    height: 31px
-    padding: 20px
-    padding-top: 5px
-    margin-top: 16px
-    a
-      color: white
-    &.selected
-      a
-        color: black
-
   #control-button.selected
-    background-color: #EFEBE3
+    background-color: $control-tab-color
   
   #monitor-button.selected
-    background-color: white
+    background-color: $monitor-tab-color
 
-  #monitor-button.selected
-    background-color: #C1D699
+  #configure-button.selected
+    background-color: $configure-tab-color
 
 #main-view
   position: absolute
@@ -70,7 +75,7 @@ a
 
 .room-list
   +fill-height(300px)
-  background-color: #EFEBE3
+  background-color: $side-bar-color
   padding-top: 30px
 
   ul
@@ -99,7 +104,6 @@ a
           padding: 10px
           display: block
 
-
 #control-view
   .center-pane
     +fill-parent
@@ -112,8 +116,38 @@ a
     right: 0
     top: 0
     bottom: 0
-    background-color: #EFEBE3
-    
+    background-color: $side-bar-color
+
+#monitor-view
+  .main-pane
+    +fill-parent
+
+#configure-view
+  .main-pane
+    +fill-parent
+    left: 300px
+
+    .tab-view
+      +fill-width(48px)
+      background-color: $configure-tab-color
+
+      li.tab-button
+        line-height: 20px
+        //width: 60px
+        padding: 10px
+        padding-top: 0px
+        height: 25px
+        margin-top: 13px
+        text-align: center
+        &.selected
+          background-color: white
+        a.label
+          color: black
+          font-size: 24px
+
+    #configure-content
+      +fill-parent
+      top: 48px
 
 .device-list
   +fill-parent
@@ -171,7 +205,7 @@ a
         color: #ddd
 
 .device-control
-  padding: 20px
+  padding: 10px
 
   h1, h2
     font-weight: normal
@@ -185,9 +219,10 @@ a
     padding-bottom: 10px
 
   .control
-    padding-bottom: 10px
-    height: 40px
+    padding-bottom: 20px
+    min-height: 40px
     padding-left: 20px
+    display: table
 
     a.button
       display: block
@@ -210,5 +245,102 @@ a
         &:active
           +gradient(#73a4eb*0.8, #73a4eb*0.7, 0.25, 1)
 
+      &.select
+        +border-radius(0)
+        margin-left: 0
+        width: inherit
+        min-width: 20px
+        padding-right: 8px
+        padding-left: 8px
+        margin-top: 1px
+
     select
       font-size: 16px
+
+
+#general-configure
+  .controls
+    +fill-width(60px)
+
+    .field
+      position: absolute
+      width: 300px
+      height: 100px
+      float: left
+      padding-top: 50px
+      left: 50%
+      margin-left: -150px
+
+      &.name
+        left: 30%
+      &.building
+        left: 70%
+      
+      label
+        font-size: 24px
+        padding-right: 20px
+
+      input
+        font-size: 20px
+        width: 150px
+        padding: 4px
+
+      select
+        font-size: 24px
+
+ul.configure-list
+  +fill-height(198px)
+  border-right: 1px #DFDFDF solid
+
+  li
+    border-bottom: 1px #DFDFDF solid
+    height: 45px
+    font-size: 20px
+    padding-left: 5px
+    line-height: 45px
+
+    &.selected
+      background-color: #5498FF
+      a
+        color: white
+    a
+      display: block      
+    
+.configure-form
+  +fill-parent
+  left: 200px
+
+  form
+    width: 400px
+    margin-left: auto
+    margin-right: auto
+    margin-top: 100px
+
+    .field
+      margin-top: 20px
+
+  label
+    color: black
+    font-size: 22px
+    line-height: 1.8
+    display: inline-block
+    vertical-align: top
+    text-align: right
+    width: 75px
+    margin-left: 25px
+    +user-select(none)
+
+  input, select
+    //-webkit-appearance: none
+    border: thin solid rgb(103, 103, 103)
+    height: 25px
+    width: 230px
+    margin-left: 10px
+    font-size: 16px
+    line-height: 1.2em
+    margin-top: 8px
+
+    &.invalid
+      border: thin solid rgb(255, 118, 111)
+
+      

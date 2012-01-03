@@ -28,8 +28,7 @@ class Server
     App.rooms.reset msg.rooms
     App.devices.reset msg.devices
     App.drivers.reset msg.drivers
-
-    App.main_view = new App.MainView().render()
+    @trigger("connected")
 
   send_message: (msg) ->
     msg['id'] = @createUUID()
