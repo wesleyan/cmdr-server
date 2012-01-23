@@ -22,9 +22,11 @@ App.DevicesConfigureView = App.BindView.extend
 
   render: () ->
     @model = App.rooms.selected
-
     if @model
-      $(@el).html App.templates.device_configure()
+      hash =
+        ports: @model.get('params').ports
+        types: _(App.drivers.pluck("type")).chain().compact().uniq().value()
+      $(@el).html App.templates.device_configure(hash)
       $(".device-list", @el).html @configure_list.render().el
       #@set_up_bindings(@model)
 
