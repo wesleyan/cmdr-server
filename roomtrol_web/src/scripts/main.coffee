@@ -13,6 +13,15 @@ $(window).ready () ->
   # This converts things like "this_is_a_name" to "this is a name"
   Handlebars.registerHelper "titleize", (name) -> name.split("_").join(" ")
 
+  # This displays the proper falsey value in the control page
+  Handlebars.registerHelper "falsey", (state) -> 
+    if state
+      state
+    else if state == false
+      "false"
+    else
+      "&nbsp;"
+
   _($("script[type='text/x-handlebars-template']")).each (d) ->
     App.templates[d.id] =
       (params) -> dommify Handlebars.compile($(d).html())(params)
