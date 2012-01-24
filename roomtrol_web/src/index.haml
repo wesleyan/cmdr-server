@@ -1,0 +1,24 @@
+!!!5
+
+%html
+  %head
+    %title Roomtrol Web
+    %script{:src => "scripts/vendor/jquery-1.7.js"}
+    slinky_styles
+    slinky_scripts
+
+    - Dir.glob("./scripts/templates/*.mustache") do |f|
+      - name = File.basename(f).split(".")[0..-2].join(".")
+      %script{:id => name, :type => "text/x-handlebars-template"}= File.read(f)
+  %body
+    #top-bar
+      #tab-bar
+        %ul
+          %li#control-button.tab-button.selected 
+            %a.label{:href => "#"} control
+          %li#monitor-button.tab-button
+            %a.label{:href => "#"} monitor
+          %li#configure-button.tab-button
+            %a.label{:href => "#"} configure
+    #main-view
+    

@@ -34,7 +34,7 @@ task :install_gems do
 	puts `sudo gem install highline net-ssh net-scp sproutcore git`
 end
 
-desc "setup controller databases"
+desc "set up controller databases"
 task :setup_db do
 	begin
 		require 'net/ssh'
@@ -61,6 +61,13 @@ task :setup_db do
 		  puts ssh.exec!(commands.join(" && "))
 		end
 	end
+end
+
+desc "set up local database"
+task :local_db do
+  require 'couchrest'
+  require_relative '../lib/server/database.rb'
+  Database.setup_database  
 end
 
 desc "finds all targets in the system and computes their build numbers" 

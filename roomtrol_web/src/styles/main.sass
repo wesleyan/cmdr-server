@@ -1,0 +1,214 @@
+/*! slinky_require("reset.css")
+@import 'mixins'
+
+$tab-bar-height: 72px
+
+h1
+  font-size: 25px
+h2 
+  font-size: 23px
+h3 
+  font-size: 21px
+h4 
+  font-size: 19px
+h5 
+  font-size: 17px
+h6 
+  font-size: 15px
+
+
+body
+  font-family: Helvetica, Arial
+
+div, img, p
+  +user-select(none)
+
+a
+  color: black
+  text-decoration: none
+
+.scroll
+  overflow-y: auto
+
+#tab-bar
+  background-image: url('/images/header.png')
+  background-repeat: no-repeat
+  background-position: 98% 50%
+  background-color: #333
+  +fill-width($tab-bar-height)
+
+  li.tab-button
+    font-size: 2.8em
+    line-height: 40px
+    display: block
+    float: left
+    height: 31px
+    padding: 20px
+    padding-top: 5px
+    margin-top: 16px
+    a
+      color: white
+    &.selected
+      a
+        color: black
+
+  #control-button.selected
+    background-color: #EFEBE3
+  
+  #monitor-button.selected
+    background-color: white
+
+  #monitor-button.selected
+    background-color: #C1D699
+
+#main-view
+  position: absolute
+  top: $tab-bar-height
+  left: 0
+  right: 0
+  bottom: 0
+
+.room-list
+  +fill-height(300px)
+  background-color: #EFEBE3
+  padding-top: 30px
+
+  ul
+    width: 100%
+    list-style: none
+
+    li
+      font-weight: bold
+      font-size: 24px
+      text-align: left
+      padding-left: 20px
+      padding-bottom: 10px
+
+      ul li
+        display: block
+        font-size: 16px
+        //margin-left: 100px
+        padding-left: 40px
+        padding-bottom: 0
+        width: 100%
+        &.selected
+          background-color: white
+
+        a
+          line-height: 18px
+          padding: 10px
+          display: block
+
+
+#control-view
+  .center-pane
+    +fill-parent
+    left: 300px
+    right: 300px
+   
+  .right-pane
+    position: absolute
+    width: 300px
+    right: 0
+    top: 0
+    bottom: 0
+    background-color: #EFEBE3
+    
+
+.device-list
+  +fill-parent
+
+  ul
+    list-style: none
+    margin: 0
+    padding: 0
+
+  li.device
+    display: block
+    height: 80px
+    cursor: default
+    overflow: hidden
+    border-bottom: 1px solid #ddd
+
+    h3
+      font-size: 30px
+      line-height: 80px
+      margin-left: 10px
+      width: 100px
+
+    dl
+      margin-left: 150px
+      padding: 0px
+      font-size: 15px
+      height: 80px
+      margin-top: -70px
+      +columns(185px)
+      position: absolute
+
+    dt
+      text-transform: capitalize
+      text-align: right
+      width: 109px
+      margin-bottom: 5px
+      border: 0
+      display: inline
+      float: left
+      clear: left
+
+    dd
+      padding-left: 5px
+      width: 71px
+      color: gray
+      display: inline
+      float: left
+      text-align: left
+
+    &.selected
+      background-color: #5498FF
+      color: white
+      
+      dd
+        color: #ddd
+
+.device-control
+  padding: 20px
+
+  h1, h2
+    font-weight: normal
+  h1
+    font-size: 38px
+    text-align: center
+    padding-bottom: 20px
+
+  h2
+    font-size: 24px
+    padding-bottom: 10px
+
+  .control
+    padding-bottom: 10px
+    height: 40px
+    padding-left: 20px
+
+    a.button
+      display: block
+      +button(#e7e7e7)
+      +border-radius(15px)
+      border: none
+      text-transform: uppercase
+      font-size: 20px
+      line-height: 34px
+      text-align: center
+      float: left
+      height: 32px
+      width: 90px
+      margin-left: 10px
+
+      &.selected
+        color: white
+        +gradient(#73a4eb, #73a4eb*0.8, 0.25, 1)
+        
+        &:active
+          +gradient(#73a4eb*0.8, #73a4eb*0.7, 0.25, 1)
+
+    select
+      font-size: 16px

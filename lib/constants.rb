@@ -8,5 +8,11 @@ module Wescontrol
     ROOMTROL_DAEMON_PORT = 10000
     # Port to start creating CouchDB SSH forwards on
     COUCHDB_PORT = 11000
+    # Server AMQP queue
+    SERVER_QUEUE = "roomtrol:server:server"
+    # Websocket AMQP queue
+    WEBSOCKET_QUEUE = "roomtrol:server:websocket"
+    # Websocket port
+    WEBSOCKET_PORT = 8000
   end
 end
