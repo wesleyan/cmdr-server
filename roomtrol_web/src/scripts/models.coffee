@@ -107,12 +107,28 @@ App.devices = new App.DeviceController
 
 ##### DRIVERS
 
-App.Driver = Backbone.Model.extend()
+App.Driver = Backbone.Model.extend
+  type: () ->
+    if @get("type")
+      @get("type")
+    else
+      App.drivers.find((d) => d.get('name') == @get('depends_on')).type()
+  options: () ->
+    _(@get("config")).chain()
+      .map((v, k) ->
+        type = {}
+        type[v.type] = true
+        _(v).chain().clone().extend(name: k, _type: type).value()
+      )
+      .filter((v) -> v.type)
+      .value()
 
 App.DriverController = Backbone.Collection.extend
   model: App.Driver
   get_by_name: (name) ->
     @find((d) -> d.get('name') == name)
+  get_by_type: (type) ->
+    @filter((d) -> d.type() == type)
 
 App.drivers = new App.DriverController
 

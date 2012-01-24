@@ -1,0 +1,21 @@
+{{#each options}}
+  <div class="field">
+    <label>{{name}}</label>
+    {{#if _type.integer}}
+      <input type="number" name="{{name}}"></input>
+    {{/if}}
+    {{#if _type.string}}
+      <input type="text" name="{{name}}"></input>
+    {{/if}}
+    {{#if _type.password}}
+      <input type="password" name="{{name}}"></input>
+    {{/if}}
+    {{#if _type.port}}
+      <select name="{{name}}">
+        {{#ports}}
+          <option name="{{this}}">{{this}}</option>
+        {{/ports}}
+      </select>
+    {{/if}}
+  </div>
+{{/each}}

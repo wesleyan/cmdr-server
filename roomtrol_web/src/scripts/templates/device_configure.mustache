@@ -9,23 +9,18 @@
       </div>
       <div class="field">
         <label>type</label>
-        <select name="port">
+        <select name="type">
           {{#types}}
-            <option name="{{this}}">{{this}}</option>
+            <option value="{{this}}">{{this}}</option>
           {{/types}}
         </select>
       </div>
       <div class="field">
         <label>driver</label>
-        <select name="driver"></select>
-      </div>
-      <div class="field">
-        <label>port</label>
-        <select name="port">
-          {{#ports}}
-            <option name="{{this}}">{{this}}</option>
-          {{/ports}}
+        <select name="driver">
         </select>
+      </div>
+      <div class="options">
       </div>
     </form>
   </div>
