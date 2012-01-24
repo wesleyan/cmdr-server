@@ -97,3 +97,8 @@
 =text-shadow($color, $x, $y, $blur)
   text-shadow: $color $x $y #{$blur}px
   -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Color=#{$color},Direction=135,Strength=#{$blur})"
+
+=columns($value)
+  -webkit-columns: $value
+  -moz-columns: $value
+  columns: $value

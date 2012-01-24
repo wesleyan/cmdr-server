@@ -13,7 +13,7 @@ class Websock
   ever_connected: no
   options:
     host: "ws://#{window.location.host.split(":")[0]}:8000/"
-    host: "ws://ims-devmac.class.wesleyan.edu:8000/"
+    # host: "ws://ims-devmac.class.wesleyan.edu:8000/"
     connect_timeout: 1000
     reconnection_delay: 500
     max_delay: 15*1000
