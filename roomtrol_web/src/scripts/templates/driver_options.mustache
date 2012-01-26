@@ -1,6 +1,6 @@
 {{#each options}}
   <div class="field">
-    <label>{{name}}</label>
+    <label>{{titleize name}}</label>
     {{#if _type.integer}}
       <input type="number" name="{{name}}"></input>
     {{/if}}
@@ -9,6 +9,13 @@
     {{/if}}
     {{#if _type.password}}
       <input type="password" name="{{name}}"></input>
+    {{/if}}
+    {{#if _type.option}}
+      <select name="{{name}}">
+        {{#options}}
+          <option name="{{this}}">{{this}}</option>
+        {{/options}}
+      </select>
     {{/if}}
     {{#if _type.port}}
       <select name="{{name}}">

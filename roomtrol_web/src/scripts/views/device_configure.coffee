@@ -21,6 +21,15 @@ App.DevicesConfigureView = App.BindView.extend
       @field_bind "select[name='driver']", @device,
         ((r) -> r.driver().get('name')),
         ((r, v) => r.set(driver: v); @update_options(v))
+      if @driver_options
+        _(@driver_options).each (opt) =>
+          @field_bind ".options [name='#{opt.name}']", @device,
+            ((r) -> r.get('params')?.config?[opt.name]),
+            ((r, v) ->
+              config = r.get('params')?.config
+              config = {} unless config
+              config[opt.name] = v
+              r.set(params: _(r.get('params')).extend(config: config)))
 
   change_selection: () ->
     @device = App.devices.selected
@@ -41,12 +50,12 @@ App.DevicesConfigureView = App.BindView.extend
   update_options: (name) ->
     driver = App.drivers.get_by_name(name)
     if driver
-      hash =
-        options: _(driver.options()).map((d) =>
+      @driver_options = _(driver.options()).map((d) =>
           _.extend(_.clone(d), ports: @model.get('params').ports))
-      console.log(hash)
+      hash =
+        options: @driver_options
       $(".options", @el).html(App.templates.driver_options(hash))
-
+    @set_up_bindings()
 
   render: () ->
     @model = App.rooms.selected
