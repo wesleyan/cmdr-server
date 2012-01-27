@@ -30,13 +30,24 @@ App.buildings = new App.BuildingController
 
 App.Room = Backbone.RelationalModel.extend
   relations: [
-    type: Backbone.HasMany,
-    key: 'devices',
-    relatedModel: 'App.Device',
-    collectionType: 'App.DeviceController'
-    reverseRelation:
-      key: 'room',
-      includeInJSON: 'id'
+    {
+      type: Backbone.HasMany,
+      key: 'devices',
+      relatedModel: 'App.Device',
+      collectionType: 'App.DeviceController'
+      reverseRelation:
+        key: 'room',
+        includeInJSON: 'id'
+    },
+    {
+      type: Backbone.HasMany,
+      key: 'sources',
+      relatedModel: 'App.Source',
+      collectionType: 'App.SourceController'
+      reverseRelation:
+        key: 'room',
+        includeInJSON: 'id'
+    }
     ]
 
 
@@ -105,6 +116,15 @@ App.DeviceController = App.SelectionCollection.extend
 
 App.devices = new App.DeviceController
 
+### SOURCES
+App.Source = Backbone.RelationalModel.extend()
+
+App.SourceController = App.SelectionCollection.extend
+  model: App.Source
+
+App.sources = new App.SourceController
+
+
 ##### DRIVERS
 
 App.Driver = Backbone.Model.extend
@@ -131,5 +151,3 @@ App.DriverController = Backbone.Collection.extend
     @filter((d) -> d.type() == type)
 
 App.drivers = new App.DriverController
-
-

@@ -21,6 +21,7 @@ module Wescontrol
 
           drivers: CouchRest.database("#{DB_URI}/drivers").
             get("_design/drivers").view("by_name")["rows"].map{|x| x['value']}
+          
         }
 
         @deferred_responses = {}
