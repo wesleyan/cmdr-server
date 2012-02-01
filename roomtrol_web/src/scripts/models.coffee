@@ -116,13 +116,21 @@ App.DeviceController = App.SelectionCollection.extend
 
 App.devices = new App.DeviceController
 
-### SOURCES
+# SOURCES
 App.Source = Backbone.RelationalModel.extend()
 
 App.SourceController = App.SelectionCollection.extend
   model: App.Source
 
 App.sources = new App.SourceController
+
+# ACTIONS
+App.Action = Backbone.RelationalModel.extend()
+
+App.ActionController = App.SelectionCollection.extend
+  model: App.Action
+
+App.actions = new App.ActionController
 
 
 ##### DRIVERS

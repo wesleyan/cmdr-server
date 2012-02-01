@@ -6,8 +6,13 @@ App.DevicesConfigureView = App.BindView.extend
   initialize: () ->
     App.rooms.bind "change:selection", @render, this
     @configure_list = new App.ConfigureListView(App.devices)
+    @configure_list.bind "add", @add, this
     App.devices.bind "change:selection", @change_selection, this
     @change_selection()
+
+  add: () ->
+    App.devices.add(params: {name: "Unnamed"}, room: App.rooms.selected)
+    @render()
 
   set_up_bindings: (room) ->
     @unbind_all()

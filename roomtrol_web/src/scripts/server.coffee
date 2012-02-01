@@ -23,11 +23,12 @@ class Server
 
   connected: (msg) ->
     # Initialize our collections
-    console.log(msg.buildings)
     App.buildings.reset msg.buildings
     App.rooms.reset msg.rooms
     App.devices.reset msg.devices
     App.drivers.reset msg.drivers
+    App.sources.reset msg.sources
+    App.actions.reset msg.actions
     @trigger("connected")
 
   send_message: (msg) ->

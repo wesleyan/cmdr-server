@@ -13,6 +13,8 @@ App.ConfigureListView = Backbone.View.extend
 
     $(@el).html App.templates.configure_list(items: items)
     $(".item a", @el).click((e) => @item_clicked(e))
+    $(".add-button", @el).click((e) => @add_clicked())
+    $(".rem-button", @el).click((e) => @rem_clicked())
     @selection_changed()
 
     this
@@ -20,6 +22,12 @@ App.ConfigureListView = Backbone.View.extend
   item_clicked: (e) ->
     @controller.select e.target.id
     false
+
+  add_clicked: () ->
+    @trigger("add")
+
+  rem_clicked: () ->
+    @trigger("remove")
 
   selection_changed: () ->
     $('li', @el).removeClass 'selected'

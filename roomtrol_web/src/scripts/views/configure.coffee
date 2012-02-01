@@ -2,11 +2,12 @@ slinky_require('../core.coffee')
 slinky_require('room_list.coffee')
 slinky_require('general_configure.coffee')
 slinky_require('device_configure.coffee')
+slinky_require('source_configure.coffee')
 
 App.ConfigureView = Backbone.View.extend
   room_list: new App.RoomListView
 
-  tabs: ["general", "devices", "sources", "actions", "preview"]
+  tabs: ["general", "sources", "actions", "devices", "preview"]
 
   initialize: () ->
     @select_tab @tabs[1]
