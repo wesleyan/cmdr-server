@@ -53,16 +53,28 @@ class Server
     @send_message(msg)
 
   createUUID: () ->
-    # http://www.ietf.org/rfc/rfc4122.txt
-    s = []
-    hexDigits = "0123456789ABCDEF"
-    for i in [0..31]
-      s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1)
+    cryptoUUID = () ->
+      # If we have a cryptographically secure PRNG, use that
+      buf = new Uint16Array(8)
+      window.crypto.getRandomValues(buf)
+      S4 = (num) ->
+        ret = num.toString(16)
+        while ret.length < 4
+           ret = "0"+ret
+        ret
+      (S4(buf[0])+S4(buf[1])+"-"+S4(buf[2])+"-"+S4(buf[3])+"-"+S4(buf[4])+"-"+S4(buf[5])+S4(buf[6])+S4(buf[7]))
 
-    s[12] = "4" # bits 12-15 of the time_hi_and_version field to 0010
-    s[16] = hexDigits.substr((s[16] & 0x3) | 0x8, 1)  # bits 6-7 of the clock_seq_hi_and_reserved to 01
+    randomUUID = () ->
+      # Otherwise, just use Math.random
+      'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace /[xy]/g, (c) ->
+          r = Math.random()*16|0
+          v = if c == 'x' then r or (r&0x3|0x8)
+          v.toString(16)
 
-    s.join("");
+    if window.crypto?.getRandomValues
+      cryptoUUID()
+    else
+      randomUUID()
 
 _.extend(Server.prototype, Backbone.Events)
 App.Server = Server

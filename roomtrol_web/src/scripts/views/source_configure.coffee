@@ -9,6 +9,13 @@ App.SourcesConfigureView = App.BindView.extend
     App.sources.bind "change:selection", @change_selection, this
     @change_selection()
 
+
+  add: () ->
+    App.sources.add
+      id: App.server.createUUID()
+      name: "Unnamed"
+      room: App.rooms.selected
+
   set_up_bindings: (room) ->
     @unbind_all()
     if @device

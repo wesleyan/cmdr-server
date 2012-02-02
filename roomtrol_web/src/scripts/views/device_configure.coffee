@@ -11,35 +11,38 @@ App.DevicesConfigureView = App.BindView.extend
     @change_selection()
 
   add: () ->
-    App.devices.add(params: {name: "Unnamed"}, room: App.rooms.selected)
+    App.devices.add
+      id: App.server.createUUID()
+      attributes: {name: "Unnamed"}
+      room: App.rooms.selected
     @render()
 
   set_up_bindings: (room) ->
     @unbind_all()
     if @device
       @field_bind "input[name='name']", @device,
-        ((r) -> r.get('params')?.name),
-        ((r, v) -> r.set(params: _(r.get('params')).extend(name: v)))
+        ((r) -> r.get('attributes')?.name),
+        ((r, v) -> r.set(attributes: _(r.get('attributes')).extend(name: v)))
       @field_bind "select[name='type']", @device,
-        ((r) -> r.driver().type()),
+        ((r) -> r.driver()?.type()),
         ((r, v) => @update_drivers(v))
       @field_bind "select[name='driver']", @device,
-        ((r) -> r.driver().get('name')),
+        ((r) -> r.driver()?.get('name')),
         ((r, v) => r.set(driver: v); @update_options(v))
       if @driver_options
         _(@driver_options).each (opt) =>
           @field_bind ".options [name='#{opt.name}']", @device,
-            ((r) -> r.get('params')?.config?[opt.name]),
+            ((r) -> r.get('attributes')?.config?[opt.name]),
             ((r, v) ->
-              config = r.get('params')?.config
+              config = r.get('attributes')?.config
               config = {} unless config
               config[opt.name] = v
-              r.set(params: _(r.get('params')).extend(config: config)))
+              r.set(attributes: _(r.get('attributes')).extend(config: config)))
 
   change_selection: () ->
     @device = App.devices.selected
-    @update_drivers(@device?.driver().type())
-    @update_options(@device?.driver().get('name'))
+    @update_drivers(@device?.driver()?.type())
+    @update_options(@device?.driver()?.get('name'))
     @set_up_bindings()
 
   update_drivers: (type) ->
@@ -56,7 +59,7 @@ App.DevicesConfigureView = App.BindView.extend
     driver = App.drivers.get_by_name(name)
     if driver
       @driver_options = _(driver.options()).map((d) =>
-          _.extend(_.clone(d), ports: @model.get('params').ports))
+          _.extend(_.clone(d), ports: @model.get('attributes').ports))
       hash =
         options: @driver_options
       $(".options", @el).html(App.templates.driver_options(hash))

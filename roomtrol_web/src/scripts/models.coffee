@@ -36,7 +36,7 @@ App.Room = Backbone.RelationalModel.extend
       relatedModel: 'App.Device',
       collectionType: 'App.DeviceController'
       reverseRelation:
-        key: 'room',
+        key: 'belongs_to',
         includeInJSON: 'id'
     },
     {
@@ -45,7 +45,7 @@ App.Room = Backbone.RelationalModel.extend
       relatedModel: 'App.Source',
       collectionType: 'App.SourceController'
       reverseRelation:
-        key: 'room',
+        key: 'belongs_to',
         includeInJSON: 'id'
     }
     ]
@@ -68,6 +68,8 @@ App.rooms = new App.RoomController
 ##### DEVICES
 
 App.Device = Backbone.RelationalModel.extend
+  idAttribute: "_id",
+
   driver: () -> App.drivers.get_by_name(@get("driver"))
 
   state_vars: () -> @get("params")?.state_vars or {}
@@ -97,8 +99,8 @@ App.Device = Backbone.RelationalModel.extend
   state_set: (v, state) ->
     App.server.state_set(this, v, state)
 
-App.DeviceController = App.SelectionCollection.extend
-  model: App.Device
+App.ChildSelectionCollection = App.SelectionCollection.extend
+  parent_key: "",
 
   initialize: () ->
     App.rooms.bind "change:selection", @parent_changed, this
@@ -106,29 +108,37 @@ App.DeviceController = App.SelectionCollection.extend
     @parent_changed()
 
   parent_changed: () ->
-    @content = App.rooms.selected?.get("devices")
+    @content = App.rooms.selected?.get(@parent_key)
     @trigger("change:content")
     if not @content
       @select(null)
     else if !@content.include @selected
-      console.log("selected", @selected)
       @select(@content.first()?.id)
+
+
+App.DeviceController = App.ChildSelectionCollection.extend
+  model: App.Device
+  parent_key: "devices"
 
 App.devices = new App.DeviceController
 
 # SOURCES
-App.Source = Backbone.RelationalModel.extend()
+App.Source = Backbone.RelationalModel.extend
+  idAttribute: "_id",
 
-App.SourceController = App.SelectionCollection.extend
+App.SourceController = App.ChildSelectionCollection.extend
   model: App.Source
+  parent_key: "sources"
 
 App.sources = new App.SourceController
 
 # ACTIONS
-App.Action = Backbone.RelationalModel.extend()
+App.Action = Backbone.RelationalModel.extend
+  idAttribute: "_id"
 
-App.ActionController = App.SelectionCollection.extend
+App.ActionController = App.ChildSelectionCollection.extend
   model: App.Action
+  parent_key: "actions"
 
 App.actions = new App.ActionController
 

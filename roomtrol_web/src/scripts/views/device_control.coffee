@@ -14,7 +14,7 @@ App.DeviceControlView = Backbone.View.extend
       @device.bind "change", @bound_update
 
       hash =
-        name: @device.get('params')?.name
+        name: @device.get('attributes')?.name
         vars: @device.controllable_vars()
 
       $(@el).html App.templates.device_control(hash)

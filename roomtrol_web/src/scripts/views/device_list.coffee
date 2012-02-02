@@ -11,7 +11,7 @@ App.DeviceListView = Backbone.View.extend
   render: () ->
     devices = App.devices.content?.map (d) ->
       id: d.id
-      name: d.get('params').name
+      name: d.get('attributes').name
       vars: d.display_vars()
 
     $(@el).html App.templates.device(devices: devices)

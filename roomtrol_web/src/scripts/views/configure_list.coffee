@@ -8,8 +8,8 @@ App.ConfigureListView = Backbone.View.extend
 
   render: () ->
     items = @controller.content?.map (c) ->
-      id: c.id
-      name: c.get('params').name
+      id: c.get("_id")
+      name: c.get('attributes')?.name or c.get('name')
 
     $(@el).html App.templates.configure_list(items: items)
     $(".item a", @el).click((e) => @item_clicked(e))
@@ -20,6 +20,7 @@ App.ConfigureListView = Backbone.View.extend
     this
 
   item_clicked: (e) ->
+    console.log(e.target.id)
     @controller.select e.target.id
     false
 
