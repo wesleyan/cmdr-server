@@ -81,13 +81,7 @@ eos
           :map => <<-eos.strip
             function(doc){
               if(doc.device && doc.belongs_to && !doc.eigenroom){
-                emit(doc._id, {
-                  id: doc._id,
-                  name: doc.name,
-                  room: doc.belongs_to,
-                  driver: doc.class,
-                  params: doc.attributes
-                });
+                emit(doc._id, doc);
               }
             }
           eos

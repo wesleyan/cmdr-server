@@ -8,16 +8,21 @@
         <input type="text" name="name">
       </div>
       <div class="field">
-        <label>port</label>
-        <select name="port"></select>
-      </div>
-      <div class="field">
         <label>type</label>
-        <select name="port"></select>
+        <select name="type">
+          {{#types}}
+            <option value="{{this}}">{{this}}</option>
+          {{/types}}
+        </select>
       </div>
       <div class="field">
         <label>driver</label>
-        <select name="driver"></select>
+        <select name="driver">
+        </select>
+      </div>
+      <div class="options">
+      </div>
+      <div class="source">
       </div>
     </form>
   </div>

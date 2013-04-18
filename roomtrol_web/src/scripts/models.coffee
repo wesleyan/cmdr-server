@@ -30,13 +30,24 @@ App.buildings = new App.BuildingController
 
 App.Room = Backbone.RelationalModel.extend
   relations: [
-    type: Backbone.HasMany,
-    key: 'devices',
-    relatedModel: 'App.Device',
-    collectionType: 'App.DeviceController'
-    reverseRelation:
-      key: 'room',
-      includeInJSON: 'id'
+    {
+      type: Backbone.HasMany,
+      key: 'devices',
+      relatedModel: 'App.Device',
+      collectionType: 'App.DeviceController'
+      reverseRelation:
+        key: 'belongs_to',
+        includeInJSON: 'id'
+    },
+    {
+      type: Backbone.HasMany,
+      key: 'sources',
+      relatedModel: 'App.Source',
+      collectionType: 'App.SourceController'
+      reverseRelation:
+        key: 'belongs_to',
+        includeInJSON: 'id'
+    }
     ]
 
 
@@ -57,6 +68,8 @@ App.rooms = new App.RoomController
 ##### DEVICES
 
 App.Device = Backbone.RelationalModel.extend
+  idAttribute: "_id",
+
   driver: () -> App.drivers.get_by_name(@get("driver"))
 
   state_vars: () -> @get("params")?.state_vars or {}
@@ -86,8 +99,8 @@ App.Device = Backbone.RelationalModel.extend
   state_set: (v, state) ->
     App.server.state_set(this, v, state)
 
-App.DeviceController = App.SelectionCollection.extend
-  model: App.Device
+App.ChildSelectionCollection = App.SelectionCollection.extend
+  parent_key: "",
 
   initialize: () ->
     App.rooms.bind "change:selection", @parent_changed, this
@@ -95,25 +108,64 @@ App.DeviceController = App.SelectionCollection.extend
     @parent_changed()
 
   parent_changed: () ->
-    @content = App.rooms.selected?.get("devices")
+    @content = App.rooms.selected?.get(@parent_key)
     @trigger("change:content")
     if not @content
       @select(null)
     else if !@content.include @selected
-      console.log("selected", @selected)
       @select(@content.first()?.id)
+
+
+App.DeviceController = App.ChildSelectionCollection.extend
+  model: App.Device
+  parent_key: "devices"
 
 App.devices = new App.DeviceController
 
+# SOURCES
+App.Source = Backbone.RelationalModel.extend
+  idAttribute: "_id",
+
+App.SourceController = App.ChildSelectionCollection.extend
+  model: App.Source
+  parent_key: "sources"
+
+App.sources = new App.SourceController
+
+# ACTIONS
+App.Action = Backbone.RelationalModel.extend
+  idAttribute: "_id"
+
+App.ActionController = App.ChildSelectionCollection.extend
+  model: App.Action
+  parent_key: "actions"
+
+App.actions = new App.ActionController
+
+
 ##### DRIVERS
 
-App.Driver = Backbone.Model.extend()
+App.Driver = Backbone.Model.extend
+  type: () ->
+    if @get("type")
+      @get("type")
+    else
+      App.drivers.find((d) => d.get('name') == @get('depends_on')).type()
+  options: () ->
+    _(@get("config")).chain()
+      .map((v, k) ->
+        type = {}
+        type[v.type] = true
+        _(v).chain().clone().extend(name: k, _type: type).value()
+      )
+      .filter((v) -> v.type)
+      .value()
 
 App.DriverController = Backbone.Collection.extend
   model: App.Driver
   get_by_name: (name) ->
     @find((d) -> d.get('name') == name)
+  get_by_type: (type) ->
+    @filter((d) -> d.type() == type)
 
 App.drivers = new App.DriverController
-
-

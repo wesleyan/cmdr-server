@@ -19,8 +19,15 @@ module Wescontrol
           devices: @db.get("_design/roomtrol_web").
             view('devices')["rows"].map{|x| x['value']},
 
+          sources: @db.get("_design/roomtrol_web").
+            view('sources')["rows"].map{|x| x['value']},
+
+          actions: @db.get("_design/roomtrol_web").
+            view('actions')["rows"].map{|x| x['value']},
+          
           drivers: CouchRest.database("#{DB_URI}/drivers").
             get("_design/drivers").view("by_name")["rows"].map{|x| x['value']}
+
         }
 
         @deferred_responses = {}
@@ -77,7 +84,9 @@ module Wescontrol
           buildings: @state[:buildings],
           rooms: @state[:rooms],
           devices: @state[:devices],
-          drivers:  @state[:drivers]
+          drivers:  @state[:drivers],
+          sources: @state[:sources],
+          actions: @state[:actions]
         }
 
         ws.send JSON.dump(init_message)
@@ -100,6 +109,8 @@ module Wescontrol
           view = if    doc["device"] && ! doc["eigenroom"] then :devices
                  elsif doc["class"] == "Room" then :rooms
                  elsif doc["class"] == "Building" then :buildings
+                 elsif doc["action"] then :actions
+                 elsif doc["source"] then :sources
                  end
           if view
             url = %@#{DB_URI}/rooms/_design/roomtrol_web/_view/#{view}?key="#{doc["_id"]}"@
