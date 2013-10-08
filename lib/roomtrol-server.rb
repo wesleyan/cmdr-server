@@ -20,9 +20,13 @@ require 'server/websocket_server'
 require 'server/database'
 require 'server/device'
 require 'server/device_lib/RS232Device'
+require 'server/device_lib/SocketDevice'
 require 'server/devices/Projector'
 require 'server/devices/VideoSwitcher'
 require 'server/devices/Computer'
+require 'server/devices/SocketProjector'
+require 'server/devices/SocketVideoSwitcher'
+require 'server/devices/ExtronVideoSwitcher'
 
 module Wescontrol
   module RoomtrolServer
