@@ -59,7 +59,7 @@ App.DevicesConfigureView = App.BindView.extend
     driver = App.drivers.get_by_name(name)
     if driver
       @driver_options = _(driver.options()).map((d) =>
-          _.extend(_.clone(d), ports: @model.get('attributes').ports))
+          _.extend(_.clone(d), ports: @model.get('params').ports))
       hash =
         options: @driver_options
       $(".options", @el).html(App.templates.driver_options(hash))
