@@ -72,7 +72,7 @@ App.Device = Backbone.RelationalModel.extend
 
   driver: () -> App.drivers.get_by_name(@get("driver"))
 
-  state_vars: () -> @get("params")?.state_vars or {}
+  state_vars: () -> @get("attributes")?.state_vars or {}
 
   vars_array: () ->
     state_vars = @state_vars()
