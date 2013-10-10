@@ -6,7 +6,7 @@
 #	"author": "Micah Wylde",
 #	"email": "mwylde@wesleyan.edu",
 #	"abstract": true,
-#	"type": "Video Switcher"
+#	"type": "Socket Video Switcher"
 #}
 #---
 

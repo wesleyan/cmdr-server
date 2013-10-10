@@ -4,7 +4,8 @@
 #	"depends_on": "VideoSwitcher",
 #	"description": "Controls Extron video switchers that support SIS",
 #	"author": "Micah Wylde",
-#	"email": "mwylde@wesleyan.edu"
+#	"email": "mwylde@wesleyan.edu",
+# "type": "Socket Video Switcher"
 #}
 #---
 

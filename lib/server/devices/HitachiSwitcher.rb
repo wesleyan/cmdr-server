@@ -5,7 +5,7 @@
 #	"description": "Controls Hitachi video switcher",
 #	"author": "Sam Giagtzoglou",
 #	"email": "sgiagtzoglou@wesleyan.edu",
-# "type": "Video Swithcer"
+# "type": "Socket Video Switcher"
 #}
 #---
 #

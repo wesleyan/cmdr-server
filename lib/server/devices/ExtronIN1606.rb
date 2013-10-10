@@ -6,7 +6,7 @@
 #	"author": "Brian Gapinski",
 #	"email": "bgapinski@wesleyan.edu",
 #	"abstract": true,
-#	"type": "Video Switcher"
+#	"type": "Socket Video Switcher"
 #}
 #---
 

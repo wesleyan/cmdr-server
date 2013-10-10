@@ -4,7 +4,8 @@
 #	"depends_on": "RS232Device",
 #	"description": "Controls Atlona AT-PA 100 amplifiers.",
 #	"author": "Micah Wylde",
-#	"email": "mwylde@wesleyan.edu"
+#	"email": "mwylde@wesleyan.edu",
+#	"type": "Sound Card"
 #}
 #---
 
