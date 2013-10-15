@@ -58,6 +58,7 @@ App.DevicesConfigureView = App.BindView.extend
   update_options: (name) ->
     driver = App.drivers.get_by_name(name)
     if driver
+      @model = App.rooms.selected
       @driver_options = _(driver.options()).map((d) =>
           _.extend(_.clone(d), ports: @model.get('params').ports))
       hash =
