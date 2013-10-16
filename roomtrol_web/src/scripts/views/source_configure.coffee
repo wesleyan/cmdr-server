@@ -15,32 +15,43 @@ App.SourcesConfigureView = App.BindView.extend
       id: App.server.createUUID()
       name: "Unnamed"
       room: App.rooms.selected
+    @render
 
   set_up_bindings: (room) ->
     @unbind_all()
-    if @device
-      @field_bind "input[name='name']", @device,
-        ((r) -> r.get('params')?.name),
-        ((r, v) -> r.set(params: _(r.get('params')).extend(name: v)))
-      @field_bind "select[name='type']", @device,
-        ((r) -> r.driver().type()),
-        ((r, v) => @update_drivers(v))
-      @field_bind "select[name='driver']", @device,
-        ((r) -> r.driver().get('name')),
-        ((r, v) => r.set(driver: v); @update_options(v))
-      if @driver_options
-        _(@driver_options).each (opt) =>
-          @field_bind ".options [name='#{opt.name}']", @device,
-            ((r) -> r.get('params')?.config?[opt.name]),
-            ((r, v) ->
-              config = r.get('params')?.config
-              config = {} unless config
-              config[opt.name] = v
-              r.set(params: _(r.get('params')).extend(config: config)))
+    if @source
+      @field_bind "input[name='name']", @source,
+        ((r) -> r.get('name')),
+        ((r, v) -> r.set(name: v))
+      @field_bind "select[name='switcher input']", @source,
+        ((r) -> if r.get('input').switcher?
+                  r.get('input').swticher
+                else
+                  r.get('input').video),
+        ((r, v) => r.set(input: _(r.get('input')).extend(switcher: v)))
+      @field_bind "select[name='projector input']", @source,
+        ((r) -> r.get('input').projector),
+        ((r, v) -> r.set(input: _(r.get('input')).extend(projector: v)))
+
+  # TODO: Abstract this more
+  update_sources: () ->
+    switcher = ["1".."8"]
+    projector = ["HDMI", "RGB1", "RGB2", "Video", "SVideo"]
+    option = (d) -> "<option value=\"#{d}\">#{d}</option>"
+    sw = switcher.map(option).join("\n")
+    pr = projector.map(option).join("\n")
+    $("select[name='switcher input']", @el).html sw
+    $("select[name='projector input']", @el).html pr
+
+  update_projector: () ->
+    sources = ["HDMI", "RGB1", "RGB2", "Video", "SVideo"]
+    options = source.map((d) -> "<option value=\"#{d}\">#{d}>/option").join("\n")
+    $
 
   change_selection: () ->
     @source = App.sources.selected
-    #@set_up_bindings()
+    @update_sources()
+    @set_up_bindings()
 
   render: () ->
     @model = App.rooms.selected
