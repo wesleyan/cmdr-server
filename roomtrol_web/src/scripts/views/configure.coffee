@@ -3,6 +3,7 @@ slinky_require('room_list.coffee')
 slinky_require('general_configure.coffee')
 slinky_require('device_configure.coffee')
 slinky_require('source_configure.coffee')
+slinky_require('action_configure.coffee')
 
 App.ConfigureView = Backbone.View.extend
   room_list: new App.RoomListView

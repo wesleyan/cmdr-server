@@ -47,6 +47,15 @@ App.Room = Backbone.RelationalModel.extend
       reverseRelation:
         key: 'belongs_to',
         includeInJSON: 'id'
+    },
+    {
+      type: Backbone.HasMany,
+      key: 'actions',
+      relatedModel: 'App.Action',
+      collectionType: 'App.ActionController',
+      reverseRelation:
+        key: 'belongs_to',
+        inscludeInJSON: 'id'
     }
     ]
 

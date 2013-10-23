@@ -43,11 +43,6 @@ App.SourcesConfigureView = App.BindView.extend
     $("select[name='switcher input']", @el).html sw
     $("select[name='projector input']", @el).html pr
 
-  update_projector: () ->
-    sources = ["HDMI", "RGB1", "RGB2", "Video", "SVideo"]
-    options = source.map((d) -> "<option value=\"#{d}\">#{d}>/option").join("\n")
-    $
-
   change_selection: () ->
     @source = App.sources.selected
     @update_sources()
