@@ -8,7 +8,7 @@ slinky_require('action_configure.coffee')
 App.ConfigureView = Backbone.View.extend
   room_list: new App.RoomListView
 
-  tabs: ["general", "sources", "actions", "devices", "preview"]
+  tabs: ["general", "devices", "sources", "actions", "preview"]
 
   initialize: () ->
     @select_tab @tabs[1]
