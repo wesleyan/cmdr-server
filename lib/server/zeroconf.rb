@@ -10,6 +10,11 @@ require 'net/ssh'
 require 'net/http'
 require 'socket'
 
+# This will work for now since all uname/pw are the same
+# but there should be some sort of handshake on connect
+# that establishes the correct credentials
+require 'authenticate'
+
 # Internal Wescontrol dependencies
 require 'constants'
 
@@ -26,6 +31,10 @@ module Wescontrol
           # name of device broadcasted via zeroconf
           @name = client_reply.name.split[-1]
           @ip_address = self.resolve client_reply
+
+          # See comment in authenticate require
+          creds = Authenticate.get_credentials("/home/bgapinski/ims/roomtrol-server/security")
+          @creds = "#{creds['user']}:#{creds['password']}@"
         end
 
         # Setup a client device. Takes a Couchdb database connection.
@@ -115,12 +124,14 @@ module Wescontrol
               # Setup replication from device's couchdb rooms to server's rooms
               data = {
                 _id: "server_replication_#{@room_id}",
-                source: "http://#{local_host}:#{local_port}/rooms",
+                # See authenticate comment
+                source: "http://#{@creds}#{local_host}:#{local_port}/rooms",
                 target: "rooms",
                 continuous: true
               }
               DaemonKit.logger.debug "#{@name}: Setting up replication"
               begin
+                DaemonKit.logger.info("Local Host: #{local_host}\n Other data: #{data[:_id]}\n all of data: #{data}")
                 url = "http://#{local_host}:5984/_replicator/#{data[:_id]}"
                 res = RestClient.get(url) rescue nil
                 if res
