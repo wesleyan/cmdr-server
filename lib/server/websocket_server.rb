@@ -113,7 +113,11 @@ module Wescontrol
                  elsif doc["source"] then :sources
                  end
           if view
-            url = %@#{DB_URI}/rooms/_design/roomtrol_web/_view/#{view}?key="#{doc["_id"]}"@
+            if view == :devices
+              url = %@#{DB_URI}/rooms/_design/roomtrol_web/_view/#{view}?key="#{doc["_id"]}"@
+            else
+              url = "#{DB_URI}/rooms/_design/roomtrol_web/_view/#{view}"
+            end
             http = EM::HttpRequest.new(url).get
             http.callback{
               msg = JSON.parse(http.response)
@@ -144,6 +148,8 @@ module Wescontrol
         case msg["type"]
         when "state_set"
           state_set(msg, deferrable)
+        when "add_config"
+          add_config(msg, deferrable)
         else
           DaemonKit.logger.debug("Unknown msg: " + msg.inspect)
         end
@@ -161,6 +167,35 @@ module Wescontrol
           value: msg["value"]
         }
 
+        deferrable = EM::DefaultDeferrable.new
+        deferrable.timeout TIMEOUT
+        deferrable.callback{|result|
+          DaemonKit.logger.debug "GOT: <#{result.inspect}>"
+          if result["error"]
+            df.succeed({:error => result["error"]})
+          else
+            df.succeed({:ack => true})
+          end
+        }
+        deferrable.errback{|error|
+          df.succeed({:error => error})
+        }
+        @deferred_responses[req[:id]] = deferrable
+        MQ.new.queue(SERVER_QUEUE).publish(req.to_json)
+      end
+
+      def add_config msg, df
+        req = {
+          id: msg["id"],
+          queue: WEBSOCKET_QUEUE,
+          type: :create_doc,
+          belongs_to: msg["belongs_to"],
+          displayNameBinding: msg["displayNameBinding"],
+          name: msg["name"]
+        }
+        #case msg["config_type"]
+        #when "source"
+        #end
         deferrable = EM::DefaultDeferrable.new
         deferrable.timeout TIMEOUT
         deferrable.callback{|result|

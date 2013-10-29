@@ -18,6 +18,8 @@ class Server
         @connected msg
       when "device_changed"
         @device_changed msg
+      when "create_doc"
+        @create_doc msg
       else
         console.log("Unhandled message type: " + msg.type)
 
@@ -37,6 +39,9 @@ class Server
     @websock.send(JSON.stringify(msg))
     msg['id']
 
+  create_doc: (msg) ->
+    
+    
   device_changed: (msg) ->
     if d = App.devices.get(msg.update?.id)
       d.set(msg.update)
@@ -52,6 +57,9 @@ class Server
       var: variable
       value: value
     @send_message(msg)
+
+  configure: (conf) ->
+    @send_message(conf)
 
   createUUID: () ->
     cryptoUUID = () ->

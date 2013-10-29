@@ -96,6 +96,8 @@ module Wescontrol
           case req["type"]
           when "state_set"
             handle_feedback.call(state_set(req), req, resp)
+          when "create_doc"
+            handle_feedback.call(create_doc(req), req, resp)
           end
         }
       end
@@ -118,6 +120,21 @@ module Wescontrol
             deferrable.succeed :error => "HTTP request to device failed"
           }
         end
+        deferrable
+      end
+
+      def create_doc req
+        DaemonKit.logger.debug("REQ: #{req.inspect}")
+        deferrable = EM::DefaultDeferrable.new
+        doc = {
+          source: true,
+          name: req['name'],
+          displayNameBinding: "name",
+          input: {projector: "HDMI", video: 3},
+          belongs_to: req['belongs_to']
+        }
+        #TODO: This part should be handled by database. Need to add that functionality
+        @db_rooms.save_doc(doc)
         deferrable
       end
     end
