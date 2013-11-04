@@ -8,22 +8,19 @@ App.SourcesConfigureView = App.BindView.extend
     @configure_list = new App.ConfigureListView(App.sources)
     App.sources.bind "change:selection", @change_selection, this
     @configure_list.bind "add", @add, this
-    #@configure_list.bind "remove", @remove, this
+    @configure_list.bind "remove", @remove, this
+    App.sources.bind "change:update", @render, this
     @change_selection()
 
   add: () ->
-    #App.sources.add
     msg =
       id: App.server.createUUID()
       name: "Unnamed"
-      #room: App.rooms.selected
-      #belongs_to: App.rooms.selected
+      room: App.rooms.selected
       belongs_to: App.rooms.selected.get('id')
-      config_type: "source"
-      type: "add_config"
-      displayNameBinding: "name"
-    App.sources.add msg
-    App.server.configure(msg)
+
+    App.server.create_doc(msg, "source")
+    App.sources.add(msg)
     @render
 
   set_up_bindings: (room) ->
@@ -62,6 +59,6 @@ App.SourcesConfigureView = App.BindView.extend
     if @model
       $(@el).html App.templates.source_configure()
       $(".source-list", @el).html @configure_list.render().el
-      #@set_up_bindings(@model)
+      @set_up_bindings(@model)
 
     this

@@ -125,7 +125,8 @@ module Wescontrol
               data = {
                 _id: "server_replication_#{@room_id}",
                 # See authenticate comment
-                source: "http://#{@creds}#{local_host}:#{local_port}/rooms",
+                #source: "http://#{@creds}#{local_host}:#{local_port}/rooms",
+                source: "http://#{local_host}:#{local_port}/rooms",
                 target: "rooms",
                 continuous: true
               }

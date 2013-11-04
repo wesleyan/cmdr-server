@@ -20,6 +20,12 @@ class Server
         @device_changed msg
       when "create_doc"
         @create_doc msg
+      when "source_changed"
+        App.sources.trigger("change:update")
+      when "action_changed"
+        App.actions.trigger("change:update")
+      when "device_changed"
+        App.devices.trigger("change:update")
       else
         console.log("Unhandled message type: " + msg.type)
 
@@ -39,8 +45,14 @@ class Server
     @websock.send(JSON.stringify(msg))
     msg['id']
 
-  create_doc: (msg) ->
-    
+  create_doc: (msg, type) ->
+    req =
+      type: "create_doc"
+      doc_type: type
+      id: msg['id']
+      belongs_to: msg['room'].get('id')
+      name: msg['name']
+    @send_message(req)
     
   device_changed: (msg) ->
     if d = App.devices.get(msg.update?.id)
@@ -57,9 +69,6 @@ class Server
       var: variable
       value: value
     @send_message(msg)
-
-  configure: (conf) ->
-    @send_message(conf)
 
   createUUID: () ->
     cryptoUUID = () ->

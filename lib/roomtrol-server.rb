@@ -127,13 +127,18 @@ module Wescontrol
         DaemonKit.logger.debug("REQ: #{req.inspect}")
         deferrable = EM::DefaultDeferrable.new
         doc = {
-          source: true,
           name: req['name'],
-          displayNameBinding: "name",
+          displayNameBinding: req['displayNameBinding'],
           input: {projector: "HDMI", video: 3},
           belongs_to: req['belongs_to']
         }
-        #TODO: This part should be handled by database. Need to add that functionality
+        case req['doc_type']
+        when "source"
+          doc['source'] = true
+        when "action"
+          doc['action'] = true
+        end
+        # TODO: This part should be handled by database. Need to add that functionality
         @db_rooms.save_doc(doc)
         deferrable
       end

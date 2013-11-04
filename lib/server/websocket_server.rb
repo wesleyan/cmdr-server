@@ -113,17 +113,12 @@ module Wescontrol
                  elsif doc["source"] then :sources
                  end
           if view
-            if view == :devices
-              url = %@#{DB_URI}/rooms/_design/roomtrol_web/_view/#{view}?key="#{doc["_id"]}"@
-            else
-              url = "#{DB_URI}/rooms/_design/roomtrol_web/_view/#{view}"
-            end
+            url = %@#{DB_URI}/rooms/_design/roomtrol_web/_view/#{view}?key="#{doc["_id"]}"@
             http = EM::HttpRequest.new(url).get
             http.callback{
               msg = JSON.parse(http.response)
-              
               doc = msg["rows"].map{|x| x['value']}.first
-              i = @state[view].find_index{|d| d["id"] == doc["id"]}
+              i = @state[view].find_index{|d| d["_id"] == doc["_id"]}
               if i
                 @state[view][i] = doc
               elsif
@@ -148,8 +143,8 @@ module Wescontrol
         case msg["type"]
         when "state_set"
           state_set(msg, deferrable)
-        when "add_config"
-          add_config(msg, deferrable)
+        when "create_doc"
+          create_doc(msg, deferrable)
         else
           DaemonKit.logger.debug("Unknown msg: " + msg.inspect)
         end
@@ -184,13 +179,14 @@ module Wescontrol
         MQ.new.queue(SERVER_QUEUE).publish(req.to_json)
       end
 
-      def add_config msg, df
+      def create_doc msg, df
         req = {
           id: msg["id"],
           queue: WEBSOCKET_QUEUE,
           type: :create_doc,
+          doc_type: msg['doc_type'],
           belongs_to: msg["belongs_to"],
-          displayNameBinding: msg["displayNameBinding"],
+          displayNameBinding: "name",
           name: msg["name"]
         }
         #case msg["config_type"]
