@@ -137,6 +137,8 @@ module Wescontrol
           doc['source'] = true
         when "action"
           doc['action'] = true
+        when "device"
+          doc['device'] = true
         end
         # TODO: This part should be handled by database. Need to add that functionality
         @db_rooms.save_doc(doc)

@@ -7,14 +7,22 @@ App.ActionsConfigureView = App.BindView.extend
     App.rooms.bind "change:selection", @render, this
     @configure_list = new App.ConfigureListView(App.actions)
     @configure_list.bind "add", @add, this
+    @configure_list.bind "remove", @remove, this
     App.actions.bind "change:selection", @change_selection, this
+    App.actions.bind "change:update", @render, this
     @change_selection()
 
   add: () ->
-    App.actions.add
+    #App.actions.add
+    msg =
       id: App.server.createUUID()
-      attributes: {name: "Unnamed"}
+      #attributes: {name: "Unnamed"}
+      name: "Unnamed"
       room: App.rooms.selected
+      belongs_to: App.rooms.selected.get('id')
+
+    App.server.create_doc(msg, "action")
+    App.actions.add(msg)
     @render()
 
   set_up_bindings: (room) ->
