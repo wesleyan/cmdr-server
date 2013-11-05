@@ -13,10 +13,19 @@ App.ActionsConfigureView = App.BindView.extend
     @change_selection()
 
   add: () ->
-    #App.actions.add
     msg =
-      id: App.server.createUUID()
-      #attributes: {name: "Unnamed"}
+      _id: App.server.createUUID()
+      attributes: {
+        name: "Unnamed"
+        belongs_to: App.rooms.selected.get('id')
+        displayNameBinding: "name"
+        action: true
+        settings: {
+          promptProjector: false
+          source: null
+          module: null
+        }
+      }
       name: "Unnamed"
       room: App.rooms.selected
       belongs_to: App.rooms.selected.get('id')
@@ -32,7 +41,7 @@ App.ActionsConfigureView = App.BindView.extend
         ((r) -> r.get('name')),
         ((r, v) -> r.set(name: v))
       @field_bind "input[name='prompt projector']", @action,
-        ((r) -> r.get('settings')['promptProjector']),
+        ((r) -> r.get('settings')['settings']['promptProjector']),
         ((r, v) -> r.set(promptProjector: v))
     #  @field_bind "select[name='type']", @action,
     #    ((r) -> r.driver()?.type()),

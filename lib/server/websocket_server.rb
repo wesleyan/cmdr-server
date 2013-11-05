@@ -185,9 +185,10 @@ module Wescontrol
           queue: WEBSOCKET_QUEUE,
           type: :create_doc,
           doc_type: msg['doc_type'],
-          belongs_to: msg["belongs_to"],
-          displayNameBinding: "name",
-          name: msg["name"]
+          settings: msg['settings']
+          #belongs_to: msg["belongs_to"],
+          #displayNameBinding: "name",
+          #name: msg["name"]
         }
         #case msg["config_type"]
         #when "source"

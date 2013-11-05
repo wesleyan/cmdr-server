@@ -49,9 +49,10 @@ class Server
     req =
       type: "create_doc"
       doc_type: type
-      id: msg['id']
-      belongs_to: msg['room'].get('id')
-      name: msg['name']
+      #id: msg['_id']
+      #belongs_to: msg['belongs_to']
+      #name: msg['name']
+      settings: msg
     @send_message(req)
     
   device_changed: (msg) ->
