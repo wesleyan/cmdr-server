@@ -13,10 +13,6 @@ App.SourcesConfigureView = App.BindView.extend
     @change_selection()
 
   add: () ->
-    #msg =
-      #_id: App.server.createUUID()
-    #  id: id
-    #  name: "Unnamed"
     msg = {
       _id: App.server.createUUID()
       name: "Unnamed"
@@ -30,28 +26,26 @@ App.SourcesConfigureView = App.BindView.extend
       belongs_to: App.rooms.selected.get('id')
       source: true
     }
-      #room: App.rooms.selected
-      #belongs_to: App.rooms.selected.get('id')
 
-    App.server.create_doc(msg, "source")
+    App.server.create_doc(msg)#, "source")
     App.sources.add(msg)
     @render
 
   set_up_bindings: (room) ->
-  #  @unbind_all()
-  #  if @source
-  #    @field_bind "input[name='name']", @source,
-  #      ((r) -> r.get('name')),
-  #      ((r, v) -> r.set(name: v))
-  #    @field_bind "select[name='switcher input']", @source,
-  #      ((r) -> if r.get('attributes').input.switcher?
-  #                r.get('attributes').input.switcher
-  #              else
-  #                r.get('attributes').input.video),
-  #      ((r, v) => r.set(attributes: _(r.get('attributes')).extend(input['switcher'] = v)))
-     # @field_bind "select[name='projector input']", @source,
-     #   ((r) -> r.get('attributes').input.projector),
-     #   ((r, v) -> r.set(attributes: _(r.get('attributes')).extend(input['projector'] = v)))
+    @unbind_all()
+    if @source
+      @field_bind "input[name='name']", @source,
+        ((r) -> r.get('name')),
+        ((r, v) -> r.set(name: v))
+      @field_bind "select[name='switcher input']", @source,
+        ((r) -> if r.get('input').switcher?
+                  r.get('input').switcher
+                else
+                  r.get('input').video),
+        ((r, v) => r.set(input: _(r.get('input')).extend(switcher: v)))
+      @field_bind "select[name='projector input']", @source,
+        ((r) -> r.get('input').projector),
+        ((r, v) -> r.set(input: _(r.get('input')).extend(projector: v)))
 
   # TODO: Abstract this more
   update_sources: () ->
@@ -65,7 +59,6 @@ App.SourcesConfigureView = App.BindView.extend
 
   change_selection: () ->
     @source = App.sources.selected
-    console.log(App.sources.selected)
     @update_sources()
     @set_up_bindings()
 

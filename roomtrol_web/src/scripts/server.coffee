@@ -45,13 +45,9 @@ class Server
     @websock.send(JSON.stringify(msg))
     msg['id']
 
-  create_doc: (msg, type) ->
+  create_doc: (msg) ->
     req =
       type: "create_doc"
-      doc_type: type
-      #id: msg['_id']
-      #belongs_to: msg['belongs_to']
-      #name: msg['name']
       settings: msg
     @send_message(req)
     
