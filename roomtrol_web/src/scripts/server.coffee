@@ -18,8 +18,6 @@ class Server
         @connected msg
       when "device_changed"
         @device_changed msg
-      when "create_doc"
-        @create_doc msg
       when "source_changed"
         App.sources.trigger("change:update")
       when "action_changed"
@@ -48,7 +46,13 @@ class Server
   create_doc: (msg) ->
     req =
       type: "create_doc"
-      settings: msg
+      doc: msg
+    @send_message(req)
+
+  remove_doc: (msg) ->
+    req =
+      type: "remove_doc"
+      doc: msg
     @send_message(req)
     
   device_changed: (msg) ->

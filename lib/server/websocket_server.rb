@@ -145,6 +145,8 @@ module Wescontrol
           state_set(msg, deferrable)
         when "create_doc"
           create_doc(msg, deferrable)
+        when "remove_doc"
+          remove_doc(msg, deferrable)
         else
           DaemonKit.logger.debug("Unknown msg: " + msg.inspect)
         end
@@ -184,8 +186,39 @@ module Wescontrol
           id: msg["id"],
           queue: WEBSOCKET_QUEUE,
           type: :create_doc,
-          settings: msg['settings']
+          doc: msg['doc']
         }
+        deferrable = EM::DefaultDeferrable.new
+        deferrable.timeout TIMEOUT
+        deferrable.callback{|result|
+          DaemonKit.logger.debug "GOT: <#{result.inspect}>"
+          if result["error"]
+            df.succeed({:error => result["error"]})
+          else
+            df.succeed({:ack => true})
+          end
+        }
+        deferrable.errback{|error|
+          df.succeed({:error => error})
+        }
+        @deferred_responses[req[:id]] = deferrable
+        MQ.new.queue(SERVER_QUEUE).publish(req.to_json)
+      end
+
+      def remove_doc msg, df
+        req = {
+          id: msg["id"],
+          queue: WEBSOCKET_QUEUE,
+          type: :remove_doc,
+          doc: msg['doc']
+        }
+        view = if msg['doc']["action"] then :actions
+               elsif msg['doc']['source'] then :sources
+               end
+        if view
+          @state[view].delete_if {|d| d["_id"] == msg["_id"]}
+          send_update view.to_s[0..-2], "remove"
+        end
         deferrable = EM::DefaultDeferrable.new
         deferrable.timeout TIMEOUT
         deferrable.callback{|result|

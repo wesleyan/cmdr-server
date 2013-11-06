@@ -30,6 +30,14 @@ App.ActionsConfigureView = App.BindView.extend
     App.actions.add(msg)
     @render()
 
+  remove: () ->
+    doc = App.actions.selected.attributes
+    doc.belongs_to = doc.belongs_to.id
+    App.server.remove_doc(doc)
+    App.rooms.selected.attributes.actions.remove(App.actions.selected)
+    App.actions.remove(App.actions.selected)
+    @render
+
   set_up_bindings: (room) ->
     @unbind_all()
     if @action

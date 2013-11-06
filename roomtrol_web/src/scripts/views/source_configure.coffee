@@ -27,8 +27,16 @@ App.SourcesConfigureView = App.BindView.extend
       source: true
     }
 
-    App.server.create_doc(msg)#, "source")
+    App.server.create_doc(msg)
     App.sources.add(msg)
+    @render
+
+  remove: () ->
+    doc = App.sources.selected.attributes
+    doc.belongs_to = doc.belongs_to.id
+    App.server.remove_doc(doc)
+    App.rooms.selected.attributes.sources.remove(App.sources.selected)
+    App.sources.remove(App.sources.selected)
     @render
 
   set_up_bindings: (room) ->

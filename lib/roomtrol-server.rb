@@ -98,6 +98,8 @@ module Wescontrol
             handle_feedback.call(state_set(req), req, resp)
           when "create_doc"
             handle_feedback.call(create_doc(req), req, resp)
+          when "remove_doc"
+            handle_feedback.call(remove_doc(req), req, resp)
           end
         }
       end
@@ -127,7 +129,16 @@ module Wescontrol
         DaemonKit.logger.debug("REQ: #{req.inspect}")
         deferrable = EM::DefaultDeferrable.new
         # TODO: This part should be handled by database. Need to add that functionality
-        @db_rooms.save_doc(req['settings'])
+        @db_rooms.save_doc(req['doc'])
+        deferrable
+      end
+
+      def remove_doc req
+        DaemonKit.logger.debug("REQ: #{req.inspect}")
+        deferrable = EM::DefaultDeferrable.new
+        # TODO: See create_doc
+        doc = @db_rooms.get(req['doc']["_id"])
+        @db_rooms.delete_doc(doc)
         deferrable
       end
     end
