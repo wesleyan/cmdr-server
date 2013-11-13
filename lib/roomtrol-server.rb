@@ -128,7 +128,6 @@ module Wescontrol
       def create_doc req
         DaemonKit.logger.debug("REQ: #{req.inspect}")
         deferrable = EM::DefaultDeferrable.new
-        # TODO: This part should be handled by database. Need to add that functionality
         @db_rooms.save_doc(req['doc'])
         deferrable
       end
@@ -136,9 +135,9 @@ module Wescontrol
       def remove_doc req
         DaemonKit.logger.debug("REQ: #{req.inspect}")
         deferrable = EM::DefaultDeferrable.new
-        # TODO: See create_doc
         doc = @db_rooms.get(req['doc']["_id"])
-        @db_rooms.delete_doc(doc)
+        doc['_deleted'] = true
+        @db_rooms.save_doc(doc)
         deferrable
       end
     end
