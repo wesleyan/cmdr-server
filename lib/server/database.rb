@@ -41,8 +41,8 @@ module Database
 				:device => "function(doc, req) { if(doc.device && !doc.update)return true; return false; }",
 				:config_filter => <<eos
 function (doc, req) {
-  if(((doc.action || doc.source || doc.device) && doc.belongs_to == req.query.key) ||
-    (doc.class == "Room" && doc.id == req.query.key)){
+  if(((doc.action || doc.source || doc.device) && doc.belongs_to == req.query.room) ||
+    (doc.class == "Room" && doc.id == req.query.rooms)){
     return true;
   }
   else return false; 
