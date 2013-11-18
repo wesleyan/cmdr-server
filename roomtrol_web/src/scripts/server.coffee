@@ -22,8 +22,6 @@ class Server
         App.sources.trigger("change:update")
       when "action_changed"
         App.actions.trigger("change:update")
-      when "device_changed"
-        App.devices.trigger("change:update")
       else
         console.log("Unhandled message type: " + msg.type)
 
@@ -58,6 +56,8 @@ class Server
   device_changed: (msg) ->
     if d = App.devices.get(msg.update?.id)
       d.set(msg.update)
+    else if msg.update == "remove"
+      App.devices.trigger("change:update")
     else
       App.devices.add msg.update
 

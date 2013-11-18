@@ -214,6 +214,7 @@ module Wescontrol
         }
         view = if msg['doc']["action"] then :actions
                elsif msg['doc']['source'] then :sources
+               elsif msg['doc']['device'] then :devices
                end
         if view
           @state[view].delete_if {|d| d["_id"] == msg["_id"]}

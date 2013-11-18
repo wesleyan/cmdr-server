@@ -7,15 +7,35 @@ App.DevicesConfigureView = App.BindView.extend
     App.rooms.bind "change:selection", @render, this
     @configure_list = new App.ConfigureListView(App.devices)
     @configure_list.bind "add", @add, this
+    @configure_list.bind "remove", @remove, this
     App.devices.bind "change:selection", @change_selection, this
+    App.devices.bind "change:update", @render, this
     @change_selection()
 
   add: () ->
-    App.devices.add
-      id: App.server.createUUID()
-      attributes: {name: "Unnamed"}
-      room: App.rooms.selected
+    msg = {
+      _id: App.server.createUUID()
+      belongs_to: App.rooms.selected.get('id')
+      controller: null
+      device: true
+      class: null
+      attributes: {
+        config: {}
+        name: "Unnamed"
+      }
+    }
+
+    App.server.create_doc(msg)
+    App.devices.add(msg)
     @render()
+
+  remove: () ->
+    doc = App.devices.selected.attributes
+    doc.belongs_to = doc.belongs_to.id
+    App.server.remove_doc(doc)
+    App.rooms.selected.attributes.devices.remove(App.devices.selected)
+    App.devices.remove(App.devices.selected)
+    @render
 
   set_up_bindings: (room) ->
     @unbind_all()
