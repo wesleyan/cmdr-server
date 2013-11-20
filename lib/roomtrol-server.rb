@@ -100,6 +100,8 @@ module Wescontrol
             handle_feedback.call(create_doc(req), req, resp)
           when "remove_doc"
             handle_feedback.call(remove_doc(req), req, resp)
+          when "save_doc"
+            handle_feedback.call(save_doc(req), req, resp)
           end
         }
       end
@@ -135,9 +137,25 @@ module Wescontrol
       def remove_doc req
         DaemonKit.logger.debug("REQ: #{req.inspect}")
         deferrable = EM::DefaultDeferrable.new
-        doc = @db_rooms.get(req['doc']["_id"])
-        doc['_deleted'] = true
-        @db_rooms.save_doc(doc)
+        begin
+          doc = @db_rooms.get(req['doc']["_id"])
+          doc['_deleted'] = true
+          @db_rooms.save_doc(doc)
+        rescue
+        end
+        deferrable
+      end
+      
+      def save_doc req
+        DaemonKit.logger.debug("REQ: #{req.inspect}")
+        deferrable = EM::DefaultDeferrable.new
+        doc = req['doc']
+        doc.delete("_rev") if doc.has_key?("_rev")
+        begin
+          @db_rooms.save_doc(doc)
+        rescue RestClient::Conflict => e
+          DaemonKit.logger.error "ERROR: #{e}".foreground(:red)
+        end
         deferrable
       end
     end

@@ -10,6 +10,8 @@ App.SourcesConfigureView = App.BindView.extend
     @configure_list.bind "add", @add, this
     @configure_list.bind "remove", @remove, this
     App.sources.bind "change:update", @render, this
+    App.sources.bind "change:save", @save, this
+    App.sources.bind "change:discard", @discard, this
     @change_selection()
 
   add: () ->
@@ -78,3 +80,8 @@ App.SourcesConfigureView = App.BindView.extend
       @set_up_bindings(@model)
 
     this
+
+  save: () ->
+    App.server.save_doc(App.sources.selected)
+  
+  discard: () ->

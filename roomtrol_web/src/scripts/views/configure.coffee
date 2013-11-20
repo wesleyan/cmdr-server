@@ -31,8 +31,27 @@ App.ConfigureView = Backbone.View.extend
     $("#configure-tabs .tab-button a", @el).click (e) => @tab_clicked(e)
 
     @select_tab(@selected_tab)
+    
+    $(".save-button", @el).click((e) => @save_clicked(e))
+    $(".discard-button", @el).click((e) => @discard_clicked(e))
 
     this
 
   tab_clicked: (e) ->
     @select_tab $(e.target).html()
+
+  #cases on @selected tab
+  save_clicked: (e) ->
+    switch @selected_tab
+      when "general" then App.general.trigger("change:save")
+      when "devices" then App.devices.trigger("change:save")
+      when "sources" then App.sources.trigger("change:save")
+      when "actions" then App.actions.trigger("change:save")
+
+  discard_clicked: (e) ->
+    switch @selected_tab
+      when "general" then App.general.trigger("change:discard")
+      when "devices" then App.devices.trigger("change:discard")
+      when "sources" then App.sources.trigger("change:discard")
+      when "actions" then App.actions.trigger("change:discard")
+

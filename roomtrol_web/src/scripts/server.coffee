@@ -52,6 +52,12 @@ class Server
       type: "remove_doc"
       doc: msg
     @send_message(req)
+
+  save_doc: (msg) ->
+    req =
+      type: "save_doc"
+      doc: msg
+    @send_message(req)
     
   device_changed: (msg) ->
     if d = App.devices.get(msg.update?.id)
