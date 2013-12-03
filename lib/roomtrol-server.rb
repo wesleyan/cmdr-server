@@ -149,10 +149,8 @@ module Wescontrol
       def save_doc req
         DaemonKit.logger.debug("REQ: #{req.inspect}")
         deferrable = EM::DefaultDeferrable.new
-        doc = req['doc']
-        doc.delete("_rev") if doc.has_key?("_rev")
         begin
-          @db_rooms.save_doc(doc)
+          @db_rooms.save_doc(req['doc'])
         rescue RestClient::Conflict => e
           DaemonKit.logger.error "ERROR: #{e}".foreground(:red)
         end

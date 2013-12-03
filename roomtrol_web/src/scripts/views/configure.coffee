@@ -32,26 +32,30 @@ App.ConfigureView = Backbone.View.extend
 
     @select_tab(@selected_tab)
     
-    $(".save-button", @el).click((e) => @save_clicked(e))
-    $(".discard-button", @el).click((e) => @discard_clicked(e))
+    #$(".save-button", @el).on("click", (e) => @save_clicked(e))
+    #$(".discard-button", @el).click((e) => @discard_clicked(e))
 
     this
 
   tab_clicked: (e) ->
     @select_tab $(e.target).html()
 
-  #cases on @selected tab
-  save_clicked: (e) ->
-    switch @selected_tab
-      when "general" then App.general.trigger("change:save")
-      when "devices" then App.devices.trigger("change:save")
-      when "sources" then App.sources.trigger("change:save")
-      when "actions" then App.actions.trigger("change:save")
+  #save_clicked: (e) ->
+    # Don't do a trigger
+    # Select tab creates a new view everytime
+    # So when you do a trigger each created view has a response
+    # This causes conflicts when saving to the db
 
-  discard_clicked: (e) ->
-    switch @selected_tab
-      when "general" then App.general.trigger("change:discard")
-      when "devices" then App.devices.trigger("change:discard")
-      when "sources" then App.sources.trigger("change:discard")
-      when "actions" then App.actions.trigger("change:discard")
+    #switch @selected_tab
+    #  #when "general" then #App.general.trigger("change:save")
+    #  when "devices" then App.server.save_doc(App.devices.selected)#App.devices.trigger("change:save")
+    #  when "sources" then App.server.save_doc(App.sources.selected)#App.sources.trigger("change:save")
+    #  when "actions" then App.server.save_doc(App.actions.selected)#App.actions.trigger("change:save")
+
+  #discard_clicked: (e) ->
+  #  switch @selected_tab
+  #    when "general" then App.general.trigger("change:discard")
+  #    when "devices" then App.devices.trigger("change:discard")
+  #    when "sources" then App.sources.trigger("change:discard")
+  #    when "actions" then App.actions.trigger("change:discard")
 

@@ -10,8 +10,6 @@ App.SourcesConfigureView = App.BindView.extend
     @configure_list.bind "add", @add, this
     @configure_list.bind "remove", @remove, this
     App.sources.bind "change:update", @render, this
-    App.sources.bind "change:save", @save, this
-    App.sources.bind "change:discard", @discard, this
     @change_selection()
 
   add: () ->
@@ -79,9 +77,13 @@ App.SourcesConfigureView = App.BindView.extend
       $(".source-list", @el).html @configure_list.render().el
       @set_up_bindings(@model)
 
+      $(".save-button", @el).click((e) => @save(e))
+      $(".cancel-button", @el).click((e) => @cancel(e))
+
     this
 
   save: () ->
-    App.server.save_doc(App.sources.selected)
+    #App.server.save_doc(App.sources.selected)
+    console.log("LKASJDLKASJDLKAJSDJLSA")
   
-  discard: () ->
+  cancel: () ->

@@ -70,7 +70,6 @@ class Server
   state_set: (device, variable, value) ->
     msg =
       type: "state_set"
-      #room: device.get('room')?.id
       room: device.get('belongs_to')?.id
       device: device.id
       var: variable

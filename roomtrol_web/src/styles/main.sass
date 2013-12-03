@@ -149,35 +149,35 @@ a
       +fill-parent
       top: 48px
 
-    .save-discard-buttons
-      position: absolute
-      top: 80%
-      bottom: 0
-      height: 40px
-      left: 0
-      right: 0
+    //.save-discard-buttons
+    //  position: absolute
+    //  top: 80%
+    //  bottom: 0
+    //  height: 40px
+    //  left: 0
+    //  right: 0
 
-    .sd-button
-      position: absolute
-      width: 150px
-      height: 35px
-      +button
-      bottom: 0
-      +border-radius(0)
-      font-size: 18px    
-      font-weight: bold
-      color: #888
-      +text-shadow(#444, -1px, -1px, 0)
-      text-align: center
-      right: 40%    
-      +box-shadow(none)
-      border: 1px solid #aaa
-      border-bottom: none
-      &.discard-button
-        right: calc(40% - 150px)
-      .sd-label
-        +user-select(none)  
-        cursor: pointer
+    //.sd-button
+    //  position: absolute
+    //  width: 150px
+    //  height: 35px
+    //  +button
+    //  bottom: 0
+    //  +border-radius(0)
+    //  font-size: 18px    
+    //  font-weight: bold
+    //  color: #888
+    //  +text-shadow(#444, -1px, -1px, 0)
+    //  text-align: center
+    //  right: 40%    
+    //  +box-shadow(none)
+    //  border: 1px solid #aaa
+    //  border-bottom: none
+    //  &.discard-button
+    //    right: calc(40% - 150px)
+    //  .sd-label
+    //    +user-select(none)  
+    //    cursor: pointer
 
 
 .device-list
@@ -402,4 +402,26 @@ a
 
     &.invalid
       border: thin solid rgb(255, 118, 111)
-   
+  
+  .button
+    position: absolute
+    width: 150px
+    height: 35px
+    +button
+    bottom: 0
+    +border-radius(0)
+    font-size: 18px    
+    font-weight: bold
+    color: #888
+    +text-shadow(#444, -1px, -1px, 0)
+    text-align: center
+    right: 40%    
+    +box-shadow(none)
+    border: 1px solid #aaa
+    border-bottom: none
+    &.cancel-button
+      right: calc(40% - 150px)
+    .label
+      +user-select(none)  
+      cursor: pointer
+
