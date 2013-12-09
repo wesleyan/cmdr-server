@@ -10,8 +10,6 @@ App.ActionsConfigureView = App.BindView.extend
     @configure_list.bind "remove", @remove, this
     App.actions.bind "change:selection", @change_selection, this
     App.actions.bind "change:update", @render, this
-    App.actions.bind "change:save", @save, this
-    App.actions.bind "change:discard", @discard, this
     @change_selection()
 
   add: () ->
@@ -61,9 +59,12 @@ App.ActionsConfigureView = App.BindView.extend
       $(".action-list", @el).html @configure_list.render().el
       @set_up_bindings(@model)
 
+      $(".save-button", @el).click((e) => @save(e))
+      $(".cancel-button", @el).click((e) => @cancel(e))
+
     this
 
   save: () ->
     App.server.save_doc(App.actions.selected)
 
-  discard: () ->
+  cancel: () ->

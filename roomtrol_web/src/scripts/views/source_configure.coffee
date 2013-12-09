@@ -83,7 +83,6 @@ App.SourcesConfigureView = App.BindView.extend
     this
 
   save: () ->
-    #App.server.save_doc(App.sources.selected)
-    console.log("LKASJDLKASJDLKAJSDJLSA")
+    App.server.save_doc(App.sources.selected)
   
   cancel: () ->

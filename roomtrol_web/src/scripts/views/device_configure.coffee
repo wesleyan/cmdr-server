@@ -10,8 +10,6 @@ App.DevicesConfigureView = App.BindView.extend
     @configure_list.bind "remove", @remove, this
     App.devices.bind "change:selection", @change_selection, this
     App.devices.bind "change:update", @render, this
-    App.devices.bind "change:save", @save, this
-    App.devices.bind "change:discard", @discard, this
     @change_selection()
 
   add: () ->
@@ -98,10 +96,13 @@ App.DevicesConfigureView = App.BindView.extend
       $(".device-list", @el).html @configure_list.render().el
       #@set_up_bindings(@model)
 
+      $(".save-button", @el).click((e) => @save(e))
+      $(".cancel-button", @el).click((e) => @save(e))
+
     this
 
   save: () ->
     App.server.save_doc(App.devices.selected)
 
-  discard: () ->
+  cancel: () ->
 
