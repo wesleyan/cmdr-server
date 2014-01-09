@@ -65,8 +65,9 @@ App.ActionsConfigureView = App.BindView.extend
     this
 
   save: () ->
-    action = App.actions.selected.attributes
-    action["belongs_to"] = App.actions.selected.get("belongs_to").get("id")
+    act = App.actions.selected.clone()
+    action = act.attributes
+    action["belongs_to"] = act.get("belongs_to").get("id")
     App.server.save_doc(action)#App.actions.selected)
 
   cancel: () ->
