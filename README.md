@@ -14,14 +14,14 @@ and line lengths should be minimized but there is no hard cut-off.
 For Ruby code, class names ShouldBeCamelCased, variable and method names 
 should\_be\_underscored, every method and class should be documented 
 using [Yardoc](yardoc.com) tags and 
-[markdown](http://daringfireball.net/projects/markdown/) formatting 
-and [RSpec](rpsec.org) tests should be written for all functionality.
+[markdown](http://daringfireball.net/projects/markdown) formatting 
+and [RSpec](http://rspec.info) tests should be written for all functionality.
 
 For Javascript, the same formatting rules should apply, but variable 
 and method names shouldBeCamelCased as well as class names. Methods 
 and classes should be documented using 
-[JSDoc](http://code.google.com/p/jsdoc-toolkit/). Also, all code should 
-be run through [JSLint](http://www.jslint.com/) and any errors it 
+[JSDoc](http://usejsdoc.org). Also, all code should 
+be run through [JSLint](http://www.jslint.com) and any errors it 
 identifies should be corrected (this means no global variables 
 and semi-colons are mandatory).
 
