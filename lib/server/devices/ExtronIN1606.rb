@@ -1,3 +1,20 @@
+# Copyright (C) 2014 Wesleyan University
+#
+# This file is part of cmdr-devices.
+#
+# cmdr-devices is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cmdr-devices is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cmdr-devices. If not, see <http://www.gnu.org/licenses/>.
+
 #---
 #{
 #	"name": "ExtronIN1606",
@@ -28,7 +45,7 @@ class ExtronIN1606 < SocketVideoSwitcher
 		:display_order => 2,
 		:response => :volume,
 		:action => proc{|volume|
-			"\eD8*100#{volume > self.volume ? "+" : "-"}GRPM\r\n"
+      volume >= 1 ? "\eD8*-1GRPM\r\n" : "\eD8*100#{volume > self.volume ? "+" : "-"}GRPM\r\n"
 		}
 	managed_state_var :mute,
 		:type => :boolean,

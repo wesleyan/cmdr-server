@@ -1,3 +1,20 @@
+# Copyright (C) 2014 Wesleyan University
+#
+# This file is part of cmdr-devices.
+#
+# cmdr-devices is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cmdr-devices is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cmdr-devices. If not, see <http://www.gnu.org/licenses/>.
+
 #---
 #{
 #	"name": "VideoRecorder",
@@ -11,9 +28,9 @@
 
 require 'uuidtools'
 
-class VideoRecorder < Wescontrol::Device
-	SEND_QUEUE = "roomtrol:video:send:queue"
-	FANOUT_QUEUE = "roomtrol:video:messages"
+class VideoRecorder < Cmdr::Device
+	SEND_QUEUE = "cmdr:video:send:queue"
+	FANOUT_QUEUE = "cmdr:video:messages"
 	state_var :state, :type => :option, :options => [:playing, :recording, :stopped]
   state_var :course, :type => :string
 	state_var :recording_started, :type => :time, :editable => false
@@ -25,7 +42,7 @@ class VideoRecorder < Wescontrol::Device
 		Thread.abort_on_exception = true
 		options = options.symbolize_keys
 		DaemonKit.logger.info "Initializing Video Recorder #{name}"
-		@response_queue = "roomtrol:#{name}:video_resp"
+		@response_queue = "cmdr:#{name}:video_resp"
 		@requests = {}
 		
 		super(name, options)

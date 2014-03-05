@@ -1,3 +1,20 @@
+# Copyright (C) 2014 Wesleyan University
+#
+# This file is part of cmdr-devices.
+#
+# cmdr-devices is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# cmdr-devices is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with cmdr-devices. If not, see <http://www.gnu.org/licenses/>.
+
 #---
 #{
 #	"name": "ATPA100",
@@ -9,7 +26,7 @@
 #}
 #---
 
-class ATPA100 < Wescontrol::RS232Device
+class ATPA100 < Cmdr::RS232Device
   configure do
     baud 9600
     message_end "\r\n"
