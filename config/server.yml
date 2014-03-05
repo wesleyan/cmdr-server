@@ -1,13 +1,13 @@
 ---
     environment: production
-    chdir: /var/roomtrol-server/lib
+    chdir: /var/cmdr-server/lib
     address: 127.0.0.1
-    user: roomtrol
-    group: roomtrol
+    user: cmdr
+    group: cmdr
     port: 4567
-    pid: /var/roomtrol-server/tmp/unicorn.pid
-    rackup: /var/roomtrol-server/lib/config.ru
-    log: /var/roomtrol-server/log/thin.log
+    pid: /var/cmdr-server/tmp/unicorn.pid
+    rackup: /var/cmdr-server/lib/config.ru
+    log: /var/cmdr-server/log/thin.log
     max_conns: 1024
     timeout: 30
     max_persistent_conns: 512

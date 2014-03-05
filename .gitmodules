@@ -1,3 +1,0 @@
-[submodule "lib/server/devices"]
-	path = lib/server/devices
-	url = git@github.com:mwylde/roomtrol-devices.git

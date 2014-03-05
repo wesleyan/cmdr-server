@@ -10,7 +10,7 @@
 
 #This class exists solely to get configuration information out of device files
 #As such, it doesn't do anything but that
-module Wescontrol
+module Cmdr
 	class Device
 		def initialize(name, hash = {})
 		end

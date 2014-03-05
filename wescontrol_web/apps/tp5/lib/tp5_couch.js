@@ -20,7 +20,21 @@ Tp5.CouchDataSource = CouchDataSource.extend({
 	
 	fetchedBuildingsCallback: function(response){
 		Tp5.deviceController.refreshContent();
-		Tp5.roomController.set('content', Tp5.store.find(Tp5.Room, Tp5.appController.roomID));
+		//we break up the string in a funny manner so that it won't get replaced when we replace the
+		//other one
+    var compare_string = "REPLACE_WITH_REAL_MAC_THIS_SHOULD_BE_UNIQUE";
+    
+		if(Tp5.appController.mac.slice(0, compare_string.length) != compare_string)
+		{
+			var query = SC.Query.local(Tp5.Room, 'mac = {mac}', {mac: Tp5.appController.mac});
+			
+			Tp5.roomController.set('content', Tp5.store.find(query).firstObject());
+		}
+		else
+		{
+			console.log("Runing local dev mode");
+			Tp5.roomController.set('content', Tp5.store.find(Tp5.Room, Tp5.appController.roomID));
+		}
 	},
 	
 	fetchedSourcesCallback: function(response){

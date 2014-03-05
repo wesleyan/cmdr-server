@@ -46,14 +46,14 @@ CouchDataSource = SC.DataSource.extend(
 				SC.Timer.schedule({
 					target: this,
 					action: "doRequest",
-					interval: 5000
+					interval: 50
 				});
 			},
 			
 			doRequest: function(){
 				if(!this.get('disableChanges') && this.running)
 				{
-					SC.Request.getUrl('/rooms/_changes?feed=longpoll&filter=wescontrol_web/device&since=' + this.since).json()
+					SC.Request.getUrl('/rooms/_changes?feed=poll&filter=wescontrol_web/device&since=' + this.since).json()
 						.notify(this, "requestFinished")
 						.send();
 				}
@@ -86,7 +86,6 @@ CouchDataSource = SC.DataSource.extend(
 				{
 					console.log("%s changed", body['_id']);
 					var device = this.appObject.store.find(this.appObject.Device, body._id);
-					console.log(device);
 					//device.set('state_vars', body.attributes.state_vars);
 					//device.set('name', device.get('name')+1);
 					var record = {
@@ -122,10 +121,11 @@ CouchDataSource = SC.DataSource.extend(
 	// 
 
 	fetch: function(store, query) {
-
+		console.log("Doing fetch for");
 		// TODO: Add handlers to fetch data for specific queries.	 
 		// call store.dataSourceDidFetchQuery(query) when done.
 		if(query.recordType == this.appObject.Building) {
+			console.log("Building");
 			SC.Request.getUrl('/rooms/_design/wescontrol_web/_view/building').json()
 				.notify(this, 'didFetchBuildings', store, query)
 				.send();

@@ -1,53 +1,73 @@
-require 'extlib'
 require 'json'
+require 'pty'
+require 'expect'
 
-PUBLIC_KEY = false #Are we using public key authentication on all the servers?
+MAC_VALUE = "REPLACE_WITH_REAL_MAC_THIS_SHOULD_BE_UNIQUE_e1599512ea6"
 
-WORKING = File.dirname(__FILE__) / '..'
-TARGETS = ['/tp5', '/wescontrol_web']
+WORKING = File.dirname(__FILE__) + '/..'
+TARGETS = ['/cmdr_web']
 
 # load server addresses from servers.json
-servers_file = File.open(WORKING / "servers.json")
+servers_file = File.open(WORKING + "/servers.json")
 exit "No servers.json file found" unless servers_file
 servers = JSON.parse(servers_file.read)
 SERVERS = servers['servers']
-CONTROLLERS = servers['controllers']
 
 OPTS = {}
 
-$:
 desc "Builds sc apps for deployment"
 task :build do
-	Dir.chdir WORKING / 'wescontrol_web'
+	Dir.chdir WORKING + '/cmdr_web'
 	puts `sc-build #{TARGETS * ' '} -rv`
 end
 
 desc "cleans the build output"
 task :clean do
-	path = WORKING / 'wescontrol_web' / 'tmp' / 'build' / 'production' / 'static'
+	path = WORKING + '/cmdr_web/tmp/'
 	puts "Removing #{path}"
 	puts `rm -r #{path}`
 end
 
 desc "installs gems needed for this Rakefile to run"
 task :install_gems do
-	puts "sudo gem install highline net-ssh net-scp sproutit-sproutcore git"
-	puts `sudo gem install highline net-ssh net-scp sproutit-sproutcore git`
+	puts "sudo gem install highline net-ssh net-scp sproutcore git"
+	puts `sudo gem install highline net-ssh net-scp sproutcore git`
 end
 
-desc "collects the login password from the operator"
-task :collect_password do
-	unless PUBLIC_KEY
-		begin
-			require 'highline/import'
-		rescue LoadError => e
-		    puts "\n ~ FATAL: sproutcore gem is required.\n          Try: rake install_gems"
-		    exit(1)
-		end
-	
-		puts "Enter roomtrol password to complete this task"
-		OPTS[:password] = ask("Password: "){|q| q.echo = '*'}
+desc "set up controller databases"
+task :setup_db do
+	begin
+		require 'net/ssh'
+		require 'net/scp'
+		require 'couchrest'
+	rescue LoadError => e
+		puts "\n ~ FATAL: net-scp gem is required.\n          Try: rake install_gems"
+		exit(1)
 	end
+	
+	password = OPTS[:password]
+	targets  = OPTS[:targets]
+    
+	SERVERS.each do |server|
+    Net::SCP.start(server, 'cmdr', :password => password) do |scp|
+      puts " ~ uploading database script"
+      local_path = WORKING + '/lib/server/database.rb'
+      scp.upload! local_path, "/tmp/database.rb"
+    end
+		Net::SSH.start(server, 'cmdr', :password => password) do |ssh|
+      puts " ~ running database script"
+      commands = ["source /usr/local/rvm/environments/default",
+                  "ruby -r couchrest -r '/tmp/database.rb' -e 'Database.setup_database'"]
+		  puts ssh.exec!(commands.join(" && "))
+		end
+	end
+end
+
+desc "set up local database"
+task :local_db do
+  require 'couchrest'
+  require_relative '../lib/server/database.rb'
+  Database.setup_database
 end
 
 desc "finds all targets in the system and computes their build numbers" 
@@ -61,7 +81,7 @@ task :prepare_targets do
 
 	puts "discovering all installed targets"
 	SC.build_mode = :production
-	project = SC.load_project(WORKING/'wescontrol_web') 
+	project = SC.load_project(WORKING + '/cmdr_web') 
 
 	# get all targets and prepare them so that build numbers work
 	targets = TARGETS.map do |name| 
@@ -79,8 +99,7 @@ end
 
 
 desc "copies the files to the controllers"
-task :deploy_assets, :to_controllers, :needs => [:collect_password, :build, :prepare_targets] do |t, args|
-	puts "Deploying for controllers: #{args.inspect}"
+task :deploy_assets, [] => [:build, :prepare_targets] do
 	begin
 		require 'net/ssh'
 		require 'net/scp'
@@ -92,10 +111,10 @@ task :deploy_assets, :to_controllers, :needs => [:collect_password, :build, :pre
 	password = OPTS[:password]
 	targets  = OPTS[:targets]
 
-	(args[:to_controllers] ? CONTROLLERS : SERVERS).each do |server|
+	SERVERS.each do |server|
 		installed = {}
 		puts "building directory structure on #{server}"
-		Net::SSH.start(server, 'roomtrol', :password => password) do |ssh|
+		Net::SSH.start(server, 'cmdr', :password => password) do |ssh|
 			targets.each do |target|
 				remote_path = "/var/www/static#{target.index_root}/en"
 				puts ssh.exec!(%[mkdir -p "#{remote_path}"]) || "%: mkdir -p #{remote_path}"
@@ -106,9 +125,9 @@ task :deploy_assets, :to_controllers, :needs => [:collect_password, :build, :pre
 		end
 		
 		puts "Copying static resources onto #{server}"
-		Net::SCP.start(server, 'roomtrol', :password => password) do |scp|
+		Net::SCP.start(server, 'cmdr', :password => password) do |scp|
 			targets.each do |target|
-				local_path = target.build_root / 'en' / target.build_number
+				local_path = target.build_root + '/en/' + target.build_number
 				remote_path = "/var/www/static#{target.index_root}/en"
 				short_path = local_path.gsub /^#{Regexp.escape(target.build_root)}/,''
 				if installed["#{remote_path}/#{target.build_number}"]
@@ -116,6 +135,14 @@ task :deploy_assets, :to_controllers, :needs => [:collect_password, :build, :pre
 				elsif File.directory?(local_path)
 					puts " ~ uploading #{target.target_name}#{short_path}"
 					scp.upload! local_path, remote_path, :recursive => true
+					Net::SSH.start(server, 'cmdr', :password => password) do |ssh|
+						# replace the mac address placeholder in the javascript file on the controller
+						# with the controller's actual mac address
+						output = ssh.exec!("ifconfig")
+						re = %r/[^:\-](?:[0-9A-F][0-9A-F][:\-]){5}[0-9A-F][0-9A-F][^:\-]/io
+						mac = output[re].strip
+						ssh.exec!("sed -i 's/#{MAC_VALUE}/#{mac}/g' #{remote_path}/#{target.build_number}/javascript.js")
+					end
 				else
 					puts "\n\n ~ WARN: cannot install #{target.target_name} - local path #{local_path} does not exist\n\n"
 				end
@@ -125,7 +152,7 @@ task :deploy_assets, :to_controllers, :needs => [:collect_password, :build, :pre
 end
 
 desc "creates symlinks to the latest versions of all pages and apps on the controllers."
-task :link_current, :to_controllers, :needs => [:collect_password, :prepare_targets] do |t, args|
+task :link_current, [] => [:prepare_targets] do
 	# don't require unless this task runs to avoid dependency problems
 	begin
 		require 'net/ssh'
@@ -146,8 +173,8 @@ task :link_current, :to_controllers, :needs => [:collect_password, :prepare_targ
 
 	# SSH in and do the symlink
 	password = OPTS[:password]
-	(args[:to_controllers] ? CONTROLLERS : SERVERS).each do |server|
-		Net::SSH.start(server, "roomtrol", :password => password) do |ssh|
+	SERVERS.each do |server|
+		Net::SSH.start(server, "cmdr", :password => password) do |ssh|
 			targets.each do |target|
 			# find the local build number
 				build_number = target.prepare!.compute_build_number
@@ -173,56 +200,43 @@ task :link_current, :to_controllers, :needs => [:collect_password, :prepare_targ
 					puts ssh.exec!("rm #{to_path}") || " ~ Removed link at #{to_path}"
 				end
 				puts ssh.exec!("ln -s #{from_path} #{to_path}") || " ~ Linked #{from_path} => #{to_path}"
-				if args[:to_controllers]
-					puts "Restarting X"
-					puts ssh.exec!("echo '#{password}' | sudo -S restart x")
-				end
 			end
 		end
 	end
 end
 
 desc "deploy server code"
-task :deploy_roomtrol_server, :needs => [:collect_password] do
+task :deploy_cmdr_server do
 	begin
 		require 'net/ssh'
-		require 'net/scp'
 	rescue LoadError => e
 		puts "\n ~ FATAL: net-scp gem is required.\n          Try: rake install_gems"
 		exit(1)
 	end
 	
-	puts "\tCreating tar of roomtrol-server"
-	`tar cf /tmp/roomtrol-server.tar.gz #{WORKING}`
-	
 	SERVERS.each do |server|
-		Net::SCP.start(server, 'roomtrol', :password => OPTS[:password]) do |scp|
-			local_path = "/tmp/roomtrol-server.tar.gz"
-			remote_path = "/var/roomtrol-server"
-			puts "\tCopying roomtrol-server to #{server}"
-			scp.upload! local_path, remote_path, :recursive => false
-		end
-		Net::SSH.start(server, "roomtrol", :password => OPTS[:password]) do |ssh|
-			puts "\tInstalling gems on server"
-			path = "/var/roomtrol-server"
-			commands = [
-				"cd #{path}",
-				"tar xvf roomtrol-server.tar.gz",
-				"rm roomtrol-server.tar.gz",
-				"rvm 1.9.2",
-				"bundle install"
-			]
-			puts ssh.exec!(commands.join("; "))
-		end
+    cmd = "rsync -arvz -e ssh #{WORKING} cmdr@#{server}:/var/cmdr-server --exclude '.git'"
+    PTY.spawn(cmd){|read,write,pid|
+      write.sync = true
+      $expect_verbose = false
+      read.expect(/total size/) do
+      end
+    }
+		# Net::SSH.start(server, "cmdr", :password => OPTS[:password]) do |ssh|
+		# 	puts "\tInstalling gems on server"
+		# 	path = "/var/cmdr-server"
+		# 	commands = [
+		# 		"rvm 1.9.2",
+		# 		"bundle install"
+		# 	]
+		# 	puts ssh.exec!(commands.join("; "))
+		# end
 		puts "\tInstallation finished on #{server}"
 	end
 end
 
 desc "builds and then deploys the files onto every server in servers.json.  This will not clean the build first, which will be faster.  If you have trouble try deploy_clean"
-task :deploy_servers, :to_controllers, :needs => [:collect_password, :build, :deploy_assets, :link_current]
-desc "builds and then deploys the files onto every controller in servers.json.  This will not clean the build first, which will be faster.  If you have trouble try deploy_clean"
-task :deploy_controllers do
-  Rake::Task[:deploy_servers].invoke(true)
-end
+task :deploy_servers, [] => [ :build, :deploy_assets, :link_current, :setup_db]
+
 desc "first cleans, then deploys the files"
 task :deploy_clean => [:clean, :deploy]

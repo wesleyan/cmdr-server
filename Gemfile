@@ -12,24 +12,27 @@ gem 'rake'
 gem 'extlib'
 gem 'daemon-kit'
 
-# For more information on bundler, please visit http://gembundler.com
-gem 'capistrano'
-gem 'capistrano-ext'
-
 # My gems
-gem 'sinatra'
 gem 'eventmachine'
 gem 'couchrest'
 gem 'json'
 gem 'net-ldap'
-gem 'em-proxy'
-gem 'unicorn'
+gem 'em-websocket'
+gem 'em-http-request'
 gem 'god'
+gem 'rainbow'
+gem 'rubybits'
+gem 'slinky'
+gem 'amqp'
+gem 'uuidtools'
+gem 'wol'
 
 # WescontrolWeb gems
 gem 'highline'
 gem 'net-ssh'
 gem 'net-scp'
-gem 'sproutcore'
 gem 'git'
 gem 'haml'
+
+# Zeroconf gems
+gem 'dnssd'

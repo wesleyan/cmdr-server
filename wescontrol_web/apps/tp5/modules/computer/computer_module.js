@@ -2,7 +2,7 @@
 // Project:   Tp5.ActionView
 // Copyright: ©2010 My Company, Inc.
 // ==========================================================================
-/*globals Tp5 */
+/*globals Tp5 p */
 
 /** @class
 
@@ -26,11 +26,10 @@ Tp5.ComputerModule = SC.View.extend(Tp5.MouseHandlingFix,
 	childViews: "titleLabel computerOffView computerOnView".w(),
 	
 	onReachableChanged: function(){
-		if(Tp5.roomController.get('pc').get('states'))
+		if(p("Tp5.roomController.pc.states"))
 		{
-			console.log("ReachableChanged");
-			this.computerOffView.set('isVisible', !Tp5.roomController.get('pc').get('states').reachable);
-			this.computerOnView.set('isVisible', Tp5.roomController.get('pc').get('states').reachable);
+			this.computerOffView.set('isVisible', !p("Tp5.roomController.pc.states.reachable"));
+			this.computerOnView.set('isVisible', p("Tp5.roomController.pc.states.reachable"));
 		}
 	}.observes("Tp5.roomController.pc.state_vars"),
 	

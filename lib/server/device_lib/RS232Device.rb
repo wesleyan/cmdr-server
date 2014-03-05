@@ -1,5 +1,4 @@
-require 'bit-struct'
-module Wescontrol
+module Cmdr
 	class RS232Device < Device
 		attr_accessor :serialport
 		

@@ -2,7 +2,7 @@
 // Project:   Tp5.sourceController
 // Copyright: ©2010 My Company, Inc.
 // ==========================================================================
-/*globals Tp5 */
+/*globals Tp5 p */
 
 /** @class
 
@@ -50,26 +50,27 @@ Tp5.sourceController = SC.ArrayController.create(
 	}.observes("source"),
 	
 	switcherChanged: function(){
-		if(this.get('content').get('length') === 0 || !this.get('switcher'))return;
-		this.set("source", this.get('states')[this.switcher_map[this.switcher.get('states').input]]);
+		/*if(this.get('content').get('length') === 0 || !this.get('switcher'))return;
+		var input = p("Tp5.sourceController.switcher.states.input");			
+		this.set("source",this.get('states')[this.switcher_map[input]]);*/
 	}.observes("switcher", "states", ".switcher.states"),
 	
 	projectorChanged: function(){
-		if(this.get('content').get('length') === 0 || this.get('switcher'))return;
-		this.set("source",this.get('states')[this.projector_map[this.projector.get('states').input]]);
+		/*if(this.get('content').get('length') === 0 || this.get('switcher'))return;
+		this.set("source", this.get('states')[this.projector_map[p("Tp5.sourceController.projector.states.input")]]);*/
 	}.observes("projector", "states", ".projector.states"),
 	
 	projectorPowerChanged: function(){
 		if(this.get('content').get('length') === 0)return;
-		if(this.projector.get('states').power == YES && this.get('source') && this.projector.get('states').power != this.old_projector_power)
+		if(p(".projector.states.power") == YES && this.get('source') && p(".projector.states.power") != this.old_projector_power)
 		{
 			var input = this.get('source').projector;
-			if(input && this.projector.get('states').input != input)
+			if(input && p(".projector.states.input") != input)
 			{
 				this.projector.set_var("input", input);
 			}
 		}
-		this.old_projector_power = this.projector.get('states').power;
+		this.old_projector_power = p(".projector.states.power");
 	}.observes("projector", "states", ".projector.states"),
 	
 	contentChanged: function() {

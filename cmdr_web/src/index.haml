@@ -1,0 +1,32 @@
+slinky_depends("scripts/templates/device_configure.mustache")
+slinky_depends("scripts/templates/general_configure.mustache")
+slinky_depends("scripts/templates/driver_options.mustache")
+slinky_depends("scripts/templates/source_configure.mustache")
+slinky_depends("scripts/templates/action_configure.mustache")
+slinky_depends("scripts/templates/configure_list.mustache")
+!!!5
+
+%html
+  %head
+    %title cmdr Web
+    %script{:src => "scripts/vendor/jquery-1.7.js"}
+    slinky_styles
+    slinky_scripts
+
+    - Dir.glob("./scripts/templates/*.mustache") do |f|
+      - name = File.basename(f).split(".")[0..-2].join(".")
+      %script{:id => name, :type => "text/x-handlebars-template"}= File.read(f)
+  %body
+    #top-bar
+      #tab-bar
+        %ul.tab-view
+          %li#control-button.tab-button
+            %a.label{:href => "#control"} control
+          %li#monitor-button.tab-button
+            %a.label{:href => "#monitor"} monitor
+          %li#configure-button.tab-button
+            %a.label{:href => "#configure"} configure
+    #main-view
+      #control.subview
+      #monitor.subview
+      #configure.subview
