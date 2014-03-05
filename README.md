@@ -1,20 +1,19 @@
-#cmdr Server
+#cmdr-server
 This repository holds the backend code for the central cmdr server 
-(responsible for managing all of the controllers), the web 
-interface that runs on the server as well as the touchscreen 
-interface run on the controllers (both of which are in the wescontrol_web subdirectory).
+(responsible for managing all of the controllers) and the web 
+interface that allows interaction with the server.
 
-cmdr is split into three parts: the server code, 
+cmdr is split into three parts: the centralized server code contained within this repo, 
 [cmdr](https://github.com/wesleyan/cmdr) which contains the 
 code for the daemon that runs on each controller, and 
 [cmdr-devices](https://github.com/wesleyan/cmdr-devices) which holds 
 the various device drivers that have been written.
 
-**Note: in order to get device drivers, you need to setup the gittrees**: 
-See the [cmdr](https://github.com/wesleyan/cmdr) repo for more information.
+**Note: We use subtrees for the devices. More information can be found
+[here](http://blogs.atlassian.com/2013/05/alternatives-to-git-submodule-git-subtree)**
 
-## Running cmdr Server
-Running cmdr server is a bit involved at the moment as there are
+## Running cmdr-server
+Running cmdr-server is a bit involved at the moment as there are
 three different pieces that need to be invoked separately, in addition
 to CouchDB.
 
@@ -32,15 +31,15 @@ All code should match the following style: spaces for indentation and
 aligning and line lengths should be minimized but there is no hard cut-off. 
 For Ruby code, class names ShouldBeCamelCased, variable and method names 
 should\_be\_underscored, every method and class should be documented 
-using [Yardoc](yardoc.com) tags and 
-[markdown](http://daringfireball.net/projects/markdown/) formatting 
-and [RSpec](rpsec.org) tests should be written for all functionality.
+using [Yardoc](http://yardoc.com) tags and 
+[markdown](http://daringfireball.net/projects/markdown) formatting 
+and [RSpec](http://rspec.info) tests should be written for all functionality.
 
 For Javascript, the same formatting rules should apply, but variable 
 and method names shouldBeCamelCased as well as class names. Methods 
 and classes should be documented using 
-[JSDoc](http://code.google.com/p/jsdoc-toolkit/). Also, all code 
-should be run through [JSLint](http://www.jslint.com/) and any errors 
+[JSDoc](http://usejsdoc.org). Also, all code 
+should be run through [JSLint](http://www.jslint.com) and any errors 
 it identifies should be corrected (this means no global variables 
 and semi-colons are mandatory).
 
