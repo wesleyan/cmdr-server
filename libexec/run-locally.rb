@@ -12,4 +12,4 @@ DaemonKit::Application.running! do |config|
 end
 
 # Sample loop to show process
-Wescontrol::RoomtrolServer::Server.new.run
+Cmdr::CmdrServer::Server.new.run

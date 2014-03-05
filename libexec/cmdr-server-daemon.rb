@@ -12,4 +12,4 @@ DaemonKit::Application.running! do |config|
 end
 
 # Sample loop to show process
-Wescontrol::RoomtrolServer::ProxyServer.new.run
+Cmdr::CmdrServer::ProxyServer.new.run

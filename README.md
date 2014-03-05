@@ -1,12 +1,20 @@
-#Roomtrol Server
-This repository holds the backend code for the central roomtrol server (responsible for managing all of the controllers), the web interface that runs on the server as well as the touchscreen interface run on the controllers (both of which are in the wescontrol_web subdirectory).
+#cmdr Server
+This repository holds the backend code for the central cmdr server 
+(responsible for managing all of the controllers), the web 
+interface that runs on the server as well as the touchscreen 
+interface run on the controllers (both of which are in the wescontrol_web subdirectory).
 
-Roomtrol is split into three parts: the server code, [roomtrol-daemon](https://github.com/mwylde/roomtrol-daemon) which contains the code for the daemon that runs on each controller, and [roomtrol-devices](https://github.com/mwylde/roomtrol-devices) which holds the various device drivers that have been written.
+cmdr is split into three parts: the server code, 
+[cmdr](https://github.com/wesleyan/cmdr) which contains the 
+code for the daemon that runs on each controller, and 
+[cmdr-devices](https://github.com/wesleyan/cmdr-devices) which holds 
+the various device drivers that have been written.
 
-**Note: in order to get device drivers, you need to run these two commands**: `git submodule init` and `git submodule update`.
+**Note: in order to get device drivers, you need to setup the gittrees**: 
+See the [cmdr](https://github.com/wesleyan/cmdr) repo for more information.
 
-## Running Roomtrol Server
-Running roomtrol server is a bit involved at the moment as there are
+## Running cmdr Server
+Running cmdr server is a bit involved at the moment as there are
 three different pieces that need to be invoked separately, in addition
 to CouchDB.
 
