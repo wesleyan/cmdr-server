@@ -1,5 +1,5 @@
-module Wescontrol
-  module RoomtrolServer
+module Cmdr
+  module CmdrServer
     class WebsocketServer
       # Time to wait for response from server in seconds
       TIMEOUT = 4.0
@@ -10,19 +10,19 @@ module Wescontrol
         @seq = @db.get("")[:update_seq]
 
         @state = {
-          buildings: @db.get("_design/roomtrol_web").
+          buildings: @db.get("_design/cmdr_web").
             view('buildings')["rows"].map{|x| x['value']},
           
-          rooms: @db.get("_design/roomtrol_web").
+          rooms: @db.get("_design/cmdr_web").
             view('rooms')["rows"].map{|x| x['value']},
 
-          devices: @db.get("_design/roomtrol_web").
+          devices: @db.get("_design/cmdr_web").
             view('devices')["rows"].map{|x| x['value']},
 
-          sources: @db.get("_design/roomtrol_web").
+          sources: @db.get("_design/cmdr_web").
             view('sources')["rows"].map{|x| x['value']},
 
-          actions: @db.get("_design/roomtrol_web").
+          actions: @db.get("_design/cmdr_web").
             view('actions')["rows"].map{|x| x['value']},
           
           drivers: CouchRest.database("#{DB_URI}/drivers").
@@ -113,7 +113,7 @@ module Wescontrol
                  elsif doc["source"] then :sources
                  end
           if view
-            url = %@#{DB_URI}/rooms/_design/roomtrol_web/_view/#{view}?key="#{doc["_id"]}"@
+            url = %@#{DB_URI}/rooms/_design/cmdr_web/_view/#{view}?key="#{doc["_id"]}"@
             http = EM::HttpRequest.new(url).get
             http.callback{
               msg = JSON.parse(http.response)

@@ -1,8 +1,0 @@
-#!/usr/bin/env ruby
-#
-# Stub executable for roomtrol-server
-#
-
-require File.expand_path('../../config/environment',  __FILE__)
-
-DaemonKit::Application.exec( DAEMON_ROOT + '/libexec/roomtrol-server-daemon.rb' )

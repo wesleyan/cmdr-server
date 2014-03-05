@@ -1,4 +1,4 @@
-module Wescontrol
+module Cmdr
 	class SocketDevice < Device
 		attr_accessor :uri
 		

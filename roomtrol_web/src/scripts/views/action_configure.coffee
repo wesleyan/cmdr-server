@@ -65,6 +65,7 @@ App.ActionsConfigureView = App.BindView.extend
     this
 
   save: () ->
+    # TODO: When save is clicked, the server should save everything that has changed
     act = App.actions.selected.clone()
     action = act.attributes
     action["belongs_to"] = act.get("belongs_to").get("id")

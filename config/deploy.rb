@@ -7,7 +7,7 @@ require "capistrano/ext/multistage"
 
 # Set some globals
 default_run_options[:pty] = true
-set :application, "roomtrol-server"
+set :application, "cmdr-server"
 
 # Deployment
 set :deploy_to, "/var/#{application}"

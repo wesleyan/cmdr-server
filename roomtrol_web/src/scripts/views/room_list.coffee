@@ -42,4 +42,4 @@ App.RoomListView = Backbone.View.extend
 
   selection_changed: () ->
     $('.rooms li', @el).removeClass 'selected'
-    $(".rooms li:has(a##{App.rooms.selected.id})", @el).addClass 'selected'
+    $(".rooms li:has(a##{App.rooms.selected.id})", @el).addClass 'selected' if App.rooms.selected
