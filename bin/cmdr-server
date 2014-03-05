@@ -1,8 +1,0 @@
-#!/usr/bin/env ruby
-#
-# Stub executable for cmdr-server
-#
-
-require File.expand_path('../../config/environment',  __FILE__)
-
-DaemonKit::Application.exec( DAEMON_ROOT + '/libexec/cmdr-server-daemon.rb' )

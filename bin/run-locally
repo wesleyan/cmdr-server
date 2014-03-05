@@ -1,5 +1,0 @@
-#!/usr/bin/env ruby
-
-require File.expand_path('../../config/environment',  __FILE__)
-
-DaemonKit::Application.exec( DAEMON_ROOT + '/libexec/run-locally.rb' )
