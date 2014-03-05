@@ -35,14 +35,14 @@ module Database
 		puts "Setting up db"
 		rooms = CouchRest.database!("http://127.0.0.1:5984/rooms")
 		doc = {
-			"_id" => "_design/roomtrol_web",
+			"_id" => "_design/cmdr_web",
 			:language => "javascript",
 			:filters => {
 				:device => "function(doc, req) { if(doc.device && !doc.update)return true; return false; }",
 				:config_filter => <<eos
 function (doc, req) {
-  if(((doc.action || doc.source || doc.device) && doc.belongs_to == req.query.key) ||
-    (doc.class == "Room" && doc.id == req.query.key)){
+  if(((doc.action || doc.source || doc.device) && doc.belongs_to == req.query.room) ||
+    (doc.class == "Room" && doc.id == req.query.rooms)){
     return true;
   }
   else return false; 
@@ -123,12 +123,12 @@ eos
 			}
 		}
 		begin 
-			doc["_rev"] = rooms.get("_design/roomtrol_web").rev
+			doc["_rev"] = rooms.get("_design/cmdr_web").rev
 		rescue
 		end
 		rooms.save_doc(doc)
 
-		roomtrol_server = CouchRest.database!("http://127.0.0.1:5984/roomtrol_server")
+		cmdr_server = CouchRest.database!("http://127.0.0.1:5984/cmdr_server")
 		doc = {
 			"_id" => "_design/auth",
 			:language => "javascript",
@@ -142,10 +142,10 @@ eos
 			}
 		}
 		begin 
-			doc["_rev"] = roomtrol_server.get("_design/auth").rev
+			doc["_rev"] = cmdr_server.get("_design/auth").rev
 		rescue
 		end
-		roomtrol_server.save_doc(doc)
+		cmdr_server.save_doc(doc)
 
 		drivers = CouchRest.database!("http://127.0.0.1:5984/drivers")
 		doc = {

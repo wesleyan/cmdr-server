@@ -1,0 +1,427 @@
+/*! slinky_require("reset.css")
+@import 'mixins'
+
+$side-bar-color: #EFEBE3
+$tab-bar-height: 72px
+$control-tab-color: $side-bar-color
+$monitor-tab-color: white
+$configure-tab-color: #C1D699
+
+h1
+  font-size: 25px
+h2 
+  font-size: 23px
+h3 
+  font-size: 21px
+h4 
+  font-size: 19px
+h5 
+  font-size: 17px
+h6 
+  font-size: 15px
+
+
+body
+  font-family: Helvetica, Arial
+
+div, img, p
+  +user-select(none)
+
+a
+  color: black
+  text-decoration: none
+
+
+.scroll
+  overflow-y: auto
+
+.tab-view li.tab-button
+  font-size: 2.8em
+  line-height: 40px
+  display: block
+  float: left
+  height: 31px
+  padding: 20px
+  padding-top: 5px
+  margin-top: 16px
+  a
+    color: white
+  &.selected
+    a
+      color: black
+
+#tab-bar
+  background-image: url('/images/header.png')
+  background-repeat: no-repeat
+  background-position: 98% 50%
+  background-color: #333
+  +fill-width($tab-bar-height)
+
+  #control-button.selected
+    background-color: $control-tab-color
+  
+  #monitor-button.selected
+    background-color: $monitor-tab-color
+
+  #configure-button.selected
+    background-color: $configure-tab-color
+
+#main-view
+  position: absolute
+  top: $tab-bar-height
+  left: 0
+  right: 0
+  bottom: 0
+
+.room-list
+  +fill-height(300px)
+  background-color: $side-bar-color
+  padding-top: 30px
+
+  ul
+    width: 100%
+    list-style: none
+
+    li
+      font-weight: bold
+      font-size: 24px
+      text-align: left
+      padding-left: 20px
+      padding-bottom: 10px
+
+      ul li
+        display: block
+        font-size: 16px
+        //margin-left: 100px
+        padding-left: 40px
+        padding-bottom: 0
+        width: 100%
+        &.selected
+          background-color: white
+
+        a
+          line-height: 18px
+          padding: 10px
+          display: block
+
+#control-view
+  .center-pane
+    +fill-parent
+    left: 300px
+    right: 300px
+   
+  .right-pane
+    position: absolute
+    width: 300px
+    right: 0
+    top: 0
+    bottom: 0
+    background-color: $side-bar-color
+
+#monitor-view
+  .main-pane
+    +fill-parent
+
+#configure-view
+  .main-pane
+    +fill-parent
+    left: 300px
+
+    .tab-view
+      +fill-width(48px)
+      background-color: $configure-tab-color
+
+      li.tab-button
+        line-height: 20px
+        //width: 60px
+        padding: 10px
+        padding-top: 0px
+        height: 25px
+        margin-top: 13px
+        text-align: center
+        &.selected
+          background-color: white
+        a.label
+          color: black
+          font-size: 24px
+
+    #configure-content
+      +fill-parent
+      top: 48px
+
+    //.save-discard-buttons
+    //  position: absolute
+    //  top: 80%
+    //  bottom: 0
+    //  height: 40px
+    //  left: 0
+    //  right: 0
+
+    //.sd-button
+    //  position: absolute
+    //  width: 150px
+    //  height: 35px
+    //  +button
+    //  bottom: 0
+    //  +border-radius(0)
+    //  font-size: 18px    
+    //  font-weight: bold
+    //  color: #888
+    //  +text-shadow(#444, -1px, -1px, 0)
+    //  text-align: center
+    //  right: 40%    
+    //  +box-shadow(none)
+    //  border: 1px solid #aaa
+    //  border-bottom: none
+    //  &.discard-button
+    //    right: calc(40% - 150px)
+    //  .sd-label
+    //    +user-select(none)  
+    //    cursor: pointer
+
+
+.device-list
+  +fill-parent
+
+  ul
+    list-style: none
+    margin: 0
+    padding: 0
+
+  li.device
+    display: block
+    height: 80px
+    cursor: default
+    overflow: hidden
+    border-bottom: 1px solid #ddd
+
+    h3
+      font-size: 30px
+      line-height: 80px
+      margin-left: 10px
+      width: 100px
+
+    dl
+      margin-left: 150px
+      padding: 0px
+      font-size: 15px
+      height: 80px
+      margin-top: -70px
+      +columns(185px)
+      position: absolute
+
+    dt
+      text-transform: capitalize
+      text-align: right
+      width: 109px
+      margin-bottom: 5px
+      border: 0
+      display: inline
+      float: left
+      clear: left
+
+    dd
+      padding-left: 5px
+      width: 71px
+      color: gray
+      display: inline
+      float: left
+      text-align: left
+
+    &.selected
+      background-color: #5498FF
+      color: white
+      
+      dd
+        color: #ddd
+
+.device-control
+  padding: 10px
+
+  h1, h2
+    font-weight: normal
+  h1
+    font-size: 38px
+    text-align: center
+    padding-bottom: 20px
+
+  h2
+    font-size: 24px
+    padding-bottom: 10px
+
+  .control
+    padding-bottom: 20px
+    min-height: 40px
+    padding-left: 20px
+    display: table
+
+    a.button
+      display: block
+      +button(#e7e7e7)
+      +border-radius(15px)
+      border: none
+      text-transform: uppercase
+      font-size: 20px
+      line-height: 34px
+      text-align: center
+      float: left
+      height: 32px
+      width: 90px
+      margin-left: 10px
+
+      &.selected
+        color: white
+        +gradient(#73a4eb, #73a4eb*0.8, 0.25, 1)
+        
+        &:active
+          +gradient(#73a4eb*0.8, #73a4eb*0.7, 0.25, 1)
+
+      &.select
+        +border-radius(0)
+        margin-left: 0
+        width: inherit
+        min-width: 20px
+        padding-right: 8px
+        padding-left: 8px
+        margin-top: 1px
+
+    select
+      font-size: 16px
+
+
+#general-configure
+  .controls
+    +fill-width(60px)
+
+    .field
+      position: absolute
+      width: 300px
+      height: 100px
+      float: left
+      padding-top: 50px
+      left: 50%
+      margin-left: -150px
+
+      &.name
+        left: 30%
+      &.building
+        left: 70%
+      
+      label
+        font-size: 24px
+        padding-right: 20px
+
+      input
+        font-size: 20px
+        width: 150px
+        padding: 4px
+
+      select
+        font-size: 24px
+
+.configure-list
+  +fill-height(198px)
+  border-right: 1px #DFDFDF solid
+
+  .add-rem-buttons
+    position: absolute
+    bottom: 0
+    height: 40px
+    left: 0
+    right: 0
+    background-color: #d3d3d3
+
+  .button
+    position: absolute
+    width: 38px
+    height: 38px
+    +button
+    bottom: 0
+    +border-radius(0)
+    font-size: 28px    
+    font-weight: bold
+    color: #888
+    +text-shadow(#444, -1px, -1px, 0)
+    text-align: center
+    right: 0    
+    +box-shadow(none)
+    border: 1px solid #aaa
+    border-bottom: none
+    &.rem-button
+      right: 38px
+    .label
+      +user-select(none)  
+      cursor: pointer
+  li
+    border-bottom: 1px #DFDFDF solid
+    height: 45px
+    font-size: 20px
+    padding-left: 5px
+    line-height: 45px
+
+    &.selected
+      background-color: #5498FF
+      a
+        color: white
+    a
+      display: block      
+    
+.configure-form
+  +fill-parent
+  left: 200px
+
+  form
+    width: 400px
+    margin-left: auto
+    margin-right: auto
+    margin-top: 100px
+
+    .field
+      margin-top: 20px
+
+  label
+    color: black
+    font-size: 22px
+    line-height: 1.8
+    display: inline-block
+    vertical-align: top
+    text-align: right
+    width: 150px
+    margin-left: 0px
+    +user-select(none)
+
+  input, select
+    //-webkit-appearance: none
+    border: thin solid rgb(103, 103, 103)
+    height: 25px
+    width: 230px
+    margin-left: 10px
+    font-size: 16px
+    line-height: 1.2em
+    margin-top: 8px
+
+    &.invalid
+      border: thin solid rgb(255, 118, 111)
+  
+  .button
+    position: absolute
+    width: 150px
+    height: 35px
+    +button
+    bottom: 0
+    +border-radius(0)
+    font-size: 18px    
+    font-weight: bold
+    color: #888
+    +text-shadow(#444, -1px, -1px, 0)
+    text-align: center
+    right: 40%    
+    +box-shadow(none)
+    border: 1px solid #aaa
+    border-bottom: none
+    &.cancel-button
+      right: calc(40% - 150px)
+    .label
+      +user-select(none)  
+      cursor: pointer
+

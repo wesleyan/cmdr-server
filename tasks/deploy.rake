@@ -5,7 +5,7 @@ require 'expect'
 MAC_VALUE = "REPLACE_WITH_REAL_MAC_THIS_SHOULD_BE_UNIQUE_e1599512ea6"
 
 WORKING = File.dirname(__FILE__) + '/..'
-TARGETS = ['/wescontrol_web']
+TARGETS = ['/cmdr_web']
 
 # load server addresses from servers.json
 servers_file = File.open(WORKING + "/servers.json")
@@ -17,13 +17,13 @@ OPTS = {}
 
 desc "Builds sc apps for deployment"
 task :build do
-	Dir.chdir WORKING + '/wescontrol_web'
+	Dir.chdir WORKING + '/cmdr_web'
 	puts `sc-build #{TARGETS * ' '} -rv`
 end
 
 desc "cleans the build output"
 task :clean do
-	path = WORKING + '/wescontrol_web/tmp/'
+	path = WORKING + '/cmdr_web/tmp/'
 	puts "Removing #{path}"
 	puts `rm -r #{path}`
 end
@@ -49,12 +49,12 @@ task :setup_db do
 	targets  = OPTS[:targets]
     
 	SERVERS.each do |server|
-    Net::SCP.start(server, 'roomtrol', :password => password) do |scp|
+    Net::SCP.start(server, 'cmdr', :password => password) do |scp|
       puts " ~ uploading database script"
       local_path = WORKING + '/lib/server/database.rb'
       scp.upload! local_path, "/tmp/database.rb"
     end
-		Net::SSH.start(server, 'roomtrol', :password => password) do |ssh|
+		Net::SSH.start(server, 'cmdr', :password => password) do |ssh|
       puts " ~ running database script"
       commands = ["source /usr/local/rvm/environments/default",
                   "ruby -r couchrest -r '/tmp/database.rb' -e 'Database.setup_database'"]
@@ -81,7 +81,7 @@ task :prepare_targets do
 
 	puts "discovering all installed targets"
 	SC.build_mode = :production
-	project = SC.load_project(WORKING + '/wescontrol_web') 
+	project = SC.load_project(WORKING + '/cmdr_web') 
 
 	# get all targets and prepare them so that build numbers work
 	targets = TARGETS.map do |name| 
@@ -114,7 +114,7 @@ task :deploy_assets, [] => [:build, :prepare_targets] do
 	SERVERS.each do |server|
 		installed = {}
 		puts "building directory structure on #{server}"
-		Net::SSH.start(server, 'roomtrol', :password => password) do |ssh|
+		Net::SSH.start(server, 'cmdr', :password => password) do |ssh|
 			targets.each do |target|
 				remote_path = "/var/www/static#{target.index_root}/en"
 				puts ssh.exec!(%[mkdir -p "#{remote_path}"]) || "%: mkdir -p #{remote_path}"
@@ -125,7 +125,7 @@ task :deploy_assets, [] => [:build, :prepare_targets] do
 		end
 		
 		puts "Copying static resources onto #{server}"
-		Net::SCP.start(server, 'roomtrol', :password => password) do |scp|
+		Net::SCP.start(server, 'cmdr', :password => password) do |scp|
 			targets.each do |target|
 				local_path = target.build_root + '/en/' + target.build_number
 				remote_path = "/var/www/static#{target.index_root}/en"
@@ -135,7 +135,7 @@ task :deploy_assets, [] => [:build, :prepare_targets] do
 				elsif File.directory?(local_path)
 					puts " ~ uploading #{target.target_name}#{short_path}"
 					scp.upload! local_path, remote_path, :recursive => true
-					Net::SSH.start(server, 'roomtrol', :password => password) do |ssh|
+					Net::SSH.start(server, 'cmdr', :password => password) do |ssh|
 						# replace the mac address placeholder in the javascript file on the controller
 						# with the controller's actual mac address
 						output = ssh.exec!("ifconfig")
@@ -174,7 +174,7 @@ task :link_current, [] => [:prepare_targets] do
 	# SSH in and do the symlink
 	password = OPTS[:password]
 	SERVERS.each do |server|
-		Net::SSH.start(server, "roomtrol", :password => password) do |ssh|
+		Net::SSH.start(server, "cmdr", :password => password) do |ssh|
 			targets.each do |target|
 			# find the local build number
 				build_number = target.prepare!.compute_build_number
@@ -206,7 +206,7 @@ task :link_current, [] => [:prepare_targets] do
 end
 
 desc "deploy server code"
-task :deploy_roomtrol_server do
+task :deploy_cmdr_server do
 	begin
 		require 'net/ssh'
 	rescue LoadError => e
@@ -215,16 +215,16 @@ task :deploy_roomtrol_server do
 	end
 	
 	SERVERS.each do |server|
-    cmd = "rsync -arvz -e ssh #{WORKING} roomtrol@#{server}:/var/roomtrol-server --exclude '.git'"
+    cmd = "rsync -arvz -e ssh #{WORKING} cmdr@#{server}:/var/cmdr-server --exclude '.git'"
     PTY.spawn(cmd){|read,write,pid|
       write.sync = true
       $expect_verbose = false
       read.expect(/total size/) do
       end
     }
-		# Net::SSH.start(server, "roomtrol", :password => OPTS[:password]) do |ssh|
+		# Net::SSH.start(server, "cmdr", :password => OPTS[:password]) do |ssh|
 		# 	puts "\tInstalling gems on server"
-		# 	path = "/var/roomtrol-server"
+		# 	path = "/var/cmdr-server"
 		# 	commands = [
 		# 		"rvm 1.9.2",
 		# 		"bundle install"

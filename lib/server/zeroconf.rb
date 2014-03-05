@@ -10,14 +10,19 @@ require 'net/ssh'
 require 'net/http'
 require 'socket'
 
-# Internal Wescontrol dependencies
+# This will work for now since all uname/pw are the same
+# but there should be some sort of handshake on connect
+# that establishes the correct credentials
+require 'authenticate'
+
+# Internal Cmdr dependencies
 require 'constants'
 
-module Wescontrol
-  module RoomtrolServer
+module Cmdr
+  module CmdrServer
     # A module for managing interactions with zeroconf devices.
     module Zeroconf
-      # Each Client object represents a roomtrol device client in a given room.     
+      # Each Client object represents a cmdr device client in a given room.     
       class Client
         attr_reader :daemon_port, :couchdb_port, :room_id
         
@@ -26,6 +31,10 @@ module Wescontrol
           # name of device broadcasted via zeroconf
           @name = client_reply.name.split[-1]
           @ip_address = self.resolve client_reply
+
+          # See comment in authenticate require
+          creds = Authenticate.get_credentials("#{File.dirname(__FILE__)}/../../security")
+          @creds = "#{creds['user']}:#{creds['password']}@"
         end
 
         # Setup a client device. Takes a Couchdb database connection.
@@ -41,7 +50,7 @@ module Wescontrol
         # it doesn't exist.
         def get_doc
           # views returns empty list if no key exits
-          doc = @db.get("_design/roomtrol_web")
+          doc = @db.get("_design/cmdr_web")
                    .view("eigenroom_by_roomid", {:key => @room_id})['rows'][0]
           if doc
             doc = doc['value']
@@ -68,7 +77,7 @@ module Wescontrol
           begin
             # Connect to client and get an ip address.
             #ip = client_reply.connect[0][3]
-            client_reply.name.match(/Roomtrol client on (.+)/)[1] + ".class"
+            client_reply.name.match(/Cmdr client on (.+)/)[1] + ".class"
           rescue
             if retries < 5
               DaemonKit.logger.debug "#{client_reply.inspect}: DNSSD connect failed, retrying...: #{$!}".foreground(:red)
@@ -90,7 +99,7 @@ module Wescontrol
         # port, where port is local port on server that forwards to
         # remote:1412. Once this is all setup, we setup CouchDB replication.
         def establish_forwards
-          # Setup forwarding to client's roomtrol-daemon at :1412.
+          # Setup forwarding to client's cmdr-daemon at :1412.
           forward(1412, @ip_address) do |local_host, local_port|
             Thread.abort_on_exception = true
             begin
@@ -115,20 +124,21 @@ module Wescontrol
               # Setup replication from device's couchdb rooms to server's rooms
               data = {
                 _id: "server_replication_#{@room_id}",
-                source: "http://#{local_host}:#{local_port}/rooms",
+                source: "http://#{@creds}#{local_host}:#{local_port}/rooms",
                 target: "rooms",
                 continuous: true
               }
               DaemonKit.logger.debug "#{@name}: Setting up replication"
               begin
-                url = "http://#{local_host}:5984/_replicator/#{data[:_id]}"
-                res = RestClient.get(url) rescue nil
-                if res
-                  rev = JSON.parse(res)["_rev"]
-                  RestClient.delete "#{url}?rev=#{rev}"
-                end
-                res = RestClient.put url, data.to_json, :content_type => :json
-                DaemonKit.logger.debug "#{@name}: Response from couch: #{res}"
+                  DaemonKit.logger.info("Local Host: #{local_host}\n Other data: #{data[:_id]}\n all of data: #{data}")
+                  url = "http://#{local_host}:5984/_replicator/#{data[:_id]}"
+                  res = RestClient.get(url) rescue nil
+                  if res
+                    rev = JSON.parse(res)["_rev"]
+                    RestClient.delete "#{url}?rev=#{rev}"
+                  end
+                  res = RestClient.put url, data.to_json, :content_type => :json
+                  DaemonKit.logger.debug "#{@name}: Response from couch: #{res}"
               rescue => e
                 DaemonKit.logger.debug "#{@name}: ERROR FROM REST".foreground(:red)
                 DaemonKit.logger.debug e.response.inspect.foreground(:red)
@@ -151,7 +161,7 @@ module Wescontrol
 
         # Establish port forwarding from a given port on local machine to
         # external port on host. These sessions are used to communicate with
-        # CouchDB and roomtrol-daemon on the remote client.
+        # CouchDB and cmdr-daemon on the remote client.
         # @param remote_port port on remote host to connect to.
         # @param remote_host host to forward connections to.
         # @param local_port local port to listen on.
@@ -161,8 +171,8 @@ module Wescontrol
         # setup on remote and local machines.
         #
         # *Example usage*: Forward traffic from localhost:1234 to user@remote.com:80
-        # port_forward(1234, 'roomtrol-allb004.class.wesleyan.edu', 80) or
-        # port_forward('127.0.0.1', 1234, 'roomtrol-allb004.class.wesleyan.edu', 80)
+        # port_forward(1234, 'cmdr-allb004.class.wesleyan.edu', 80) or
+        # port_forward('127.0.0.1', 1234, 'cmdr-allb004.class.wesleyan.edu', 80)
         def forward remote_port, remote_host, local_port=10000, local_host='127.0.0.1', user=SSH_USERNAME
           EM.defer do
             Thread.abort_on_exception = true
@@ -176,6 +186,7 @@ module Wescontrol
               end
               
               Net::SSH.start(remote_host, user) do |ssh|
+                #ssh.forward.local(local_port, remote_host, remote_port)
                 ssh.forward.local(local_port, remote_host, remote_port)
                 EM.defer do
                   yield local_host, local_port
@@ -187,7 +198,7 @@ module Wescontrol
               #puts "Error, port #{local_port} in use, on retry count #{retry_count}"
               local_port += 2
               retry_count += 1
-              retry unless retry_count > 1000
+              retry #unless retry_count > 1000
               exit
 
               # TODO: implement a port finder
@@ -206,7 +217,7 @@ module Wescontrol
           # Look for ports higher than begin_port_range
           begin_port_range = 
             if service == :couchdb then COUCHDB_PORT
-            elsif service == :roomtrol then ROOMTROL_DAEMON_PORT
+            elsif service == :cmdr then CMDR_DAEMON_PORT
             else 10000
             end
           DaemonKit.logger.debug "Port starting at #{begin_port_range}"

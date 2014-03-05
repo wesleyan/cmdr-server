@@ -12,7 +12,7 @@ Bundler.require :default, DaemonKit.env
 DaemonKit::Initializer.run do |config|
 
 	# The name of the daemon as reported by process monitoring tools
-	config.daemon_name = 'roomtrol-server'
+	config.daemon_name = 'cmdr-server'
 
 	# Force the daemon to be killed after X seconds from asking it to
 	# config.force_kill_wait = 30

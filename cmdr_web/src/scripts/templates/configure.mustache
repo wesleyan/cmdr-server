@@ -1,0 +1,19 @@
+<div id="configure-view">
+  <div class="left-pane scroll">
+  </div>
+  <div class="main-pane scroll">
+    <div class="tab-view">
+      <ul id="configure-tabs">
+        {{#tabs}}
+          <li class="tab-button {{this}}-tab"><a class="label" href="javascript:">{{this}}</a></li>
+        {{/tabs}}
+      </ul>
+    </div>
+    <div id="configure-content">
+    </div>
+    <div class="save-discard-buttons">
+      <div class="sd-button save-button"><div class="sd-label">Save Changes</div></div>
+      <div class="sd-button discard-button"><div class="sd-label">Discard Changes</div></div>
+    </div>
+  </div>
+</div>

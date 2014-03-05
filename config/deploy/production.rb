@@ -11,8 +11,8 @@ $:.unshift(File.expand_path('./lib', ENV['rvm_path'])) # Add RVM's lib directory
 require "rvm/capistrano"       # Load RVM's capistrano plugin.
 set :rvm_ruby_string, '1.9.1'  # Or whatever env you want it to run in.
 
-#set :deploy_to, "/svc/roomtrol-server" # defaults to "/u/apps/#{application}"
-set :user, 'roomtrol' # defaults to the currently logged in user
+#set :deploy_to, "/svc/cmdr-server" # defaults to "/u/apps/#{application}"
+set :user, 'cmdr' # defaults to the currently logged in user
 set :daemon_env, 'production'
 
 set :domain, servers[0]
