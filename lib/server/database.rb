@@ -1,8 +1,13 @@
+require 'authenticate'
+
 module Database
+  auth = Authenticate.get_credentials "../../security"
+  @creds = "#{auth["user"]}:#{auth["password"]}@"
+
 	def self.update_devices
 		puts "Updating devices"
 		errors = []
-		couch = CouchRest.database!("http://127.0.0.1:5984/drivers")
+		couch = CouchRest.database!("http://#{@creds}127.0.0.1:5984/drivers")
     dir = File.dirname(__FILE__)
 		Dir.glob("#{dir}/devices/*.rb").each{|device|
 			begin
@@ -33,7 +38,7 @@ module Database
 
 	def self.setup_database
 		puts "Setting up db"
-		rooms = CouchRest.database!("http://127.0.0.1:5984/rooms")
+		rooms = CouchRest.database!("http://#{@creds}127.0.0.1:5984/rooms")
 		doc = {
 			"_id" => "_design/cmdr_web",
 			:language => "javascript",
@@ -128,7 +133,7 @@ eos
 		end
 		rooms.save_doc(doc)
 
-		cmdr_server = CouchRest.database!("http://127.0.0.1:5984/cmdr_server")
+		cmdr_server = CouchRest.database!("http://#{@creds}127.0.0.1:5984/cmdr_server")
 		doc = {
 			"_id" => "_design/auth",
 			:language => "javascript",
@@ -147,7 +152,7 @@ eos
 		end
 		cmdr_server.save_doc(doc)
 
-		drivers = CouchRest.database!("http://127.0.0.1:5984/drivers")
+		drivers = CouchRest.database!("http://#{@creds}127.0.0.1:5984/drivers")
 		doc = {
 			"_id" => "_design/drivers",
 			:language => "javascript",
