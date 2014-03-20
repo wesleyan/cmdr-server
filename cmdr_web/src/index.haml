@@ -10,6 +10,7 @@ slinky_depends("scripts/templates/configure_list.mustache")
   %head
     %title cmdr Web
     %script{:src => "scripts/vendor/jquery-1.7.js"}
+    %link{href: "//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css", rel: "stylesheet"}
     slinky_styles
     slinky_scripts
 
@@ -21,11 +22,17 @@ slinky_depends("scripts/templates/configure_list.mustache")
       #tab-bar
         %ul.tab-view
           %li#control-button.tab-button
-            %a.label{:href => "#control"} control
+            %a.label{:href => "#control"}
+              %i.fa.fa-magic
+              control
           %li#monitor-button.tab-button
-            %a.label{:href => "#monitor"} monitor
+            %a.label{:href => "#monitor"}
+              %i.fa.fa-desktop
+              monitor
           %li#configure-button.tab-button
-            %a.label{:href => "#configure"} configure
+            %a.label{:href => "#configure"}
+              %i.fa.fa-gear
+              configure
     #main-view
       #control.subview
       #monitor.subview

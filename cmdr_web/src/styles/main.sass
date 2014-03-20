@@ -1,11 +1,12 @@
 /*! slinky_require("reset.css")
+*/
 @import 'mixins'
 
-$side-bar-color: #EFEBE3
+$side-bar-color: #FAE541 /*lighter yellow*/
 $tab-bar-height: 72px
-$control-tab-color: $side-bar-color
-$monitor-tab-color: white
-$configure-tab-color: #C1D699
+$control-tab-color: #F3BE4B
+$monitor-tab-color: #AF7BD8
+$configure-tab-color: #62D08D
 
 h1
   font-size: 25px
@@ -22,7 +23,8 @@ h6
 
 
 body
-  font-family: Helvetica, Arial
+  font-family: "Helvetica Neue", Helvetica, Arial
+  -webkit-font-smoothing: antialiased
 
 div, img, p
   +user-select(none)
@@ -36,25 +38,30 @@ a
   overflow-y: auto
 
 .tab-view li.tab-button
-  font-size: 2.8em
+  font-weight: 100
+  font-size: 2.2em
   line-height: 40px
   display: block
   float: left
   height: 31px
-  padding: 20px
+  padding: 40px
   padding-top: 5px
+  padding-bottom: 20px
   margin-top: 16px
   a
     color: white
   &.selected
     a
-      color: black
+      color: white
+  .label i
+    margin-right: 5px
+    font-size: 0.8em
 
 #tab-bar
   background-image: url('/images/header.png')
   background-repeat: no-repeat
   background-position: 98% 50%
-  background-color: #333
+  background-color: #363A3C
   +fill-width($tab-bar-height)
 
   #control-button.selected
