@@ -1,12 +1,16 @@
 /*! slinky_require("reset.css")
-*/
+/*#efebe3*/
 @import 'mixins'
 
-$side-bar-color: #FAE541 /*lighter yellow*/
 $tab-bar-height: 72px
+
 $control-tab-color: #F3BE4B
+$control-side-bar-color: #f8f8f6
+
 $monitor-tab-color: #AF7BD8
+
 $configure-tab-color: #62D08D
+$configure-side-bar-color: #f6f8f6
 
 h1
   font-size: 25px
@@ -22,9 +26,8 @@ h6
   font-size: 15px
 
 
-body
+body, input, select
   font-family: "Helvetica Neue", Helvetica, Arial
-  -webkit-font-smoothing: antialiased
 
 div, img, p
   +user-select(none)
@@ -61,7 +64,7 @@ a
   background-image: url('/images/header.png')
   background-repeat: no-repeat
   background-position: 98% 50%
-  background-color: #363A3C
+  background-color: #3c3d3f
   +fill-width($tab-bar-height)
 
   #control-button.selected
@@ -82,7 +85,6 @@ a
 
 .room-list
   +fill-height(300px)
-  background-color: $side-bar-color
   padding-top: 30px
 
   ul
@@ -95,6 +97,9 @@ a
       text-align: left
       padding-left: 20px
       padding-bottom: 10px
+
+      a
+        font-weight: 200
 
       ul li
         display: block
@@ -110,8 +115,11 @@ a
           line-height: 18px
           padding: 10px
           display: block
+          font-weight: 500
 
 #control-view
+  .room-list
+    background-color: $control-side-bar-color
   .center-pane
     +fill-parent
     left: 300px
@@ -123,13 +131,16 @@ a
     right: 0
     top: 0
     bottom: 0
-    background-color: $side-bar-color
+    background-color: $control-side-bar-color
 
 #monitor-view
   .main-pane
     +fill-parent
 
 #configure-view
+  .room-list
+    background-color: $configure-side-bar-color
+
   .main-pane
     +fill-parent
     left: 300px
@@ -149,8 +160,9 @@ a
         &.selected
           background-color: white
         a.label
-          color: black
-          font-size: 24px
+          color: #363A3C
+          font-size: 22px
+          font-weight: 200
 
     #configure-content
       +fill-parent
@@ -193,6 +205,7 @@ a
   ul
     list-style: none
     margin: 0
+    margin-top: 15px
     padding: 0
 
   li.device
@@ -200,10 +213,12 @@ a
     height: 80px
     cursor: default
     overflow: hidden
+    color: #363A3C
     border-bottom: 1px solid #ddd
 
     h3
       font-size: 30px
+      font-weight: 500
       line-height: 80px
       margin-left: 10px
       width: 100px
@@ -236,17 +251,18 @@ a
       text-align: left
 
     &.selected
-      background-color: #5498FF
+      background-color: $control-tab-color
       color: white
       
       dd
-        color: #ddd
+        color: #666
 
 .device-control
   padding: 10px
+  font-weight: 200
 
   h1, h2
-    font-weight: normal
+    font-weight: 200
   h1
     font-size: 38px
     text-align: center
@@ -265,8 +281,8 @@ a
     a.button
       display: block
       +button(#e7e7e7)
+      border-right: 0px
       +border-radius(15px)
-      border: none
       text-transform: uppercase
       font-size: 20px
       line-height: 34px
@@ -278,10 +294,10 @@ a
 
       &.selected
         color: white
-        +gradient(#73a4eb, #73a4eb*0.8, 0.25, 1)
+        background-color: $control-tab-color
         
         &:active
-          +gradient(#73a4eb*0.8, #73a4eb*0.7, 0.25, 1)
+          background-color: $control-tab-color
 
       &.select
         +border-radius(0)
@@ -333,29 +349,28 @@ a
   .add-rem-buttons
     position: absolute
     bottom: 0
-    height: 40px
+    height: 52px
     left: 0
     right: 0
-    background-color: #d3d3d3
+    background-color: transparent
 
   .button
     position: absolute
-    width: 38px
-    height: 38px
+    width: 60px
+    height: 50px
     +button
     bottom: 0
     +border-radius(0)
-    font-size: 28px    
+    font-size: 40px    
     font-weight: bold
     color: #888
-    +text-shadow(#444, -1px, -1px, 0)
     text-align: center
     right: 0    
     +box-shadow(none)
     border: 1px solid #aaa
     border-bottom: none
     &.rem-button
-      right: 38px
+      right: 60px
     .label
       +user-select(none)  
       cursor: pointer
@@ -367,7 +382,7 @@ a
     line-height: 45px
 
     &.selected
-      background-color: #5498FF
+      background-color: $configure-tab-color
       a
         color: white
     a
@@ -414,21 +429,25 @@ a
     position: absolute
     width: 150px
     height: 35px
+    padding-top: 10px
     +button
     bottom: 0
     +border-radius(0)
     font-size: 18px    
-    font-weight: bold
+    font-weight: 300
     color: #888
-    +text-shadow(#444, -1px, -1px, 0)
     text-align: center
     right: 40%    
     +box-shadow(none)
-    border: 1px solid #aaa
+    border: 1px solid white
     border-bottom: none
+    .label i
+      margin-right: 5px
+    &.save-button
+      background-color: #4C3CE7
     &.cancel-button
+      background-color: #E74C3C
       right: calc(40% - 150px)
     .label
       +user-select(none)  
       cursor: pointer
-
