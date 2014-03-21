@@ -20,6 +20,8 @@ slinky_depends("scripts/templates/configure_list.mustache")
   %body
     #top-bar
       #tab-bar
+        .search
+          %input{:type => "search", :id => "room-search", :placeholder => "Search a room"}
         %ul.tab-view
           %li#control-button.tab-button
             %a.label{:href => "#control"}

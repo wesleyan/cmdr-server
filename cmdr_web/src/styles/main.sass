@@ -67,6 +67,32 @@ a
   background-color: #3c3d3f
   +fill-width($tab-bar-height)
 
+  div.search
+    height: $tab-bar-height - (2*20px)
+    padding: 20px
+    width: 300px - (2*20px)
+    float: left
+    background-color: #f6f6f6
+    &:before
+      z-index: 99
+      font-family: 'FontAwesome'
+      position: absolute
+      top: 31px
+      left: 30px
+      content: "\f002"
+
+    input
+      width: 100%
+      border: 1px solid gray
+      height: 40px
+      padding: 6px
+      padding-left: 25px
+      font-size: 16px
+      font-weight: 200
+
+  ul.tab-view
+    margin-left: 300px
+
   #control-button.selected
     background-color: $control-tab-color
   
@@ -85,7 +111,7 @@ a
 
 .room-list
   +fill-height(300px)
-  padding-top: 30px
+  padding-top: 0px
 
   ul
     width: 100%
