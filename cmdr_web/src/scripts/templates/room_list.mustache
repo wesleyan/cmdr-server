@@ -5,7 +5,7 @@
         <a href="#" id="{{id}}">{{name}}</a>
         <ul class="rooms">
           {{#rooms}}
-            <li><a href="#" id="{{id}}">{{params.name}}</a></li>
+            <li><a href="#" id="{{id}}" data-search="{{../name}} {{params.name}}">{{params.name}}</a></li>
           {{/rooms}}
          </ul>
       </li>

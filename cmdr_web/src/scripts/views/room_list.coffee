@@ -1,4 +1,5 @@
 slinky_require('../core.coffee')
+slinky_require('search.coffee')
 
 App.RoomListView = Backbone.View.extend
   initialize: () ->
@@ -30,6 +31,7 @@ App.RoomListView = Backbone.View.extend
       b.get('rooms').each (r) =>
         @html_bind("#" + r.id, r, get)
 
+    new App.SearchView() #deals with hide/show in the new room list
     this
 
   room_clicked: (e) ->
