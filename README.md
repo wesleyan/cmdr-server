@@ -26,3 +26,6 @@ identifies should be corrected (this means no global variables
 and semi-colons are mandatory).
 
 In general, try to maintain the style already found in the code.
+
+##License
+cmdr-devices is licensed under the [GNU General Public License](https://raw.github.com/wesleyan/cmdr-devices/master/LICENSE).
