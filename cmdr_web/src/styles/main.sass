@@ -64,7 +64,7 @@ a
   background-image: url('/images/header.png')
   background-repeat: no-repeat
   background-position: 98% 50%
-  background-size: auto 60%
+  background-size: auto 80%
   background-color: #3c3d3f
   +fill-width($tab-bar-height)
 
@@ -180,9 +180,9 @@ a
         line-height: 20px
         //width: 60px
         padding: 10px
-        padding-top: 0px
+        padding-top: 8px
         height: 25px
-        margin-top: 13px
+        margin-top: 5px
         text-align: center
         &.selected
           background-color: white
@@ -225,6 +225,9 @@ a
     //    +user-select(none)  
     //    cursor: pointer
 
+.configure-list
+  ul
+    margin-top: 15px
 
 .device-list
   +fill-parent
@@ -232,7 +235,6 @@ a
   ul
     list-style: none
     margin: 0
-    margin-top: 15px
     padding: 0
 
   li.device
@@ -308,7 +310,7 @@ a
     a.button
       display: block
       +button(#e7e7e7)
-      border-right: 0px
+      margin-right: 1px
       +border-radius(15px)
       text-transform: uppercase
       font-size: 20px
@@ -385,6 +387,7 @@ a
     position: absolute
     width: 60px
     height: 50px
+    padding-top: 10px
     +button
     bottom: 0
     +border-radius(0)
@@ -478,3 +481,4 @@ a
     .label
       +user-select(none)  
       cursor: pointer
+      color: white
