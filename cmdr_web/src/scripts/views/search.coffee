@@ -2,7 +2,8 @@ slinky_require('../core.coffee')
 
 App.SearchView = Backbone.View.extend
   initialize: () ->
-    $("input#room-search").change ->
+    # search on keyup in search box    
+    $("input#room-search").keyup =>
       @search()
 
   search: () ->
@@ -14,15 +15,19 @@ App.SearchView = Backbone.View.extend
       return
 
     # else, do the rest
-    roomList = $(".rooms li").map ->
-      $(this).attr "data-search"
-    
+
+    # first, hide all
     $(".rooms li").hide()
     $(".buildings li").hide()
 
+    # get data-search attributes of all rooms
+    roomList = $(".rooms li").map ->
+      $(this).attr "data-search"
+
+    # fuzzy search filter the data-search attributes
     fuzzy.filter(searchFilter, roomList).map((r) ->
       r.string
-    ).forEach (r) ->
+    ).forEach (r) -> #show the filtered ones
       selector = $("*[data-search=\"#{r}\"]")
       selector.show() #show the room itself
       selector.parent().parent().parent().show() #show the building
