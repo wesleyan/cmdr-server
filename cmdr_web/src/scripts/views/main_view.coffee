@@ -1,7 +1,6 @@
 slinky_require('control.coffee')
 slinky_require('monitor.coffee')
 slinky_require('configure.coffee')
-slinky_require('search.coffee')
 
 App.MainView = Backbone.View.extend
   control_view: new App.ControlView

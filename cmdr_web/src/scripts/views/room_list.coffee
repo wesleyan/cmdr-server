@@ -1,4 +1,5 @@
 slinky_require('../core.coffee')
+slinky_require('search.coffee')
 
 App.RoomListView = Backbone.View.extend
   initialize: () ->
