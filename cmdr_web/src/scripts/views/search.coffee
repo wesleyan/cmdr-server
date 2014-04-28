@@ -21,8 +21,10 @@ App.SearchView = Backbone.View.extend
     $(".buildings li").hide()
 
     # get data-search attributes of all rooms
-    roomList = $(".rooms li").map ->
+    roomList = $(".rooms li a").map ->
       $(this).attr "data-search"
+
+    roomList = Array::slice.apply roomList #convert jQuery object to array
 
     # fuzzy search filter the data-search attributes
     fuzzy.filter(searchFilter, roomList).map((r) ->
