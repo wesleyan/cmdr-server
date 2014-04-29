@@ -18,7 +18,7 @@ App.SearchView = Backbone.View.extend
 
     # first, hide all
     $(".rooms li").hide()
-    $(".buildings li").hide()
+    $(".buildings li a").hide()
 
     # get data-search attributes of all rooms
     roomList = $(".rooms li a").map ->

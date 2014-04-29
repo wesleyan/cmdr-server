@@ -1,12 +1,10 @@
 slinky_require('../core.coffee')
-slinky_require('search.coffee')
 
 App.RoomListView = Backbone.View.extend
   initialize: () ->
     App.rooms.bind "change", () => @render()
     App.rooms.bind "change:selection", @selection_changed
 
-  search_view: new App.SearchView #deals with hide/show in the new room list
   html_bind: (selector, model, get) ->
     el = $(selector, @el)
     model.bind "change", () ->
@@ -23,6 +21,7 @@ App.RoomListView = Backbone.View.extend
 
 
     $(@el).html App.templates.room_list(buildings: buildings)
+    App.MainView.search_view.search() # refresh search
     $(".rooms a", @el).click @room_clicked
     $(".buildings>li>a", @el).click @building_clicked
     @selection_changed()
