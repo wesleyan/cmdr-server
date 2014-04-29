@@ -12,7 +12,6 @@ slinky_depends("scripts/templates/configure_list.mustache")
     %script{:src => "scripts/vendor/jquery-1.7.js"}
     %link{href: "//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css", rel: "stylesheet"}
     slinky_styles
-    slinky_scripts
 
     - Dir.glob("./scripts/templates/*.mustache") do |f|
       - name = File.basename(f).split(".")[0..-2].join(".")
@@ -39,3 +38,5 @@ slinky_depends("scripts/templates/configure_list.mustache")
       #control.subview
       #monitor.subview
       #configure.subview
+
+    slinky_scripts
