@@ -8,6 +8,9 @@ App.MainView = Backbone.View.extend
   monitor_view: new App.MonitorView
   configure_view: new App.ConfigureView
 
+  initialize: () ->
+    @search_view()
+
   select_tab: (tab) ->
     $("#top-bar #tab-bar .tab-button").removeClass("selected")
     $("#top-bar .tab-button##{tab}-button").addClass("selected")

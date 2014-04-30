@@ -6,19 +6,22 @@ App.SearchView = Backbone.View.extend
     $("input#room-search").keyup =>
       @search()
 
+    $("input#room-search").click =>
+      @search()
+
   search: () ->
     searchFilter = $("input#room-search").val()
 
     if searchFilter == ""
-      $(".rooms li").show()
-      $(".buildings li").show()
+      $(".rooms li a").show()
+      $(".buildings li a").show()
       return
 
     # else, do the rest
 
     # first, hide all
-    $(".rooms li").hide()
-    $(".buildings li a").hide()
+    $(".rooms li a").hide()       # hide rooms
+    $(".buildings li > a").hide() # hide buildings
 
     # get data-search attributes of all rooms
     roomList = $(".rooms li a").map ->
@@ -32,4 +35,4 @@ App.SearchView = Backbone.View.extend
     ).forEach (r) -> #show the filtered ones
       selector = $("*[data-search=\"#{r}\"]")
       selector.show() #show the room itself
-      selector.parent().parent().parent().show() #show the building
+      selector.parent().parent().prev("a").show() #show the building
