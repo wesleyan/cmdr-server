@@ -14,7 +14,10 @@ App.MainView = Backbone.View.extend
     $("#main-view .subview").hide()
     $("#main-view ##{tab}").show()
 
-  search_view: new App.SearchView
+  search_view: () ->
+    view = new App.SearchView
+    view.start()
+    view
   render: () ->
     $('#main-view #control').html @control_view.render().el
     $('#main-view #monitor').html @monitor_view.render().el

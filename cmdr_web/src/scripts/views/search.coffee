@@ -1,7 +1,7 @@
 slinky_require('../core.coffee')
 
 App.SearchView = Backbone.View.extend
-  initialize: () ->
+  start: () ->
     # search on keyup in search box    
     $("input#room-search").keyup =>
       @search()
