@@ -165,6 +165,8 @@ module Cmdr
             tries += 1
             retry
           end
+	rescue
+		nil
         end
         deferrable
       end
