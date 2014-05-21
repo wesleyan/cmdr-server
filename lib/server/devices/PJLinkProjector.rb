@@ -17,11 +17,11 @@
 
 #---
 #{
-#	"name": "PJLinkProjector",
-#	"depends_on": "SocketProjector",
-#	"description": "Controls any projector capable of understanding the PJLink protocol standard, ie. the Epson PowerLite Pro G5750WU",
-#	"author": "Jonathan Lyons",
-#	"email": "jclyons@wesleyan.edu",
+# "name": "PJLinkProjector",
+# "depends_on": "SocketProjector",
+# "description": "Controls any projector capable of understanding the PJLink protocol standard, ie. the Epson PowerLite Pro G5750WU",
+# "author": "Jonathan Lyons",
+# "email": "jclyons@wesleyan.edu",
 # "type": "Projector"
 #}
 #---
@@ -29,6 +29,7 @@ require 'digest/md5'
 
 class PJLinkProjector < SocketProjector  
   INPUT_HASH = {"HDMI" => 32, "YPBR" => 13, "RGB1" => 11, "VIDEO" => 23, "SVIDEO" => 22}
+  ERROR = ["Fan", "Lamp", "Temperature", "Cover open", "Filter", "Other"]
 
   configure do
     #DaemonKit.logger.info "@Initializing PJLinkProjector at URI #{options[:uri]} with name #{@name}"
@@ -37,6 +38,7 @@ class PJLinkProjector < SocketProjector
   def initialize(name, options)
     options = options.symbolize_keys
     @_password = options[:password]
+    @_shutoff_timer = nil
     super(name, options)
   end
 
@@ -55,56 +57,142 @@ class PJLinkProjector < SocketProjector
     super string
   end
 
-	managed_state_var :power, 
-		:type => :boolean,
-		:display_order => 1,
-		:action => proc{|on|
-      "%1POWR #{on ? "1" : "0"}\r"
-		}
+  def interpret_error(error)
+    DaemonKit.logger.info "Projector has error code: #{error}"
+    (1..6).each do |i|
+      event = {'device' => "Projector", 
+               'device_type' => 'PJLink',
+               'location' => @hostname}
+      e = error[i]
+      if e == "1"
+        #register_error @name, "WARNING: #{ERROR[i]}", 0.5
+        event['severity'] = 0.5
+        event['title'] = "#{ERROR[i]} WARNING"
+        event['description'] = "Warning notice received for: #{ERROR[i]}"
+        event['time'] = Time.now.to_i
+        Cmdr.send_event event
+      elsif e == "2"
+        #register_error @name, "ERROR: #{ERROR[i]}", 0.9
+        event['severity'] = 0.9
+        event['title'] = "#{ERROR[i]} ERROR"
+        event['description'] = "Error notice received for: #{ERROR[i]}"
+        event['time'] = Time.now.to_i
+        Cmdr.send_event event
+      end
+    end
+  end
 
-	managed_state_var :input, 
-		:type => :option,
-		# Numbers correspond to HDMI, YPBR, RGB, RGB2, VID, and SVID in that order
-		:options => [ 'HDMI', 'YPBR', 'RGB1', 'VID', 'SVID'],
-		:display_order => 2,
-		:action => proc{|source|
-			"%1INPT #{INPUT_HASH[source]}\r"
-		}
+  #def change_power(state)
+  #  if state 
+  #    unless self.power and self.timer
+  #      self.power = true
+  #      @warning_timer = EM::Timer.new(30) do
+  #        self.timer = true
+  #      end
+  #    end
+  #  else
+  #    self.power = false
+  #    cancel_shutdown_timers
+  #  end
+  #end
 
-	managed_state_var :mute, 
-		:type => :boolean,
-		:action => proc{|on|
-			"%1AVMT #{on ? "31" : "30"}\r"
-		}
+  #def start_shutdown_timers
+  #  @warning_timer = EventMachine::Timer.new(30) do
+  #    @shutoff_timer = EventMachine::Timer.new(30) do
+  #      send_string "%1POWR 0"
+  #    end
+  #    self.timer = true
+  #  end
+  #end
 
-	managed_state_var :video_mute,
-		:type => :boolean,
-		:display_order => 4,
-		:action => proc{|on|
-			"%1AVMT #{on ? "31" : "30"}\r"
-		}
+  #def cancel_shutdown_timers
+  #  @warning_timer.cancel if @warning_timer
+  #  @shutoff_timer.cancel if @shutoff_timer
+  #  @warning_timer = nil
+  #  @shutoff_timer = nil
+  #  self.timer = false
+  #end
 
-	responses do
-		#ack ":"
-		error :general_error, "ERR", "Received an error"
-		match :power,  /%1POWR=(.+)/, proc{|m|
-	 		#DaemonKit.logger.info "Received power value #{m[1]}"
-			  self.power = (m[1] == "1") 
-	  		self.cooling = (m[1] == "2")
-	  		self.warming = (m[1] == "3") || (m[1] == "ERR3")
-		}
-		#match :mute,       /%1AVMT=(.+)/, proc{|m| self.mute = (m[1] == "31")}
-		match :video_mute, /%1AVMT=(.+)/, proc{|m| self.video_mute = (m[1] == "31")}
-		match :input,      /%1INPT=(.+)/, proc{|m| self.input = m[1]}
+  managed_state_var :power, 
+    :type => :boolean,
+    :display_order => 1,
+    :action => proc{|on|
+          "%1POWR #{on ? "1" : "0"}\r"
+    }
 
-	end
+  managed_state_var :input, 
+    :type => :option,
+    # Numbers correspond to HDMI, YPBR, RGB, RGB2, VID, and SVID in that order
+    :options => [ 'HDMI', 'YPBR', 'RGB1', 'VID', 'SVID'],
+    :display_order => 2,
+    :action => proc{|source|
+      "%1INPT #{INPUT_HASH[source]}\r"
+    }
 
-	requests do
+  managed_state_var :mute, 
+    :type => :boolean,
+    :action => proc{|on|
+      "%1AVMT #{on ? "31" : "30"}\r"
+    }
+
+  managed_state_var :video_mute,
+    :type => :boolean,
+    :display_order => 4,
+    :action => proc{|on|
+      "%1AVMT #{on ? "31" : "30"}\r"
+    }
+
+    state_var :timer, :type => :boolean, :display_order => 5
+
+  virtual_var :auto_off,
+    :type => :boolean,
+    :display_order => 6,
+    :depends_on => [:power],
+    :transformation => proc{
+      if power
+        @t1 = Time.now
+        @_shutoff_timer = EM::PeriodicTimer.new(15) do
+          t2 = Time.now
+          if t2 - @t1 > 10800
+            send_string "%1POWR 0\r"
+          end
+        end
+      else
+        @_shutoff_timer.cancel
+      end
+    }
+
+  responses do
+    #ack ":"
+    error :general_error, "ERR", "Received an error"
+        match :err_status, /%1ERST=(\d+)/, proc{|m|
+            interpret_error m[1] if m[1] != "000000"
+        }
+    match :power,  /%1POWR=(.+)/, proc{|m|
+        #change_power(m[1] == "1") 
+            self.power = (m[1] == "1")
+        self.cooling = (m[1] == "2")
+        self.warming = (m[1] == "3") || (m[1] == "ERR3")
+    }
+    match :video_mute, /%1AVMT=(.+)/, proc{|m| self.video_mute = (m[1] == "31")}
+    match :input,      /%1INPT=(.+)/, proc{|m| self.input = m[1]}
+        match :lamp_hours, /%1LAMP=(\d+) (\d)/, proc {|m|
+            self.lamp_hours = m[1].to_i
+            self.percent_lamp_used =((m[1].to_f / 2000) * 100).floor
+        }
+        match :name, /%1NAME=(.*)/, proc{|m|
+            self.projector_name = m[1].chomp 
+        }
+
+  end
+
+  requests do
            send :power, "#{@_digest}%1POWR ?\r", 1
            send :source, "#{@_digest}%1INPT ?\r", 1
            send :mute, "#{@_digest}%1AVMT ?\r", 1
-           #send :lamp_usage, "*ltim=?#", 0.1
+           send :err_status, "#{@_digest}%1ERST ?\r", 0.1
            send :lamp_usage, "#{@_digest}%1LAMP ?\r", 0.1
-	end
+           send :info, "#{@_digest}%1NAME ?\r", 0.01
+  end
 
 end
