@@ -1,0 +1,4 @@
+[subtree "lib/server/devices"]
+	url = git@github.com:wesleyan/cmdr-devices.git
+	path = lib/server/devices
+	branch = master
