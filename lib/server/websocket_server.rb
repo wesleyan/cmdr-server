@@ -60,7 +60,8 @@ module Cmdr
           
           EM::WebSocket.start({
                                 :host => "0.0.0.0",
-                                :port => WEBSOCKET_PORT
+                                :port => WEBSOCKET_PORT,
+                                :secure_proxy => true
                               }) do |ws|
             ws.onopen { onopen ws }
 
