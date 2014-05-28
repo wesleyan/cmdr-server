@@ -34,7 +34,7 @@ GEM
       http_parser.rb (~> 0.6.0)
     eventmachine (1.0.3)
     eventmachine_httpserver (0.2.1)
-    execjs (2.0.2)
+    execjs (2.1.0)
     extlib (0.9.16)
     ffi (1.9.3)
     git (1.2.6)
