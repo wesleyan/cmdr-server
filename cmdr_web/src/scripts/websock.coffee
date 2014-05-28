@@ -12,7 +12,7 @@ class Websock
   should_reconnect: yes
   ever_connected: no
   options:
-    host: "ws://#{window.location.host.split(":")[0]}:8000/"
+    host: "wss://#{window.location.host.split(":")[0]}/websock"
     connect_timeout: 1000
     reconnection_delay: 500
     max_delay: 15*1000
