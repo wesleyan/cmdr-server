@@ -13,7 +13,7 @@ module Cmdr
     # Websocket AMQP queue
     WEBSOCKET_QUEUE = "cmdr:server:websocket"
     # Websocket port
-    WEBSOCKET_PORT = 8000
+    WEBSOCKET_PORT = 9001
     # MAC address
     MAC = "00:50:56:96:7e:9d"
   end
