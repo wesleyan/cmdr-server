@@ -14,5 +14,7 @@ module Cmdr
     WEBSOCKET_QUEUE = "cmdr:server:websocket"
     # Websocket port
     WEBSOCKET_PORT = 8000
+    # MAC address
+    MAC = "00:50:56:96:7e:9d"
   end
 end

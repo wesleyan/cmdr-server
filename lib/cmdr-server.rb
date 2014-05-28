@@ -14,7 +14,7 @@ require 'uuidtools'
 
 # lib files
 require 'server/zeroconf'
-require 'server/MAC'
+#require 'server/MAC'
 require 'server/websocket_server'
 
 require 'server/database'
@@ -40,7 +40,7 @@ module Cmdr
           "c180fad1e1599512ea68f1748eb601ea" => 5984
         }
         # Get id of uberroom document, devices should belong to this room.
-        @uberroom_id = @db_rooms.get("_design/room").view("by_mac", {:key => MAC.addr})['rows'][0]["id"]
+        @uberroom_id = @db_rooms.get("_design/room").view("by_mac", {:key => MAC})['rows'][0]["id"]
         
         # A list of clients
         @clients = []
