@@ -41,7 +41,7 @@ class RoomsController < ApplicationController
   # PATCH/PUT /rooms/1.json
   def update
     respond_to do |format|
-      if @room.update(room_params)
+      if @room.update_attributes(room_params)
         format.html { redirect_to @room, notice: 'Room was successfully updated.' }
         format.json { render :show, status: :ok, location: @room }
       else

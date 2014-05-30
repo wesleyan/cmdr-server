@@ -1,4 +1,35 @@
 <%= form_for(@room) do |f| %>
+  <%= f.label :name %>
+  <%= f.text_field :name %>
+
+  <%= f.label :hostname %>
+  <%= f.text_field :hostname %>
+
+  <%= f.label :belongs_to %>
+  <%= f.text_field :belongs_to %>
+
+  <%= f.fields_for :attrs do |attr| %>
+    Name: <%= attr.text_field :name %>
+
+    Hostname: <%= attr.text_field :hostname %>
+
+    MAC: <%= attr.text_field :mac %>
+
+    Projector: <%= attr.text_field :projector %>
+
+    Volume: <%= attr.text_field :volume %>
+
+    Switcher: <%= attr.text_field :switcher %>
+
+    IR Switcher: <%= attr.text_field :ir_switcher %>
+
+    BlurayPlayer: <%= attr.text_field :blurayplayer %>
+    
+    Computer: <%= attr.text_field :computer %>
+
+    Ports: <%#= attr.text_field :ports %>
+  <% end %>
+
   <% if @room.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@room.errors.count, "error") %> prohibited this room from being saved:</h2>
