@@ -1,19 +1,11 @@
-class Room
-  include ActiveModel::Conversion
-  extend ActiveModel::Naming
+class Room < CouchRest::Model::Base
+  use_database 'rooms'
 
-  @db = CouchRest.database('http://localhost:5984/rooms')
+  property :belongs_to, String
+  property :name, String
+  property :attrs, Hash
 
-  def self.all
-    @db.get('_design/cmdr_web').view('rooms')['rows']
-      .map { |doc| doc['value'] }
-  end
-
-  def self.find(id)
-    @db.get(id).to_hash
-  end
-
-  def persisted?
-    true
+  design do
+    view :by_name
   end
 end
