@@ -15,8 +15,8 @@ class Room < CouchRest::Model::Base
     property :ports, [String], default: []
   end
 
-  validates_uniqueness_of :mac
-  validates_uniqueness_of :hostname
+  #validates_uniqueness_of :mac
+  #validates_uniqueness_of :hostname
 
   design do
     view :by_name
@@ -24,6 +24,10 @@ class Room < CouchRest::Model::Base
 
   design do
     view :by_hostname
+  end
+
+  def cow c
+    puts "moo"
   end
 
 end

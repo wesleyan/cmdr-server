@@ -28,21 +28,22 @@ module CmdrServerRails
     # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
     # config.i18n.default_locale = :de
     config.after_initialize do
-     DNSSD.browse("_roomtrol._tcp") do |client_reply|
+      creds = Authenticate.get_credentials("#{config.root}/security")
+    
+      DNSSD.browse("_roomtrol._tcp") do |client_reply|
       #begin - zeroconf detection
-      if (client_reply.flags.to_i & DNSSD::Flags::Add) != 0
+        if (client_reply.flags.to_i & DNSSD::Flags::Add) != 0
         
-        #DaemonKit.logger.debug("DNSSD Add: #{client_reply.inspect}".foreground(:green))
-        client = Zeroconf::Client.new client_reply
-        #client.setup(@db_rooms, @uberroom_id)
-        #@clients << client
-        #DaemonKit.logger.debug(@clients.inspect)
-      else
-        puts "DNSSD Remove"
-        #DaemonKit.logger.debug("DNSSD Remove: #{client_reply.name}".foreground(:red))
+          #DaemonKit.logger.debug("DNSSD Add: #{client_reply.inspect}".foreground(:green))
+          client = Zeroconf::Client.new client_reply
+          RoomsController.connect client
+          #client.setup(@db_rooms, @uberroom_id, creds[:user], creds[:password])
+          # need to add some setup code here.
+        else
+          puts "DNSSD Remove"
+        end
+        #end - zeroconf detection
       end
-      #end - zeroconf detection
     end
-   end
   end
 end

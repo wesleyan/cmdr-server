@@ -22,7 +22,7 @@ require 'socket'
 
       # Each Client object represents a cmdr device client in a given room.     
       class Client
-        attr_reader :daemon_port, :couchdb_port, :room_id
+        attr_reader :daemon_port, :couchdb_port, :room_id, :ip_address, :name
 
         # Initialize Client object. Select a unused port to establish ssh connections
         def initialize client_reply, db_uri=DB_URI
