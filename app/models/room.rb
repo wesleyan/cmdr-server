@@ -4,10 +4,8 @@ class Room < CouchRest::Model::Base
   property :belongs_to, String, default: ''
   property :name, String, default: 'Unnamed'
   property :hostname, String, default: 'localhost'
-  property :attrs, default: {} do
-    property :name, String, default: 'Unnamed'
-    property :hostname, String, default: 'localhost'
-    property :mac, String, default: ''
+  property :mac, String, default: ''
+  property :devices, default: {} do
     property :projector, String, default: ''
     property :volume, String, default: ''
     property :switcher, String, default: ''
@@ -16,6 +14,9 @@ class Room < CouchRest::Model::Base
     property :computer, String, default: ''
     property :ports, [String], default: []
   end
+
+  validates_uniqueness_of :mac
+  validates_uniqueness_of :hostname
 
   design do
     view :by_name

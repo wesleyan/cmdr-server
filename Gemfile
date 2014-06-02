@@ -37,3 +37,6 @@ gem 'spring',        group: :development
 # gem 'debugger', group: [:development, :test]
 gem 'couchrest'
 gem 'couchrest_model'
+gem 'dnssd'
+gem 'net-ssh'
+gem 'net-scp'
