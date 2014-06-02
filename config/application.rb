@@ -36,8 +36,8 @@ module CmdrServerRails
         
           #DaemonKit.logger.debug("DNSSD Add: #{client_reply.inspect}".foreground(:green))
           client = Zeroconf::Client.new client_reply
+          client.setup(@db_rooms, creds[:user], creds[:password])
           RoomsController.connect client
-          #client.setup(@db_rooms, @uberroom_id, creds[:user], creds[:password])
           # need to add some setup code here.
         else
           puts "DNSSD Remove"

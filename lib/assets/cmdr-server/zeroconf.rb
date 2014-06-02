@@ -19,6 +19,7 @@ require 'socket'
     # A module for managing interactions with zeroconf devices.
     module Zeroconf
       DB_URI = 'http://localhost:5984/rooms'
+      SSH_USERNAME = 'roomtrol'
 
       # Each Client object represents a cmdr device client in a given room.     
       class Client
@@ -36,11 +37,11 @@ require 'socket'
         end
 
         # Setup a client device. Takes a Couchdb database connection.
-        def setup db, uberroom_id, user, pass
+        def setup db, user, pass
           @user = user
           @password = pass
           @db = db
-          @uberroom_id = uberroom_id
+          #@uberroom_id = uberroom_id
           # must establish connection to 1412 first
           establish_forwards
           #forward(5984, @ip_address)
@@ -56,7 +57,7 @@ require 'socket'
             doc = doc['value']
           else
             doc = {
-              belongs_to: @uberroom_id,
+              #belongs_to: @uberroom_id,
               device: true,
               :class => "Eigenroom",
               eigenroom: true,
@@ -108,6 +109,7 @@ require 'socket'
               @room_id = JSON.parse(RestClient.get(url))["id"]
               #DaemonKit.logger.debug("#{@name} has room_id: #{@room_id}".foreground(:green))
             rescue Errno::ECONNREFUSED, RestClient::ResourceNotFound, RestClient::RequestTimeout => e
+              puts $!
               #DaemonKit.logger.debug("#{@name}: Failed to retrieve RoomID: #{e}".foreground(:red))
             end
             
@@ -175,7 +177,7 @@ require 'socket'
         # port_forward(1234, 'cmdr-allb004.class.wesleyan.edu', 80) or
         # port_forward('127.0.0.1', 1234, 'cmdr-allb004.class.wesleyan.edu', 80)
         def forward remote_port, remote_host, local_port=10000, local_host='127.0.0.1', user=SSH_USERNAME
-          EM.defer do
+          #EM.defer do
             Thread.abort_on_exception = true
             retry_count = 0
             #DaemonKit.logger.debug("#{@name}: Attempting to establish port fowarding from #{local_host}:#{local_port} to #{remote_host}:#{remote_port}")
@@ -189,9 +191,9 @@ require 'socket'
               Net::SSH.start(remote_host, user) do |ssh|
                 #ssh.forward.local(local_port, remote_host, remote_port)
                 ssh.forward.local(local_port, remote_host, remote_port)
-                EM.defer do
+                #EM.defer do
                   yield local_host, local_port
-                end
+                #end
                 #DaemonKit.logger.debug("#{@name}: Established SSH forwarding.")
                 ssh.loop { true }
               end
@@ -208,7 +210,7 @@ require 'socket'
             rescue
               #DaemonKit.logger.error "Problem with SSH: #{$!}"
             end
-          end
+          #end
         end
 
         # Find a free port to use for a given service

@@ -16,7 +16,7 @@ class Room < CouchRest::Model::Base
   end
 
   #validates_uniqueness_of :mac
-  #validates_uniqueness_of :hostname
+  validates_uniqueness_of :hostname
 
   design do
     view :by_name
