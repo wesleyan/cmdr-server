@@ -9,7 +9,7 @@ require 'rubygems'
 require 'net/ssh'
 require 'net/http'
 require 'socket'
-require_relative 'authenticate'
+#require_relative 'authenticate'
 
 # Internal Cmdr dependencies
 #require 'constants'
@@ -31,12 +31,14 @@ require_relative 'authenticate'
           @ip_address = self.resolve client_reply
 
           # See comment in authenticate require
-          creds = Authenticate.get_credentials("#{File.dirname(__FILE__)}/security")
-          @creds = "#{creds[:user]}:#{creds[:password]}@"
+          #creds = Authenticate.get_credentials("#{File.dirname(__FILE__)}/security")
+          #@creds = "#{creds[:user]}:#{creds[:password]}@"
         end
 
         # Setup a client device. Takes a Couchdb database connection.
-        def setup db, uberroom_id
+        def setup db, uberroom_id, user, pass
+          @user = user
+          @password = pass
           @db = db
           @uberroom_id = uberroom_id
           # must establish connection to 1412 first
@@ -123,7 +125,7 @@ require_relative 'authenticate'
               # Setup replication from device's couchdb rooms to server's rooms
               data = {
                 _id: "server_replication_#{@room_id}",
-                source: "http://#{@creds}#{local_host}:#{local_port}/rooms",
+                source: "http://#{@user}:#{@password}@#{local_host}:#{local_port}/rooms",
                 target: "rooms",
                 continuous: true
               }
