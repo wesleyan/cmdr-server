@@ -1,4 +1,5 @@
 #cmdr-server
+#Currently doesn't work with new version of CMDR
 This repository holds the backend code for the central cmdr server 
 (responsible for managing all of the controllers) and the web 
 interface that allows interaction with the server.
